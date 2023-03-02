@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <body v-scope @vue:mounted="mounted">
+        <h1>Home Page</h1>
+        <hr/>
+        <div v-if="state">
+            <h2>Next Up:</h2>
+            <h2>{{ state.doctors[state.pointer].name }}</h2>
+            <button @click="assign">Assign Patient</button>
+
+            <h3>Logged In Doctors</h3>
+            <ul>
+                <li v-for="(doc, id) in state.doctors">
+                    {{ id }}. <b>{{ doc.name }}</b> Turn: {{ doc.turn }} | Count: {{ doc.count }} 
+                    <button @click="logoutDoc(id)">logout</button>
+                    <button @click="move('down', id)">move down</button>
+                    <button @click="move('up', id)">move up</button>
+                </li>
+            </ul>
+
+            <h3>Inactive Doctors</h3>
+            <ul>
+                <li v-for="doc in state.inactive">
+                    {{ doc.name }}
+                </li>
+            </ul>
+
+            <h2>Log In Doctor</h2>
+            <input v-model='newDoctorName' @keyup.enter="loginDoc" />
+        </div>  
+    </body>
+
+    <script type="module">
+    import { createApp } from 'https://unpkg.com/petite-vue?module';
+
+    createApp({
+        state: null,
+        newDoctorName: '',
+
+        //utility state handler, promise style async
+        apifetch(url, method = 'POST') {
+            return fetch(url, { method: method})
+            .then(res => {
+                return res.json();
+            })
+            .then(data => { this.state = data.state })
+            .catch(err => {
+                console.error('Error: ', err);
+            });
+        },
+
+        getState() {
+            this.apifetch('/api', 'GET');
+        },
+
+        loginDoc() {
+            this.apifetch('/api/logindoctor/'+this.newDoctorName)
+            .then(() => {
+                this.newDoctorName = '';
+            });
+        },
+
+        logoutDoc(id) {
+            this.apifetch('/api/logoutdoctor/'+id);
+        },
+
+        move(updown, id) {
+            this.apifetch(`/api/move/${updown}/${id}`);
+        },
+
+        assign() {
+            this.apifetch('/api/assignpatient');
+        },
+
+        mounted() {
+            this.getState();
+        }
+    }).mount();
+
+    </script>
+</html>
