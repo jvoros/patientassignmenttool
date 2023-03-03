@@ -1,13 +1,13 @@
 // setup express
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-// for socket.io
-const http = require('http');
-const { Server, } = require("socket.io");
+import express from 'express';
+import cors from 'cors';
+import http from 'http';
+import path from 'path';
+import { Server } from "socket.io";
+const ROOT_PATH = new URL(path.dirname(import.meta.url)).pathname;
 
 // api routes
-const api = require('./api.js');
+import api from './api.js';
 
 //build app with socket.io
 const app = express();
@@ -16,7 +16,7 @@ const io = new Server(server);
 
 // middleware
 app.use(cors());
-app.use(bodyParser.json());
+// passes io object to routers
 app.use((req, res, next) => {
     req.io = io;
     return next();
@@ -24,6 +24,9 @@ app.use((req, res, next) => {
 
 // routes
 app.use(express.static('public'));
+app.get('/', (req, res) => {
+    res.sendFile(ROOT_PATH + '/index.html')
+})
 app.use('/api', api);
 
 const port = process.env.PORT || 4000;

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Patient Assignment Tool 3000",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "test",
     "serve": "node index.js",
@@ -11,8 +12,10 @@
   "author": "Jeremy Voros",
   "license": "ISC",
   "dependencies": {
+    "@supabase/supabase-js": "^2.10.0",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "nodemon": "^2.0.20",
     "socket.io": "^4.6.1"

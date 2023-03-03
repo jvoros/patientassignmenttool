@@ -1,22 +1,38 @@
 <!DOCTYPE html>
 <html>
-    <body v-scope @vue:mounted="mounted">
-        <h1>Home Page</h1>
-        <hr/>
-        <div v-if="state">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <link rel="stylesheet" href="https://unpkg.com/chota@latest"> -->
+    <link rel="stylesheet" href="/pico.css">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+
+    <body>
+        <header class="container">
+            <hgroup>
+            <h1>PAT3000</h1>
+            <h2>Patient Assignment Tool</h2>
+            </hgroup>
+        </header>
+        <main class="container" v-scope @vue:mounted="mounted">
+        <div v-if="!state">Loading...</div>
+        <div v-if="state" v-cloak>
+            <div v-if="state.error">Error: {{ state.error }}</div>
+        <div v-if="state.doctors">
             <h2>Next Up:</h2>
             <h2>{{ state.doctors[state.pointer].name }}</h2>
             <button @click="assign">Assign Patient</button>
 
             <h3>Logged In Doctors</h3>
-            <ul>
-                <li v-for="(doc, id) in state.doctors">
-                    {{ id }}. <b>{{ doc.name }}</b> Turn: {{ doc.turn }} | Count: {{ doc.count }} 
-                    <button @click="logoutDoc(id)">logout</button>
-                    <button @click="move('down', id)">move down</button>
-                    <button @click="move('up', id)">move up</button>
-                </li>
-            </ul>
+
+            <div v-for="(doc, id) in state.doctors">
+                <h3>{{ doc.name }}</h3>
+                <p>Turn: {{ doc.turn }} | Count: {{ doc.count }}</p>
+                <button @click="logoutDoc(id)">logout</button>
+                <button @click="move('down', id)">move down</button>
+                <button @click="move('up', id)">move up</button>
+            </div>
+
 
             <h3>Inactive Doctors</h3>
             <ul>
@@ -28,6 +44,8 @@
             <h2>Log In Doctor</h2>
             <input v-model='newDoctorName' @keyup.enter="loginDoc" />
         </div>  
+    </div>
+</main>
     </body>
 
     <script type="module">
@@ -43,7 +61,7 @@
             .then(res => {
                 return res.json();
             })
-            .then(data => { this.state = data.state })
+            .then(data => { this.state = data.state; })
             .catch(err => {
                 console.error('Error: ', err);
             });
