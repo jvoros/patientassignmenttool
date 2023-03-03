@@ -1,3 +1,10 @@
+/* Vue Mods */
+
 [v-cloak] {
     display: none;
   }
+
+/* Primer Mods */
+.Header {
+  font-size: 20px;
+}

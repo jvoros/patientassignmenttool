@@ -11,10 +11,15 @@ const supabase = createClient(
     process.env.SUPABASE_KEY
   );
 
-// utility object
+// utility functions
+function myDate() {
+    const d = new Date();
+    return d.toLocaleDateString("fr-CA", {timeZone: "America/Denver"});
+}
 function Doctor(name, shift) {
 	this.name = name;
     this.shift = shift;
+    this.date = myDate();
 	this.turn = 0;
 	this.count = 0;
     this.patients = [];
@@ -54,8 +59,8 @@ async function updateState(newState) {
 // state modification functions
 // take state as parameter
 // modifies then returns state
-function loginDoctor(state, name) {
-    state.doctors.splice(state.pointer, 0, new Doctor(name));
+function loginDoctor(state, name, shift) {
+    state.doctors.splice(state.pointer, 0, new Doctor(name, shift));
     return state;
 }
 
@@ -119,8 +124,8 @@ api.get('/', async (req, res) => {
     res.json({ state: state });
 });
 
-api.post('/logindoctor/:name', async (req, res) => {
-    newStateRespond(loginDoctor(state, req.params.name), res);
+api.post('/logindoctor/:name/shift/:shift', async (req, res) => {
+    newStateRespond(loginDoctor(state, req.params.name, req.params.shift), res);
 });
 
 api.post('/logoutdoctor/:id', async (req, res) => {

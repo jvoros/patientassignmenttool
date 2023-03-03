@@ -3,97 +3,198 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- <link rel="stylesheet" href="https://unpkg.com/chota@latest"> -->
-    <link rel="stylesheet" href="/pico.css">
+    <!-- <link rel="stylesheet" href="/pico.css"> -->
+    <link rel="stylesheet" href="/primer.css">
     <link rel="stylesheet" href="/styles.css">
 </head>
-
-    <body>
-        <header class="container">
-            <hgroup>
-            <h1>PAT3000</h1>
-            <h2>Patient Assignment Tool</h2>
-            </hgroup>
-        </header>
-        <main class="container" v-scope @vue:mounted="mounted">
-        <div v-if="!state">Loading...</div>
-        <div v-if="state" v-cloak>
-            <div v-if="state.error">Error: {{ state.error }}</div>
-        <div v-if="state.doctors">
-            <h2>Next Up:</h2>
-            <h2>{{ state.doctors[state.pointer].name }}</h2>
-            <button @click="assign">Assign Patient</button>
-
-            <h3>Logged In Doctors</h3>
-
-            <div v-for="(doc, id) in state.doctors">
-                <h3>{{ doc.name }}</h3>
-                <p>Turn: {{ doc.turn }} | Count: {{ doc.count }}</p>
-                <button @click="logoutDoc(id)">logout</button>
-                <button @click="move('down', id)">move down</button>
-                <button @click="move('up', id)">move up</button>
-            </div>
-
-
-            <h3>Inactive Doctors</h3>
-            <ul>
-                <li v-for="doc in state.inactive">
-                    {{ doc.name }}
-                </li>
-            </ul>
-
-            <h2>Log In Doctor</h2>
-            <input v-model='newDoctorName' @keyup.enter="loginDoc" />
-        </div>  
+<body v-scope @vue:mounted="mounted">
+    <div class="Header">
+        <div class="Header-item">
+            <h2>PAT 3000</h2>
+        </div>
+        <div class="Header-item"><span>Patient Assignment Tool</span></div>
     </div>
-</main>
-    </body>
+    <div class="blankslate" v-if="!state">
+        <h3 class="blankslate-heading">Loading...</h3>
+        <p>Retrieving content from server</p>
+    </div>
 
-    <script type="module">
-    import { createApp } from 'https://unpkg.com/petite-vue?module';
+    <div v-cloak>
+    <main class="d-flex flex-row" v-if="state">
+        <!-- LEFT COLUMN -->
+        <section class="col-3 p-5">
+            <div class="Subhead">
+                <h2 class="Subhead-heading">Assign Patient</h2>
+            </div>
+            <button class="btn btn-large btn-block btn-primary mr-2" type="button" @click="assign">Pick Up Patient</button>
+            <div class="d-flex mt-4">
+                <div class="flex-auto">
+                    <button class="btn btn-danger" type="button">Skip Assignment</button>
+                </div>
+                <button class="btn btn-outline" type="button">Undo</button>
+            </div>
+            
 
-    createApp({
-        state: null,
-        newDoctorName: '',
+            <div class="Subhead Subhead--spacious">
+                <h2 class="Subhead-heading">Log In Doctor</h2>
+            </div>
+            <div>
+                <div class="d-flex">
+                    <label class="flex-auto"  for="physician-select">Physician: </label>
+                    <select class="form-select" v-model="newDoctor" id="physician-select">
+                        <option diasabled value=""></option>
+                        <option>Christensen</option>
+                        <option>Merchant</option>
+                        <option>Park</option>
+                        <option>Porter</option>
+                        <option>Voros</option>
+                        <option>Wiesley</option>
+                    </select>
+                </div>
+                <div class="d-flex mt-2">
+                    <label class="flex-auto" for="shift-select">Shift Start Time:</label>
+                    <select v-model="newShift" class="form-select float-right" id="shift-select">
+                        <option>6 am</option>
+                        <option>8 am</option>
+                        <option>10 am</option>
+                        <option>1 pm</option>
+                        <option>3 pm</option>
+                        <option>6 pm</option>
+                        <option>11 pm</option>
+                    </select>
+                </div>
+                <hr>
+                <div class="clearfix float-right mt-2">
+                    <button class="btn" @click="loginDoc">Login</button>
+                </div>
+            </div>
+        </section>
 
-        //utility state handler, promise style async
-        apifetch(url, method = 'POST') {
-            return fetch(url, { method: method})
-            .then(res => {
-                return res.json();
-            })
-            .then(data => { this.state = data.state; })
-            .catch(err => {
-                console.error('Error: ', err);
-            });
-        },
+        <!-- MIDDLE COLUMN -->
+        <section class="col-5 p-5">
+            <div class="Subhead">
+                <h2 class="Subhead-heading">On Rotation</h2>
+            </div>
+            <div class="Box Box--condensed mb-2" v-for="(doc, id) in state.doctors">
+                <div class="Box-row">
+                    <div class="d-flex flex-items-center">
+                        <div class="flex-auto">
+                            <h2>{{ doc.name }}</h2>
+                            <div class="text-small color-fg-subtle">{{ doc.shift }} on {{doc.date}}</div>
+                            <div class="mt-2">
+                                <!-- <span class="Label Label--secondary mr-1">{{ doc.turn }} turns</span> -->
+                                <span class="Label Label--secondary mr-1">{{ doc.count }} patients</span>
+                                <span class="Label Label--secondary mr-1">{{ doc.count }} fast track</span>
+                                <span class="Label Label--secondary mr-1">{{ doc.count }} pit</span>
+                            </div>
+                        </div>
+                        <span v-if="state.pointer == id" class="IssueLabel IssueLabel--big color-bg-attention-emphasis color-fg-on-emphasis ml-3">
+                            Next Patient
+                        </span>
+                    </div>
+                </div>
+                <div class="Box-row Box-row--gray">
+                    <div class="d-flex">
+                        <div class="BtnGroup flex-auto">
+                            <button class="BtnGroup-item btn btn-sm" @click="move('up', id)" type="button">
+                                Move Up
+                            </button>
+                            <button class="BtnGroup-item btn btn-sm" type="button"@click="move('down', id)">
+                                Move Down
+                            </button>
+                        </div>
+                        <button type="button" class="btn btn-danger btn-sm"  @click="logoutDoc(id)">Sign Off Rotation</button>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        getState() {
-            this.apifetch('/api', 'GET');
-        },
+        <!-- RIGHT COLUMN  -->
+        <section class="col-4 p-5">
+            <div class="Subhead">
+                <h2 class="Subhead-heading">Off Rotation</h2>
+            </div>
+            <div class="Box Box--condensed mb-2" v-for="(doc, id) in state.inactive">
+                <div class="Box-header d-flex flex-items-center">
+                    <div class="flex-auto">
+                        <h3>{{ doc.name }}</h3>
+                        <div class="text-small color-fg-subtle">6 pm Shift</div>
+                        <div class="mt-1">
+                            <!-- <span class="Label Label--secondary mr-1">{{ doc.turn }} turns</span> -->
+                            <span class="Label Label--secondary mr-1">{{ doc.count }} patients</span>
+                            <span class="Label Label--secondary mr-1">{{ doc.count }} fast track</span>
+                            <span class="Label Label--secondary mr-1">{{ doc.count }} pit</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="Box-row Box-row--gray d-flex">
+                    <div class="flex-auto">
+                        <button class="btn btn-sm" @click="logoutDoc(id)">Sign Back On</button>
+                    </div>
+                    <div class="BtnGroup">
+                        <button class="BtnGroup-item btn btn-outline btn-sm" type="button">
+                            Fast Track
+                        </button>
+                        <button class="BtnGroup-item btn btn-outline btn-sm" type="button">
+                            PIT
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    </div>
+</body>
 
-        loginDoc() {
-            this.apifetch('/api/logindoctor/'+this.newDoctorName)
-            .then(() => {
-                this.newDoctorName = '';
-            });
-        },
+<script type="module">
+import { createApp } from 'https://unpkg.com/petite-vue?module';
 
-        logoutDoc(id) {
-            this.apifetch('/api/logoutdoctor/'+id);
-        },
+createApp({
+    state: null,
+    newDoctor: '',
+    newShift: '',
 
-        move(updown, id) {
-            this.apifetch(`/api/move/${updown}/${id}`);
-        },
+    //utility state handler, promise style async
+    apifetch(url, method = 'POST') {
+        return fetch(url, { method: method})
+        .then(res => {
+            return res.json();
+        })
+        .then(data => { this.state = data.state; })
+        .catch(err => {
+            console.error('Error: ', err);
+        });
+    },
 
-        assign() {
-            this.apifetch('/api/assignpatient');
-        },
+    getState() {
+        this.apifetch('/api', 'GET');
+    },
 
-        mounted() {
-            this.getState();
-        }
-    }).mount();
+    loginDoc() {
+        console.log(this.newDoctor, this.newShift);
+        this.apifetch('/api/logindoctor/'+this.newDoctor+'/shift/'+this.newShift)
+        .then(() => {
+            this.newDoctor = '';
+            this.newShift = '';
+        });
+    },
 
-    </script>
+    logoutDoc(id) {
+        this.apifetch('/api/logoutdoctor/'+id);
+    },
+
+    move(updown, id) {
+        this.apifetch(`/api/move/${updown}/${id}`);
+    },
+
+    assign() {
+        this.apifetch('/api/assignpatient');
+    },
+
+    mounted() {
+        this.getState();
+    }
+}).mount();
+
+</script>
 </html>
