@@ -40,8 +40,13 @@ api.post('/logindoctor/:id/shift/:shift/pointer/:pointer', async (req, res) => {
 
 // off rotation
 api.post('/gooffrotation/:index', async (req, res) => {
-    const shift = state.shifts.on_rotation[req.params.index];
-    if (state.pointer >= req.params.index) state.pointer--;
+    const index = req.params.index;
+    const shift = state.shifts.on_rotation[index];
+    if (state.pointer > index) { 
+        state.pointer--;
+    } else if (state.pointer == index && state.pointer == state.shifts.on_rotation.length-1) {
+        state.pointer = 0;
+    }
     const off = await db.goOffRotation(shift.id);
     const order = await db.newRowOrders(state.newRotationOrderOnOff(req.params.index));
     state.shifts = await db.getShifts();
@@ -100,7 +105,8 @@ api.post('/increment/:type/shift/:shift_id', async (req, res) => {
     const shift = state.getShiftById(req.params.shift_id);
     const data = await db.incrementCount(shift, req.params.type);
     state.shifts = await db.getShifts();
-    res.json({ state: state });
+    res.send(true);
+    res.io.emit('new state', state);
 });
 
 // skip patient assignment

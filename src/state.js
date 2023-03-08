@@ -55,7 +55,6 @@ export default {
             }
             return ({ id: s.id, rotation_order: new_order });
         });
-        console.log(arr);
         return arr;
     },
 
@@ -70,7 +69,6 @@ export default {
             { id: shift.id, rotation_order: neworder},
             { id: moveShift.id, rotation_order: order}
         ];
-        console.log(arr);
         return arr;
     },
 

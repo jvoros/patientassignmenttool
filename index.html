@@ -2,8 +2,6 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- <link rel="stylesheet" href="https://unpkg.com/chota@latest"> -->
-    <!-- <link rel="stylesheet" href="/pico.css"> -->
     <link rel="stylesheet" href="/primer.css">
     <link rel="stylesheet" href="/styles.css">
 </head>
@@ -16,7 +14,7 @@
         <div class="Header-item"><span>Patient Assignment Tool</span></div>
     </div>
     <div class="blankslate" v-if="!state">
-        <h3 class="blankslate-heading">Loading...</h3>
+        <h3 class="blankslate-heading">Loading<span class="AnimatedEllipsis"></span></h3>
         <p>Retrieving content from server</p>
     </div>
 
@@ -24,11 +22,15 @@
     <main class="d-flex flex-row" v-if="state">
         <!-- LEFT COLUMN -->
         <section class="col-3 p-5">
-            
+
             <!-- Login -->
             <div class="Subhead Subhead">
                 <h2 class="Subhead-heading">Join Rotation</h2>
+                <span class="Subhead-actions State State--draft mr-2" v-if="loaders.includes('join')">
+                    Loading<span class="AnimatedEllipsis"></span>
+                </span>
             </div>
+
             <div>
                 <div class="d-flex">
                     <label class="flex-auto"  for="physician-select">Physician: </label>
@@ -57,13 +59,17 @@
 
                 <div class="d-flex mt-3">
                     <div class="flex-auto"></div>
-                    <button class="btn" @click="loginDoc" :aria-disabled="newShift == '' || newDoctor == ''">Join Rotation</button>
+                    <button class="btn" @click="joinrotation" :aria-disabled="newShift == '' || newDoctor == ''">Join Rotation</button>
                 </div>
+
             </div>
 
             <!-- New Day -->
             <div class="Subhead Subhead--spacious">
                 <h2 class="Subhead-heading">Admin</h2>
+                <span class="Subhead-actions State State--draft mr-2" v-if="loaders.includes('reset')">
+                    Loading<span class="AnimatedEllipsis"></span>
+                </span>
             </div>
             <button class="btn btn-danger" @click="resetBoardFlagToggle">Reset the Board</button>
             <div v-if="resetBoardFlag" class="flash mt-3 flash-warn">
@@ -71,7 +77,7 @@
                 Clicking this button will reset the current rotation and start a new one.</p>
                 <button class="btn btn-danger mb-2" @click="resetBoard">Okay, do it.</button>
                 <button class="btn-link" type="button" @click="resetBoardFlagToggle">No, don't do it. Cancel!</button>
-            </div>
+            </div>  
 
         </section>
 
@@ -79,8 +85,11 @@
         <section class="col-5 p-5">
             <div class="Subhead">
                 <h2 class="Subhead-heading">On Rotation: {{ state.datestring }}</h2>
+                <span class="Subhead-actions State State--draft mr-2" v-if="loaders.includes('on')">
+                    Loading<span class="AnimatedEllipsis"></span>
+                </span>
             </div>
-
+        
             <!-- On Rotation -->
             <div v-if="state.shifts.on_rotation.length < 1" class="blankslate">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M9.836 3.244c.963-1.665 3.365-1.665 4.328 0l8.967 15.504c.963 1.667-.24 3.752-2.165 3.752H3.034c-1.926 0-3.128-2.085-2.165-3.752ZM12 8.5a.75.75 0 0 0-.75.75v4.5a.75.75 0 0 0 1.5 0v-4.5A.75.75 0 0 0 12 8.5Zm1 9a1 1 0 1 0-2 0 1 1 0 0 0 2 0Z"></path></svg>   
@@ -111,11 +120,11 @@
                     </div>
                     <div class="BtnGroup">
                         <button class="BtnGroup-item btn btn-outline btn-sm" type="button" @click="increment('patient', shift.patient, shift.id)">
-                            Patients
+                            Pts
                             <span class="Counter">{{ shift.patient }}</span>
                         </button>
                         <button class="BtnGroup-item btn btn-outline btn-sm" type="button" @click="increment('fasttrack', shift.fasttrack, shift.id)">
-                            Fast Track
+                            Fasttrack
                             <span class="Counter">{{ shift.fasttrack }}</span>
                         </button>
                         <button class="BtnGroup-item btn btn-outline btn-sm" type="button" @click="increment('pit', shift.pit, shift.id)">
@@ -143,24 +152,28 @@
         <section class="col-4 p-5">
             <div class="Subhead">
                 <h2 class="Subhead-heading">Off Rotation</h2>
+                <span class="Subhead-actions State State--draft mr-2" v-if="loaders.includes('off')">
+                    Loading<span class="AnimatedEllipsis"></span>
+                </span>
             </div>
+            
             <!-- Off Rotation -->
             <div class="Box Box--condensed mb-2" v-for="(shift, index) in state.shifts.off_rotation">
-                <div class="Box-row Box-row--gray">
+                <div class="Box-row Box-row--gray p-2">
                     <div class="d-flex flex-items-center">
                         <div class="flex-auto">
-                            <h3>{{ shift.doctors.last }}</h3>
-                            <p class="text-small color-fg-subtle mt-1">{{ shift.shift_details.name }}</p>
+                            <p class="h3 color-fg-muted">{{ shift.doctors.last }}</p>
+                            <p class="text-small color-fg-subtle">{{ shift.shift_details.name }}</p>
                         </div>
                         <button class="btn btn-sm" @click="rejoin(shift.id)">Rejoin</button>
                     </div>
                     <div class="BtnGroup">
                         <button class="BtnGroup-item btn btn-outline btn-sm" type="button" @click="increment('patient', shift.patient, shift.id)">
-                            Patients
+                            Pts
                             <span class="Counter">{{ shift.patient }}</span>
                         </button>
                         <button class="BtnGroup-item btn btn-outline btn-sm" type="button" @click="increment('fasttrack', shift.fasttrack, shift.id)">
-                            Fast Track
+                            Fasttrack
                             <span class="Counter">{{ shift.fasttrack }}</span>
                         </button>
                         <button class="BtnGroup-item btn btn-outline btn-sm" type="button" @click="increment('pit', shift.pit, shift.id)">
@@ -188,8 +201,21 @@ createApp({
     newDoctor: '',
     newShift: '',
     resetBoardFlag: false,
-    isNext(id) { return this.state.pointer == id },
+    loaders: [],
 
+    // interface flags and methods
+    resetLoaders() {
+        this.loaders = [];
+    },
+    isNext(id) { 
+        return this.state.pointer == id 
+    },
+    resetBoardFlagToggle() {
+        this.resetBoardFlag = !this.resetBoardFlag;
+    },
+    sixamAlert() {
+        this.newShift = null;
+    },
 
     //utility state handler, promise style async
     apifetch(url, method = 'POST') {
@@ -200,28 +226,39 @@ createApp({
             });
     },
 
-    async loginDoc() {
+    // network transmission methods
+    handleState(state) {
+        this.resetLoaders();
+        this.state = state;
+    },
+
+    async joinrotation(loader) {
         if (this.newDoctor == '' || this.newShift == '') return;
+        this.loaders.push('join');
         await this.apifetch('/api/logindoctor/'+this.newDoctor+'/shift/'+this.newShift+'/pointer/'+this.state.pointer);
         this.newDoctor = '';
         this.newShift = '';
     },
  
     goOffRotation(id) {
+        this.loaders.push('on');
         this.apifetch('/api/gooffrotation/'+id);
     },
 
    rejoin(id) {
+        this.loaders.push('off');
         this.apifetch('/api/rejoin/'+id);
     },
 
     move(dir, id) {
         if (dir == 'up' && id == 0) return;
         if (dir == 'down' && id == this.state.shifts.on_rotation.length-1) return;
+        this.loaders.push('on');
         this.apifetch(`/api/move/${dir}/${id}`);
     },
 
     assign() {
+        this.loaders.push('on');
         this.apifetch('/api/assignpatient');
     },
 
@@ -234,18 +271,12 @@ createApp({
     },
 
     async resetBoard() {
-        this.state = await this.apifetch('/api/resetboard');
+        this.loaders.push('reset');
+        await this.apifetch('/api/resetboard');
+        this.apifetch('/api', 'GET');
         this.resetBoardFlag = false;
         this.newDoctor = '';
         this.newShift = '';
-    },
-
-    resetBoardFlagToggle() {
-        this.resetBoardFlag = !this.resetBoardFlag;
-    },
-
-    sixamAlert() {
-        this.newShift = null;
     },
 
     async mounted() {
@@ -255,7 +286,7 @@ createApp({
             // establish sockets to listen
             socket.on('new state', (state) => {
                 console.log('new state...');
-                this.state = state;
+                this.handleState(state);
             });
 
             // fire off first event after socket set up
