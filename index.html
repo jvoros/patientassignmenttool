@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/primer.css">
     <link rel="stylesheet" href="/styles.css">
 </head>
+
 <body v-scope @vue:mounted="mounted">
     <div class="Header">
         <div class="Header-item">
@@ -23,90 +24,119 @@
     <main class="d-flex flex-row" v-if="state">
         <!-- LEFT COLUMN -->
         <section class="col-3 p-5">
-            <div class="Subhead">
-                <h2 class="Subhead-heading">Assign Patient</h2>
-            </div>
-            <button class="btn btn-large btn-block btn-primary mr-2" type="button" @click="assign">Pick Up Patient</button>
-            <div class="d-flex mt-4">
-                <div class="flex-auto">
-                    <button class="btn btn-danger" type="button">Skip Assignment</button>
-                </div>
-                <button class="btn btn-outline" type="button">Undo</button>
-            </div>
             
-
-            <div class="Subhead Subhead--spacious">
-                <h2 class="Subhead-heading">Log In Doctor</h2>
+            <!-- Login -->
+            <div class="Subhead Subhead">
+                <h2 class="Subhead-heading">Join Rotation</h2>
             </div>
             <div>
                 <div class="d-flex">
                     <label class="flex-auto"  for="physician-select">Physician: </label>
                     <select class="form-select" v-model="newDoctor" id="physician-select">
                         <option diasabled value=""></option>
-                        <option>Christensen</option>
-                        <option>Merchant</option>
-                        <option>Park</option>
-                        <option>Porter</option>
-                        <option>Voros</option>
-                        <option>Wiesley</option>
+                        <option v-for="doc in state.doctors.filter(d=>!d.working)" :value="doc.id">
+                            {{ doc.last }}, {{ doc.first }}
+                        </option>
                     </select>
                 </div>
                 <div class="d-flex mt-2">
                     <label class="flex-auto" for="shift-select">Shift Start Time:</label>
                     <select v-model="newShift" class="form-select float-right" id="shift-select">
-                        <option>6 am</option>
-                        <option>8 am</option>
-                        <option>10 am</option>
-                        <option>1 pm</option>
-                        <option>3 pm</option>
-                        <option>6 pm</option>
-                        <option>11 pm</option>
+                        <option v-for="detail in state.shift_details" :value="detail.id">{{ detail.name }}</option>
                     </select>
                 </div>
-                <hr>
-                <div class="clearfix float-right mt-2">
-                    <button class="btn" @click="loginDoc">Login</button>
+
+                <div v-if="newShift == 1" class="flash flash-warn mt-3">
+                    <p><svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M8.22 1.754a.25.25 0 00-.44 0L1.698 13.132a.25.25 0 00.22.368h12.164a.25.25 0 00.22-.368L8.22 1.754zm-1.763-.707c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0114.082 15H1.918a1.75 1.75 0 01-1.543-2.575L6.457 1.047zM9 11a1 1 0 11-2 0 1 1 0 012 0zm-.25-5.25a.75.75 0 00-1.5 0v2.5a.75.75 0 001.5 0v-2.5z"></path></svg>
+                        It looks like you are starting the <strong>6 am shift</strong>.</p>
+                    <p>Do you want to reset the board and start a fresh rotation?</p>
+                    <button class="btn btn-danger mb-2" @click="resetBoard">Yes - reset the board.</button>
+                    <button class="btn-link" type="button" @click="sixamAlert">No - don't do it. Cancel!</button>
+                    <p class="mt-2">If you already reset the board, go ahead and <strong>Join Rotation</strong></p>
+                </div>
+
+                <div class="d-flex mt-3">
+                    <div class="flex-auto"></div>
+                    <button class="btn" @click="loginDoc" :aria-disabled="newShift == '' || newDoctor == ''">Join Rotation</button>
                 </div>
             </div>
+
+            <!-- New Day -->
+            <div class="Subhead Subhead--spacious">
+                <h2 class="Subhead-heading">Admin</h2>
+            </div>
+            <button class="btn btn-danger" @click="resetBoardFlagToggle">Reset the Board</button>
+            <div v-if="resetBoardFlag" class="flash mt-3 flash-warn">
+                <p><svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path fill-rule="evenodd" d="M8.22 1.754a.25.25 0 00-.44 0L1.698 13.132a.25.25 0 00.22.368h12.164a.25.25 0 00.22-.368L8.22 1.754zm-1.763-.707c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0114.082 15H1.918a1.75 1.75 0 01-1.543-2.575L6.457 1.047zM9 11a1 1 0 11-2 0 1 1 0 012 0zm-.25-5.25a.75.75 0 00-1.5 0v2.5a.75.75 0 001.5 0v-2.5z"></path></svg>
+                Clicking this button will reset the current rotation and start a new one.</p>
+                <button class="btn btn-danger mb-2" @click="resetBoard">Okay, do it.</button>
+                <button class="btn-link" type="button" @click="resetBoardFlagToggle">No, don't do it. Cancel!</button>
+            </div>
+
         </section>
 
         <!-- MIDDLE COLUMN -->
         <section class="col-5 p-5">
             <div class="Subhead">
-                <h2 class="Subhead-heading">On Rotation</h2>
+                <h2 class="Subhead-heading">On Rotation: {{ state.datestring }}</h2>
             </div>
-            <div class="Box Box--condensed mb-2" v-for="(doc, id) in state.doctors">
-                <div class="Box-row">
-                    <div class="d-flex flex-items-center">
-                        <div class="flex-auto">
-                            <h2>{{ doc.name }}</h2>
-                            <div class="text-small color-fg-subtle">{{ doc.shift }} on {{doc.date}}</div>
-                            <div class="mt-2">
-                                <!-- <span class="Label Label--secondary mr-1">{{ doc.turn }} turns</span> -->
-                                <span class="Label Label--secondary mr-1">{{ doc.count }} patients</span>
-                                <span class="Label Label--secondary mr-1">{{ doc.count }} fast track</span>
-                                <span class="Label Label--secondary mr-1">{{ doc.count }} pit</span>
-                            </div>
-                        </div>
-                        <span v-if="state.pointer == id" class="IssueLabel IssueLabel--big color-bg-attention-emphasis color-fg-on-emphasis ml-3">
-                            Next Patient
-                        </span>
+
+            <!-- On Rotation -->
+            <div v-if="state.shifts.on_rotation.length < 1" class="blankslate">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M9.836 3.244c.963-1.665 3.365-1.665 4.328 0l8.967 15.504c.963 1.667-.24 3.752-2.165 3.752H3.034c-1.926 0-3.128-2.085-2.165-3.752ZM12 8.5a.75.75 0 0 0-.75.75v4.5a.75.75 0 0 0 1.5 0v-4.5A.75.75 0 0 0 12 8.5Zm1 9a1 1 0 1 0-2 0 1 1 0 0 0 2 0Z"></path></svg>   
+                <h3 class="blankslate-heading">No doctors in rotation.</h3>
+                <p>Who is working?</p>
+            </div>
+            <template v-for="(shift, index) in state.shifts.on_rotation">
+            <div class="Box Box--condensed Box--blue mb-2" >
+                <div class="Box-header d-flex">
+                    <p class="flex-auto h5">{{ shift.shift_details.name }}</p>
+                    <div class="BtnGroup">
+                        <button aria-label="Move up the rotation order" class="BtnGroup-item btn btn-sm tooltipped tooltipped-sw" :aria-disabled="index == 0" type="button" @click="move('up', index)">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12"><path d="M6 4c-.2 0-.4.1-.5.2L2.2 7.5c-.3.3-.3.8 0 1.1.3.3.8.3 1.1 0L6 5.9l2.7 2.7c.3.3.8.3 1.1 0 .3-.3.3-.8 0-1.1L6.6 4.3C6.4 4.1 6.2 4 6 4Z"></path></svg>
+                        </button>
+                        <button aria-label="Move down the rotation order" class="BtnGroup-item btn btn-sm tooltipped tooltipped-sw" :aria-disabled="index == state.shifts.on_rotation.length-1" type="button" @click="move('down', index)">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12"><path d="M6 8.825c-.2 0-.4-.1-.5-.2l-3.3-3.3c-.3-.3-.3-.8 0-1.1.3-.3.8-.3 1.1 0l2.7 2.7 2.7-2.7c.3-.3.8-.3 1.1 0 .3.3.3.8 0 1.1l-3.2 3.2c-.2.2-.4.3-.6.3Z"></path></svg>
+                        </button>
+                        <button aria-label="Go off rotation" type="button" class="BtnGroup-item btn btn-sm btn-danger tooltipped tooltipped-sw"  @click="goOffRotation(index)">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12"><path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path></svg>    
+                        </button>
                     </div>
                 </div>
-                <div class="Box-row Box-row--gray">
-                    <div class="d-flex">
-                        <div class="BtnGroup flex-auto">
-                            <button class="BtnGroup-item btn btn-sm" @click="move('up', id)" type="button">
-                                Move Up
-                            </button>
-                            <button class="BtnGroup-item btn btn-sm" type="button"@click="move('down', id)">
-                                Move Down
-                            </button>
-                        </div>
-                        <button type="button" class="btn btn-danger btn-sm"  @click="logoutDoc(id)">Sign Off Rotation</button>
+
+                <div class="Box-row pt-3"  :class="{'Box-row--blue' : isNext(index) }">
+                    <div class="d-flex mb-1">
+                        <p class="h2 flex-auto">{{ shift.doctors.last }}, {{ shift.doctors.first}}<p>
+                        <button v-if="state.pointer == index" class="btn btn-primary btn-sm" type="button" @click="assign">Assign Patient</button>
                     </div>
+                    <div class="BtnGroup">
+                        <button class="BtnGroup-item btn btn-outline btn-sm" type="button" @click="increment('patient', shift.patient, shift.id)">
+                            Patients
+                            <span class="Counter">{{ shift.patient }}</span>
+                        </button>
+                        <button class="BtnGroup-item btn btn-outline btn-sm" type="button" @click="increment('fasttrack', shift.fasttrack, shift.id)">
+                            Fast Track
+                            <span class="Counter">{{ shift.fasttrack }}</span>
+                        </button>
+                        <button class="BtnGroup-item btn btn-outline btn-sm" type="button" @click="increment('pit', shift.pit, shift.id)">
+                            PIT
+                            <span class="Counter">{{ shift.pit }}</span>
+                        </button>
+                        <button class="BtnGroup-item btn btn-outline btn-sm" type="button" @click="increment('biscuit', shift.biscuit, shift.id)">
+                            Biscuit
+                            <span class="Counter">{{ shift.biscuit }}</span>
+                        </button>
+                    </div>
+
                 </div>
             </div>
+            </template>
+
+            <hr>
+            <button class="btn btn-danger btn-large" type="button" @click="skip">
+                <span>Skip Assignment</span>
+            </button>
+       
         </section>
 
         <!-- RIGHT COLUMN  -->
@@ -114,29 +144,32 @@
             <div class="Subhead">
                 <h2 class="Subhead-heading">Off Rotation</h2>
             </div>
-            <div class="Box Box--condensed mb-2" v-for="(doc, id) in state.inactive">
-                <div class="Box-header d-flex flex-items-center">
-                    <div class="flex-auto">
-                        <h3>{{ doc.name }}</h3>
-                        <div class="text-small color-fg-subtle">6 pm Shift</div>
-                        <div class="mt-1">
-                            <!-- <span class="Label Label--secondary mr-1">{{ doc.turn }} turns</span> -->
-                            <span class="Label Label--secondary mr-1">{{ doc.count }} patients</span>
-                            <span class="Label Label--secondary mr-1">{{ doc.count }} fast track</span>
-                            <span class="Label Label--secondary mr-1">{{ doc.count }} pit</span>
+            <!-- Off Rotation -->
+            <div class="Box Box--condensed mb-2" v-for="(shift, index) in state.shifts.off_rotation">
+                <div class="Box-row Box-row--gray">
+                    <div class="d-flex flex-items-center">
+                        <div class="flex-auto">
+                            <h3>{{ shift.doctors.last }}</h3>
+                            <p class="text-small color-fg-subtle mt-1">{{ shift.shift_details.name }}</p>
                         </div>
-                    </div>
-                </div>
-                <div class="Box-row Box-row--gray d-flex">
-                    <div class="flex-auto">
-                        <button class="btn btn-sm" @click="logoutDoc(id)">Sign Back On</button>
+                        <button class="btn btn-sm" @click="rejoin(shift.id)">Rejoin</button>
                     </div>
                     <div class="BtnGroup">
-                        <button class="BtnGroup-item btn btn-outline btn-sm" type="button">
-                            Fast Track
+                        <button class="BtnGroup-item btn btn-outline btn-sm" type="button" @click="increment('patient', shift.patient, shift.id)">
+                            Patients
+                            <span class="Counter">{{ shift.patient }}</span>
                         </button>
-                        <button class="BtnGroup-item btn btn-outline btn-sm" type="button">
+                        <button class="BtnGroup-item btn btn-outline btn-sm" type="button" @click="increment('fasttrack', shift.fasttrack, shift.id)">
+                            Fast Track
+                            <span class="Counter">{{ shift.fasttrack }}</span>
+                        </button>
+                        <button class="BtnGroup-item btn btn-outline btn-sm" type="button" @click="increment('pit', shift.pit, shift.id)">
                             PIT
+                            <span class="Counter">{{ shift.pit }}</span>
+                        </button>
+                        <button class="BtnGroup-item btn btn-outline btn-sm" type="button" @click="increment('biscuit', shift.biscuit, shift.id)">
+                            Biscuit
+                            <span class="Counter">{{ shift.biscuit }}</span>
                         </button>
                     </div>
                 </div>
@@ -153,42 +186,72 @@ createApp({
     state: null,
     newDoctor: '',
     newShift: '',
+    resetBoardFlag: false,
+    isNext(id) { return this.state.pointer == id },
+
 
     //utility state handler, promise style async
-    apifetch(url, method = 'POST') {
+    async apifetch(url, method = 'POST') {
         return fetch(url, { method: method})
-        .then(res => {
-            return res.json();
-        })
-        .then(data => { this.state = data.state; })
-        .catch(err => {
-            console.error('Error: ', err);
-        });
+            .then(res => {
+                return res.json();
+            })
+            .then(data => { return data.state; })
+            .catch(err => {
+                console.error('Error: ', err);
+            });
     },
 
-    getState() {
-        this.apifetch('/api', 'GET');
+    async getState() {
+        this.state = await this.apifetch('/api', 'GET');
     },
 
-    loginDoc() {
-        console.log(this.newDoctor, this.newShift);
-        this.apifetch('/api/logindoctor/'+this.newDoctor+'/shift/'+this.newShift)
-        .then(() => {
-            this.newDoctor = '';
-            this.newShift = '';
-        });
+    async loginDoc() {
+        if (this.newDoctor == '' || this.newShift == '') return;
+        this.state = await this.apifetch('/api/logindoctor/'+this.newDoctor+'/shift/'+this.newShift+'/pointer/'+this.state.pointer)
+        this.newDoctor = '';
+        this.newShift = '';
+    },
+ 
+    async goOffRotation(id) {
+        this.state = await this.apifetch('/api/gooffrotation/'+id);
     },
 
-    logoutDoc(id) {
-        this.apifetch('/api/logoutdoctor/'+id);
+    async rejoin(id) {
+        this.state = await this.apifetch('/api/rejoin/'+id);
     },
 
-    move(updown, id) {
-        this.apifetch(`/api/move/${updown}/${id}`);
+    async move(dir, id) {
+        if (dir == 'up' && id == 0) return;
+        if (dir == 'down' && id == this.state.shifts.on_rotation.length-1) return;
+        this.state = await this.apifetch(`/api/move/${dir}/${id}`);
     },
 
-    assign() {
-        this.apifetch('/api/assignpatient');
+    async assign() {
+        this.state = await this.apifetch('/api/assignpatient');
+    },
+
+    async skip() {
+        this.state = await this.apifetch('/api/skip');
+    },
+
+    async increment(type, current, id) {
+        this.state = await this.apifetch('/api/increment/'+type+'/shift/'+id);
+    },
+
+    async resetBoard() {
+        this.state = await this.apifetch('/api/resetboard');
+        this.resetBoardFlag = false;
+        this.newDoctor = '';
+        this.newShift = '';
+    },
+
+    resetBoardFlagToggle() {
+        this.resetBoardFlag = !this.resetBoardFlag;
+    },
+
+    sixamAlert() {
+        this.newShift = null;
     },
 
     mounted() {

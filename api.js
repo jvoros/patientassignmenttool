@@ -1,160 +1,124 @@
-// Hitting the route modifies the state,
-// then returns complete state
-import * as dotenv from 'dotenv';
-dotenv.config();
 import express from 'express';
-import { createClient } from '@supabase/supabase-js';
 
+import State from './state.js';
+import db from './db.js';
+
+let state = await State.initialize(db);
 const api = express.Router();
-const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_KEY
-  );
 
-// utility functions
-function myDate() {
-    const d = new Date();
-    return d.toLocaleDateString("fr-CA", {timeZone: "America/Denver"});
-}
-function Doctor(name, shift) {
-	this.name = name;
-    this.shift = shift;
-    this.date = myDate();
-	this.turn = 0;
-	this.count = 0;
-    this.patients = [];
-}
-
-// utility base state
-let basestate = {
-	pointer: 0,
-	doctors: [new Doctor("Nicolai", "6a"), new Doctor("Stevens", "8a")],
-	inactive: [],
-    error: ''
-};
-
-// current state
-let state = await supabase
-    .from('state_table')
-    .select("*")
-    .eq('id', 2)
-    .limit(1)
-    .then((res) => {
-        if (res.error) return ({ error: res.error});
-        else return res.data[0].state;
-    })
-    .catch(console.error);
-
-// utility to update state
-async function updateState(newState) {
-    const {data, error} = await supabase
-        .from('state_table')
-        .update({ state: newState })
-        .eq('id', 2)
-        .select()
-    if (data) return data[0].state;
-    return ({ error: error.message });
-}
-
-// state modification functions
-// take state as parameter
-// modifies then returns state
-function loginDoctor(state, name, shift) {
-    state.doctors.splice(state.pointer, 0, new Doctor(name, shift));
-    return state;
-}
-
-function logoutDoctor(state, i) {
-    if (i == state.doctors.length - 1) state.pointer = 0;
-    state.inactive.push(state.doctors[i]);
-    state.doctors.splice(i, 1);
-    return state;
-}
-
-function moveUp(state, index) {
-    const i = parseInt(index);
-    console.log('move up: ', i);
-    if (i == 0) return state;
-    [state.doctors[i], state.doctors[i-1]] = [state.doctors[i-1], state.doctors[i]];
-    return state;
-}
-
-function moveDown(state, index) {
-    // https://stackoverflow.com/questions/30475749/about-5-1-51-in-javascript-plus-and-minus-signs
-    const i = parseInt(index); 
-    if (i == state.doctors.length - 1) return state;
-    [state.doctors[i], state.doctors[i+1]] = [state.doctors[i+1], state.doctors[i]];
-    return state;
-}
-
-function takeTurn(state) {
-    state.doctors[state.pointer].count++;
-    state.doctors[state.pointer].turn++;
-    state.pointer = state.pointer < state.doctors.length-1 ? state.pointer+1 : 0;
-    return state;
-}
-
-// handles different process for first and second turns
-function assignPatient(state) {
-    const d = state.doctors[state.pointer];
-    if (d.turn === 0 && d.count < 2) {
-        d.count++;
-        return state;
-    }
-    if (d.turn === 1 && d.count < 4) {
-        d.count++;
-        return state;
-    }
-    return takeTurn(state);
-}
-
-// utility to handle all the state mod functions and responses
-// first update supabase
-// then update local state
-// then send updated state back to client
-async function newStateRespond(newState, res) {
-    state = await updateState(newState);
-    res.json({ state: state });
-}
-
-// routes
 api.get('/', async (req, res) => {
-    // reset to base state 
-     //newStateRespond(basestate, res)
     res.json({ state: state });
 });
 
-api.post('/logindoctor/:name/shift/:shift', async (req, res) => {
-    newStateRespond(loginDoctor(state, req.params.name, req.params.shift), res);
+// new shift
+api.post('/logindoctor/:id/shift/:shift/pointer/:pointer', async (req, res) => {
+    // update doctor
+    const doc = await db.updateDoctor(req.params.id);
+    
+    // increment row orders
+    const orders = await db.newRowOrders(state.newRotationOrdersOnNew());
+
+    // add the new shift
+    const params = {
+        doctor_id: req.params.id,
+        shift_id: req.params.shift,
+        rotation_order: req.params.pointer,
+        date: state.date
+    }
+    const newshift = await db.newShift(params);
+
+    // update state
+    state.shifts = await db.getShifts(state.date);
+    state.doctors = await db.getDoctors();
+    
+    // send back new state
+    res.json({ state: state })
 });
 
-api.post('/logoutdoctor/:id', async (req, res) => {
-    newStateRespond(logoutDoctor(state, req.params.id), res);
+// off rotation
+api.post('/gooffrotation/:index', async (req, res) => {
+    const shift = state.shifts.on_rotation[req.params.index];
+    if (state.pointer >= req.params.index) state.pointer--;
+    const off = await db.goOffRotation(shift.id);
+    state.shifts = await db.getShifts(state.date);
+    res.json({ state: state });
 });
 
-api.post('/move/:updown/:i', async (req, res) => {
-    if (req.params.updown == 'up') {
-        newStateRespond(moveUp(state, req.params.i), res);
+// rejoin rotation
+api.post('/rejoin/:id', async (req, res) => {
+    const params = {'on_rotation': true, 'rotation_order': state.pointer}
+    const orders = await db.newRowOrders(state.newRotationOrdersOnNew());
+    const newshift = await db.updateShift(req.params.id, params);
+    state.shifts = await db.getShifts(state.date);
+    res.json({ state: state });
+});
+
+// move shift up and down
+api.post('/move/:dir/:i', async (req, res) => {
+    // i is index of shifts array, not shift.id
+    const i = parseInt(req.params.i);
+    const shift = state.shifts.on_rotation[i];
+    if (req.params.dir == 'up' && i == 0) { 
+        res.json({ state: state });
+    } else if (req.params.dir == 'down' && i == state.shifts.on_rotation.length-1) { 
+        res.json({ state: state });
     } else {
-        newStateRespond(moveDown(state, req.params.i), res);
+        const orders = await db.newRowOrders(state.moveRotationOrder(shift, req.params.dir));
+        state.shifts = await db.getShifts(state.date);
+        res.json({ state: state });
     }
 });
 
+// assign patient
 api.post('/assignpatient', async (req, res) => {
-    newStateRespond(assignPatient(state), res);
+    const shift = state.getPointerShift();
+
+    // first turn
+    if (shift.turn == 0 && shift.patient < 2) {
+        // increment just patient count
+        const data = await db.incrementCount(shift, 'patient')
+    } else {
+    // other turns
+        // increment patient count and turn and pointer
+        const data = await db.incrementCount(shift, 'patient', true)
+        state.advancePointer();
+    }
+    state.shifts = await db.getShifts();
+    res.json({ state: state });
 });
 
-api.get('/devreset', async (req, res) => {
-    newStateRespond(basestate, res);
+// increment other patient types
+api.post('/increment/:type/shift/:shift_id', async (req, res) => {
+    const shift = state.getShiftById(req.params.shift_id);
+    const data = await db.incrementCount(shift, req.params.type);
+    state.shifts = await db.getShifts();
+    res.json({ state: state });
 });
 
-// api.get('/databasefill', async(req, res) => {
-//     for (let i=1; i<100; i++) {
-//         const { error } = await supabase
-//             .from('state_table')
-//             .insert({state: basestate})
-//         i++;
-//     }
-// });
+// skip patient assignment
+api.post('/skip', (req, res) =>{
+    state.advancePointer();
+    res.json({ state: state });
+});
+
+// reset doctors
+api.get('/resetdoctors', async (req, res) => {
+    const data = await db.resetDoctors(state.resetDocQuery());
+    state.doctors = await db.getDoctors();
+    res.json({ state: state });
+
+});
+
+// reset board
+api.post('/resetboard', async (req, res) => {
+    const data = await db.resetBoard(state.resetDocQuery(), state.resetShiftQuery());
+    state.doctors = await db.getDoctors();
+    res.json({ state: await state.initialize(db) });
+});
+
+api.get('/supatest', async (req, res) => {
+    // res.json({ state: state });
+    res.json(state.resetShiftQuery());
+});
 
 export default api;
