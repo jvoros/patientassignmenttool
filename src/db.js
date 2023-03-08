@@ -84,6 +84,7 @@ export default {
         return handleDataError(data, error, 'newRowOrders');
     },
 
+    
     async newShift(params) {
         const { data, error } = await supabase
             .from('shifts')

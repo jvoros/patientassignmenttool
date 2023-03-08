@@ -20,7 +20,8 @@
             socket.on('connect', () => {
                 console.log('socket id: ', socket.id);
                 socket.on('new state', (state) => {
-                this.state = state;
+                    console.warn('New state incoming...');
+                    this.state = state;
                 });
             });
         }

@@ -179,6 +179,7 @@
     </div>
 </body>
 
+<script src="/socket.io/socket.io.js"></script>
 <script type="module">
 import { createApp } from 'https://unpkg.com/petite-vue?module';
 
@@ -191,52 +192,45 @@ createApp({
 
 
     //utility state handler, promise style async
-    async apifetch(url, method = 'POST') {
-        return fetch(url, { method: method})
-            .then(res => {
-                return res.json();
-            })
-            .then(data => { return data.state; })
+    apifetch(url, method = 'POST') {
+        return fetch(url, { method: method })
+            .then(res => res.ok)
             .catch(err => {
                 console.error('Error: ', err);
             });
     },
 
-    async getState() {
-        this.state = await this.apifetch('/api', 'GET');
-    },
-
     async loginDoc() {
         if (this.newDoctor == '' || this.newShift == '') return;
-        this.state = await this.apifetch('/api/logindoctor/'+this.newDoctor+'/shift/'+this.newShift+'/pointer/'+this.state.pointer)
+        await this.apifetch('/api/logindoctor/'+this.newDoctor+'/shift/'+this.newShift+'/pointer/'+this.state.pointer);
         this.newDoctor = '';
         this.newShift = '';
     },
  
-    async goOffRotation(id) {
-        this.state = await this.apifetch('/api/gooffrotation/'+id);
+    goOffRotation(id) {
+        this.apifetch('/api/gooffrotation/'+id);
     },
 
-    async rejoin(id) {
-        this.state = await this.apifetch('/api/rejoin/'+id);
+   rejoin(id) {
+        this.apifetch('/api/rejoin/'+id);
     },
 
-    async move(dir, id) {
+    move(dir, id) {
         if (dir == 'up' && id == 0) return;
         if (dir == 'down' && id == this.state.shifts.on_rotation.length-1) return;
-        this.state = await this.apifetch(`/api/move/${dir}/${id}`);
+        this.apifetch(`/api/move/${dir}/${id}`);
     },
 
-    async assign() {
-        this.state = await this.apifetch('/api/assignpatient');
+    assign() {
+        this.apifetch('/api/assignpatient');
     },
 
-    async skip() {
-        this.state = await this.apifetch('/api/skip');
+    skip() {
+        this.apifetch('/api/skip');
     },
 
-    async increment(type, current, id) {
-        this.state = await this.apifetch('/api/increment/'+type+'/shift/'+id);
+    increment(type, current, id) {
+        this.apifetch('/api/increment/'+type+'/shift/'+id);
     },
 
     async resetBoard() {
@@ -254,8 +248,19 @@ createApp({
         this.newShift = null;
     },
 
-    mounted() {
-        this.getState();
+    async mounted() {
+        const socket = io();
+        socket.on('connect', () => {
+            
+            // establish sockets to listen
+            socket.on('new state', (state) => {
+                console.log('new state...');
+                this.state = state;
+            });
+
+            // fire off first event after socket set up
+            this.apifetch('/api', 'GET');
+        });
     }
 }).mount();
 

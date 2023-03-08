@@ -7,7 +7,7 @@ import { Server } from "socket.io";
 const ROOT_PATH = new URL(path.dirname(import.meta.url)).pathname;
 
 // api routes
-import api from './api.js';
+import api from './src/api.js';
 
 //build app with socket.io
 const app = express();
@@ -18,7 +18,7 @@ const io = new Server(server);
 app.use(cors());
 // passes io object to routers
 app.use((req, res, next) => {
-    req.io = io;
+    res.io = io;
     return next();
 });
 

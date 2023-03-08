@@ -7,7 +7,9 @@ let state = await State.initialize(db);
 const api = express.Router();
 
 api.get('/', async (req, res) => {
-    res.json({ state: state });
+    res.send(true);
+    res.io.emit('new state', state);
+    //res.json({ state: state });
 });
 
 // new shift
@@ -28,11 +30,12 @@ api.post('/logindoctor/:id/shift/:shift/pointer/:pointer', async (req, res) => {
     const newshift = await db.newShift(params);
 
     // update state
-    state.shifts = await db.getShifts(state.date);
+    state.shifts = await db.getShifts();
     state.doctors = await db.getDoctors();
     
     // send back new state
-    res.json({ state: state })
+    res.send(true);
+    res.io.emit('new state', state);
 });
 
 // off rotation
@@ -40,8 +43,10 @@ api.post('/gooffrotation/:index', async (req, res) => {
     const shift = state.shifts.on_rotation[req.params.index];
     if (state.pointer >= req.params.index) state.pointer--;
     const off = await db.goOffRotation(shift.id);
-    state.shifts = await db.getShifts(state.date);
-    res.json({ state: state });
+    const order = await db.newRowOrders(state.newRotationOrderOnOff(req.params.index));
+    state.shifts = await db.getShifts();
+    res.send(true);
+    res.io.emit('new state', state);
 });
 
 // rejoin rotation
@@ -49,8 +54,9 @@ api.post('/rejoin/:id', async (req, res) => {
     const params = {'on_rotation': true, 'rotation_order': state.pointer}
     const orders = await db.newRowOrders(state.newRotationOrdersOnNew());
     const newshift = await db.updateShift(req.params.id, params);
-    state.shifts = await db.getShifts(state.date);
-    res.json({ state: state });
+    state.shifts = await db.getShifts();
+    res.send(true);
+    res.io.emit('new state', state);
 });
 
 // move shift up and down
@@ -59,13 +65,14 @@ api.post('/move/:dir/:i', async (req, res) => {
     const i = parseInt(req.params.i);
     const shift = state.shifts.on_rotation[i];
     if (req.params.dir == 'up' && i == 0) { 
-        res.json({ state: state });
+        res.send(true);
     } else if (req.params.dir == 'down' && i == state.shifts.on_rotation.length-1) { 
-        res.json({ state: state });
+        res.send(true)
     } else {
         const orders = await db.newRowOrders(state.moveRotationOrder(shift, req.params.dir));
-        state.shifts = await db.getShifts(state.date);
-        res.json({ state: state });
+        state.shifts = await db.getShifts();
+        res.send(true);
+        res.io.emit('new state', state);
     }
 });
 
@@ -84,7 +91,8 @@ api.post('/assignpatient', async (req, res) => {
         state.advancePointer();
     }
     state.shifts = await db.getShifts();
-    res.json({ state: state });
+    res.send(true);
+    res.io.emit('new state', state);
 });
 
 // increment other patient types
@@ -98,27 +106,30 @@ api.post('/increment/:type/shift/:shift_id', async (req, res) => {
 // skip patient assignment
 api.post('/skip', (req, res) =>{
     state.advancePointer();
-    res.json({ state: state });
+    res.send(true);
+    res.io.emit('new state', state);
 });
 
 // reset doctors
 api.get('/resetdoctors', async (req, res) => {
     const data = await db.resetDoctors(state.resetDocQuery());
     state.doctors = await db.getDoctors();
-    res.json({ state: state });
-
+    res.send(true);
+    res.io.emit('new state', state);
 });
 
 // reset board
 api.post('/resetboard', async (req, res) => {
     const data = await db.resetBoard(state.resetDocQuery(), state.resetShiftQuery());
     state.doctors = await db.getDoctors();
-    res.json({ state: await state.initialize(db) });
+    state = await state.initialize(db);
+    res.send(true);
+    res.io.emit('new state', state);
 });
 
 api.get('/supatest', async (req, res) => {
     // res.json({ state: state });
-    res.json(state.resetShiftQuery());
+    //res.json(state.resetShiftQuery());
 });
 
 export default api;

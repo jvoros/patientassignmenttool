@@ -43,6 +43,23 @@ export default {
         return arr;
     },
 
+    newRotationOrderOnOff(order) {
+        const arr = this.shifts.on_rotation.map(s => {
+            let new_order;
+            if (s.rotation_order < order) { 
+                new_order = s.rotation_order; 
+            } else if (s.rotation_order == order) { 
+                new_order = null; 
+            } else { 
+                new_order = s.rotation_order-1; 
+            }
+            return ({ id: s.id, rotation_order: new_order });
+        });
+        console.log(arr);
+        return arr;
+    },
+
+
     moveRotationOrder(shift, dir) {
         const order = shift.rotation_order;
         const neworder = (dir == 'up' ? order-1 : order+1)
@@ -53,6 +70,7 @@ export default {
             { id: shift.id, rotation_order: neworder},
             { id: moveShift.id, rotation_order: order}
         ];
+        console.log(arr);
         return arr;
     },
 
