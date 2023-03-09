@@ -109,6 +109,15 @@ api.post('/increment/:type/shift/:shift_id', async (req, res) => {
     res.io.emit('new state', state);
 });
 
+// decrement other patient types
+api.post('/decrement/:type/shift/:shift_id', async (req, res) => {
+    const shift = state.getShiftById(req.params.shift_id);
+    const data = await db.decrementCount(shift, req.params.type);
+    state.shifts = await db.getShifts();
+    res.send(true);
+    res.io.emit('new state', state);
+});
+
 // skip patient assignment
 api.post('/skip', (req, res) =>{
     state.advancePointer();

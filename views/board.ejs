@@ -1,0 +1,41 @@
+<%- include('partials/html_head') %>
+
+<body v-scope @vue:mounted="mounted">
+<%- include('partials/nav_header_blank') %>
+    
+    <div v-cloak>
+        <main class="d-flex flex-row" v-if="state">
+
+            <!-- LEFT COLUMN -->
+            <section class="col-3 m-3">
+                <!-- <p class="rounded color-bg-accent h1 p-3">Patient<br>Assignment<br>Tool</p> -->
+                <div class="p-3 color-bg-inset rounded">
+                    <!-- Login -->
+                    <%- include('partials/login') %>
+                </div>
+
+                <!-- Admin -->
+                <% if (typeof admin != 'undefined' ) { %> 
+                    <div class="mt-3 p-3 color-bg-danger rounded">
+                    <%- include('partials/admin') %>
+                    </div>
+                <% } %>
+            </section>
+
+            <!-- MIDDLE COLUMN -->
+            <section class="col-5 p-3">
+                <!-- On Rotation -->
+                <%- include('partials/on_rotation') %>
+            </section>
+
+            <!-- RIGHT COLUMN  -->
+            <section class="col-4 p-3">
+                <!-- Off Rotation -->
+                <%- include('partials/off_rotation') %>
+            </section>
+        </main>
+    </div>
+
+</body>
+<%- include('partials/scripts') %>
+</html>

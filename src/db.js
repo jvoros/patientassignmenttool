@@ -128,6 +128,15 @@ export default {
         return handleDataError(data, error, 'incrementCount');
     },
 
+    async decrementCount(shift, type) {
+        const { data, error } = await supabase
+            .from('shifts')
+            .update({[type]: shift[type]-1})
+            .eq('id', shift.id)
+            .select();
+        return handleDataError(data, error, 'decrementCount');
+    },
+
     async resetBoard(docQuery, shiftQuery) {
         const { data, error } = await supabase
             .from('shifts')

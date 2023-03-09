@@ -1,0 +1,33 @@
+<!-- Header  -->
+<div class="Subhead">
+    <p class="Subhead-heading h2">Off Rotation</p>
+    <span class="Subhead-actions State State--draft mr-2" v-if="loaders.includes('off')">
+        Loading<span class="AnimatedEllipsis"></span>
+    </span>
+</div>
+
+<!-- Boxes  -->
+<div class="Box Box--condensed mb-2" v-for="(shift, index) in state.shifts.off_rotation">
+    <div class="Box-row Box-row--gray p-2">
+        <div class="d-flex flex-items-center">
+            <div class="flex-auto">
+                <p class="h3 color-fg-muted">{{ shift.doctors.last }}</p>
+                <p class="text-small color-fg-subtle">{{ shift.shift_details.name }}</p>
+            </div>
+            <button class="btn btn-sm btn-outline" @click="rejoin(shift.id)">Rejoin</button>
+        </div>
+        <%- include('patient_types_buttons') %>
+    </div>
+    <!-- Decrement Admin Row  -->
+    <div class="Box-row pt-3 Box-row--yellow" v-if="decrementToolFlag">
+        <p>Decrease Buttons</p>
+        <div class="BtnGroup">
+            <button v-for="type in ptTypes" class="BtnGroup-item btn btn-outline btn-sm" @click="decrement(type, shift.id)">
+                {{ type }} <span class="Counter">{{ shift[type] }}</span>
+            </button>
+        </div>
+        <button class="btn btn-outline btn-small" @click="decrement('turn', shift.id)">
+            Turn<span class="Counter">{{ shift.turn }}</span>
+        </button>
+    </div>
+</div>

@@ -77,7 +77,8 @@
                 Clicking this button will reset the current rotation and start a new one.</p>
                 <button class="btn btn-danger mb-2" @click="resetBoard">Okay, do it.</button>
                 <button class="btn-link" type="button" @click="resetBoardFlagToggle">No, don't do it. Cancel!</button>
-            </div>  
+            </div>
+            <button class="btn btn-danger mt-2" @click="decrementFlagToggle">Show Decrement Buttons</button>
 
         </section>
 
@@ -119,24 +120,15 @@
                         <button v-if="state.pointer == index" class="btn btn-primary btn-sm" type="button" @click="assign">Assign Patient</button>
                     </div>
                     <div class="BtnGroup">
-                        <button class="BtnGroup-item btn btn-outline btn-sm" type="button" @click="increment('patient', shift.patient, shift.id)">
-                            Pts
-                            <span class="Counter">{{ shift.patient }}</span>
-                        </button>
-                        <button class="BtnGroup-item btn btn-outline btn-sm" type="button" @click="increment('fasttrack', shift.fasttrack, shift.id)">
-                            Fasttrack
-                            <span class="Counter">{{ shift.fasttrack }}</span>
-                        </button>
-                        <button class="BtnGroup-item btn btn-outline btn-sm" type="button" @click="increment('pit', shift.pit, shift.id)">
-                            PIT
-                            <span class="Counter">{{ shift.pit }}</span>
-                        </button>
-                        <button class="BtnGroup-item btn btn-outline btn-sm" type="button" @click="increment('biscuit', shift.biscuit, shift.id)">
-                            Biscuit
-                            <span class="Counter">{{ shift.biscuit }}</span>
-                        </button>
+                        <button v-for="type in ptTypes" class="BtnGroup-item btn btn-outline btn-sm" @click="increment(type, shift.id)">{{ type }} <span class="Counter">{{ shift[type] }}</span></button>
                     </div>
+                </div>
 
+                <div class="Box-row pt-3 Box-row--yellow" v-if="decrementToolFlag">
+                    <p>Decrement Buttons</p>
+                    <div class="BtnGroup">
+                        <button v-for="type in ptTypesDec" class="BtnGroup-item btn btn-outline btn-sm" @click="decrement(type, shift.id)">{{ type }} <span class="Counter">{{ shift[type] }}</span></button>
+                    </div>
                 </div>
             </div>
             </template>
@@ -165,25 +157,16 @@
                             <p class="h3 color-fg-muted">{{ shift.doctors.last }}</p>
                             <p class="text-small color-fg-subtle">{{ shift.shift_details.name }}</p>
                         </div>
-                        <button class="btn btn-sm" @click="rejoin(shift.id)">Rejoin</button>
+                        <button class="btn btn-sm btn-outline" @click="rejoin(shift.id)">Rejoin</button>
                     </div>
                     <div class="BtnGroup">
-                        <button class="BtnGroup-item btn btn-outline btn-sm" type="button" @click="increment('patient', shift.patient, shift.id)">
-                            Pts
-                            <span class="Counter">{{ shift.patient }}</span>
-                        </button>
-                        <button class="BtnGroup-item btn btn-outline btn-sm" type="button" @click="increment('fasttrack', shift.fasttrack, shift.id)">
-                            Fasttrack
-                            <span class="Counter">{{ shift.fasttrack }}</span>
-                        </button>
-                        <button class="BtnGroup-item btn btn-outline btn-sm" type="button" @click="increment('pit', shift.pit, shift.id)">
-                            PIT
-                            <span class="Counter">{{ shift.pit }}</span>
-                        </button>
-                        <button class="BtnGroup-item btn btn-outline btn-sm" type="button" @click="increment('biscuit', shift.biscuit, shift.id)">
-                            Biscuit
-                            <span class="Counter">{{ shift.biscuit }}</span>
-                        </button>
+                        <button v-for="type in ptTypes" class="BtnGroup-item btn btn-outline btn-sm" @click="increment(type, shift[type], shift.id)">{{ type }} <span class="Counter">{{ shift[type] }}</span></button>
+                    </div>
+                </div>
+                <div class="Box-row pt-3 Box-row--yellow" v-if="decrementToolFlag">
+                    <p>Decrement Buttons</p>
+                    <div class="BtnGroup">
+                        <button v-for="type in ptTypesDec" class="BtnGroup-item btn btn-outline btn-sm" @click="decrement(type, shift.id)">{{ type }} <span class="Counter">{{ shift[type] }}</span></button>
                     </div>
                 </div>
             </div>
@@ -201,7 +184,10 @@ createApp({
     newDoctor: '',
     newShift: '',
     resetBoardFlag: false,
+    decrementToolFlag: false,
     loaders: [],
+    ptTypes: ['patient', 'fasttrack', 'pit', 'biscuit'],
+    ptTypesDec: ['patient', 'fasttrack', 'pit', 'biscuit', 'turn'],
 
     // interface flags and methods
     resetLoaders() {
@@ -215,6 +201,9 @@ createApp({
     },
     sixamAlert() {
         this.newShift = null;
+    },
+    decrementFlagToggle() {
+        this.decrementToolFlag = !this.decrementToolFlag
     },
 
     //utility state handler, promise style async
@@ -266,8 +255,12 @@ createApp({
         this.apifetch('/api/skip');
     },
 
-    increment(type, current, id) {
+    increment(type, id) {
         this.apifetch('/api/increment/'+type+'/shift/'+id);
+    },
+
+    decrement(type, id) {
+        this.apifetch('/api/decrement/'+type+'/shift/'+id);
     },
 
     async resetBoard() {

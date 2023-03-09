@@ -1,0 +1,3 @@
+<div class="BtnGroup">
+    <button v-for="type in ptTypes" class="BtnGroup-item btn btn-outline btn-sm" @click="increment(type, shift.id)">{{ type }} <span class="Counter">{{ shift[type] }}</span></button>
+</div>

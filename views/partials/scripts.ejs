@@ -1,0 +1,114 @@
+<script src="/socket.io/socket.io.js"></script>
+<script type="module">
+import { createApp } from 'https://unpkg.com/petite-vue?module';
+
+createApp({
+    state: null,
+    newDoctor: '',
+    newShift: '',
+    resetBoardFlag: false,
+    decrementToolFlag: false,
+    loaders: [],
+    ptTypes: ['patient', 'fasttrack', 'pit', 'biscuit'],
+    ptTypesDec: ['patient', 'fasttrack', 'pit', 'biscuit', 'turn'],
+
+    // interface flags and methods
+    resetLoaders() {
+        this.loaders = [];
+    },
+    isNext(id) { 
+        return this.state.pointer == id 
+    },
+    resetBoardFlagToggle() {
+        this.resetBoardFlag = !this.resetBoardFlag;
+    },
+    sixamAlert() {
+        this.newShift = null;
+    },
+    decrementFlagToggle() {
+        this.decrementToolFlag = !this.decrementToolFlag
+    },
+
+    //utility state handler, promise style async
+    apifetch(url, method = 'POST') {
+        return fetch(url, { method: method })
+            .then(res => res.ok)
+            .catch(err => {
+                console.error('Error: ', err);
+            });
+    },
+
+    // network transmission methods
+    handleState(state) {
+        this.resetLoaders();
+        this.state = state;
+    },
+
+    async joinrotation(loader) {
+        if (this.newDoctor == '' || this.newShift == '') return;
+        this.loaders.push('join');
+        await this.apifetch('/api/logindoctor/'+this.newDoctor+'/shift/'+this.newShift+'/pointer/'+this.state.pointer);
+        this.newDoctor = '';
+        this.newShift = '';
+    },
+ 
+    goOffRotation(id) {
+        this.loaders.push('on');
+        this.apifetch('/api/gooffrotation/'+id);
+    },
+
+   rejoin(id) {
+        this.loaders.push('off');
+        this.apifetch('/api/rejoin/'+id);
+    },
+
+    move(dir, id) {
+        if (dir == 'up' && id == 0) return;
+        if (dir == 'down' && id == this.state.shifts.on_rotation.length-1) return;
+        this.loaders.push('on');
+        this.apifetch(`/api/move/${dir}/${id}`);
+    },
+
+    assign() {
+        this.loaders.push('on');
+        this.apifetch('/api/assignpatient');
+    },
+
+    skip() {
+        this.apifetch('/api/skip');
+    },
+
+    increment(type, id) {
+        this.apifetch('/api/increment/'+type+'/shift/'+id);
+    },
+
+    decrement(type, id) {
+        this.apifetch('/api/decrement/'+type+'/shift/'+id);
+    },
+
+    async resetBoard() {
+        this.loaders.push('reset');
+        await this.apifetch('/api/resetboard');
+        this.apifetch('/api', 'GET');
+        this.resetBoardFlag = false;
+        this.newDoctor = '';
+        this.newShift = '';
+    },
+
+    async mounted() {
+        const socket = io();
+        socket.on('connect', () => {
+            
+            // establish sockets to listen
+            socket.on('new state', (state) => {
+                console.log('new state...');
+                this.handleState(state);
+            });
+
+            // fire off first event after socket set up
+            this.apifetch('/api', 'GET');
+        });
+    }
+}).mount();
+
+</script>
