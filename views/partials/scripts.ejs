@@ -29,6 +29,12 @@ createApp({
         this.decrementToolFlag = !this.decrementToolFlag
     },
 
+    handleState(state) {
+        this.resetLoaders();
+        this.state = state;
+    },
+
+    // database transmission methods
     //utility state handler, promise style async
     apifetch(url, method = 'POST') {
         return fetch(url, { method: method })
@@ -36,12 +42,6 @@ createApp({
             .catch(err => {
                 console.error('Error: ', err);
             });
-    },
-
-    // network transmission methods
-    handleState(state) {
-        this.resetLoaders();
-        this.state = state;
     },
 
     async joinrotation(loader) {

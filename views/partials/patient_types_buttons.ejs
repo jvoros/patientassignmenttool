@@ -5,13 +5,13 @@
         </div>
         
         <div class="BtnGroup">
-            <button v-for="type in ptTypes" :aria-label="'Increase count of '+type+' patients'" class="BtnGroup-item btn btn-outline btn-sm tooltipped tooltipped-sw" @click="increment(type, shift.id)">{{ type }} <span class="Counter">{{ shift[type] }}</span></button>
+            <button v-for="type in ptTypes" :title="'Increase count of '+type+' patients'" class="BtnGroup-item btn btn-outline btn-sm" @click="increment(type, shift.id)">{{ type }} <span class="Counter">{{ shift[type] }}</span></button>
         </div>
     </div>
 <% } %>
 
 <% if (role == 'admin') { %>
     <div class="BtnGroup">
-        <button v-for="type in ptTypesAdmin" :aria-label="'Increase count of '+type+' patients'" class="BtnGroup-item btn btn-outline btn-sm tooltipped tooltipped-sw" @click="increment(type, shift.id)">{{ type }} <span class="Counter">{{ shift[type] }}</span></button>
+        <button v-for="type in ptTypesAdmin" :title="'Increase count of '+type+' patients'" class="BtnGroup-item btn btn-outline btn-sm" @click="increment(type, shift.id)">{{ type }} <span class="Counter">{{ shift[type] }}</span></button>
     </div>
 <% } %>
