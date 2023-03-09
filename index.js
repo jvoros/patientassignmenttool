@@ -1,8 +1,11 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
 // setup express
 import express from 'express';
 import cors from 'cors';
 import http from 'http';
 import path from 'path';
+import basicAuth from 'express-basic-auth';
 import { Server } from "socket.io";
 const ROOT_PATH = new URL(path.dirname(import.meta.url)).pathname;
 
@@ -30,15 +33,27 @@ app.use(express.static('public'));
 // app.get('/', (req, res) => {
 //     res.sendFile(ROOT_PATH + '/index.html')
 // })
-app.get('/triage', (req, res) => {
-    res.render('board', { role: 'admin' });
-});
 
-app.get('/doctor', (req, res) => {
+app.use('/api', api);
+
+
+app.get('/doctor', basicAuth({
+    users: { 'doctor': process.env.DOC_PASS },
+    challenge: true
+  }), (req, res) => {
     res.render('board', { role: 'user' });
 });
 
-app.use('/api', api);
+app.get('/triage', basicAuth({
+    users: { 'triage': process.env.PASS },
+    challenge: true
+  }), (req, res) => {
+    res.render('board', { role: 'admin' });
+});
+
+
+
+
 
 const port = process.env.PORT || 4000;
 server.listen(port, () => {
