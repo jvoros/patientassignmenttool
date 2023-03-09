@@ -31,11 +31,11 @@ app.use(express.static('public'));
 //     res.sendFile(ROOT_PATH + '/index.html')
 // })
 app.get('/triage', (req, res) => {
-    res.render('board', {admin: true});
+    res.render('board', { role: 'admin' });
 });
 
-app.get('/doctors', (req, res) => {
-    res.render('board');
+app.get('/doctor', (req, res) => {
+    res.render('board', { role: 'user' });
 });
 
 app.use('/api', api);

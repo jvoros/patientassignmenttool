@@ -49,6 +49,7 @@ export default {
         const { data, error } = await supabase
             .from('shift_details')
             .select()
+            .order('order')
             return handleDataError(data, error, 'getShiftDetails');
     },
 

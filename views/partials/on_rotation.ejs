@@ -21,7 +21,7 @@
     <div class="Box-header d-flex">
         <p class="flex-auto h5">{{ shift.shift_details.name }}</p>
         <div class="BtnGroup">
-            <% if (typeof admin != 'undefined' ) { %>
+            <% if (role=='admin') { %>
                 <button aria-label="Move up the rotation order" class="BtnGroup-item btn btn-sm tooltipped tooltipped-sw" :aria-disabled="index == 0" type="button" @click="move('up', index)">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12"><path d="M6 4c-.2 0-.4.1-.5.2L2.2 7.5c-.3.3-.3.8 0 1.1.3.3.8.3 1.1 0L6 5.9l2.7 2.7c.3.3.8.3 1.1 0 .3-.3.3-.8 0-1.1L6.6 4.3C6.4 4.1 6.2 4 6 4Z"></path></svg>
                 </button>
@@ -39,31 +39,19 @@
     <div class="Box-row pt-3"  :class="{'Box-row--blue' : isNext(index) }">
         <div class="d-flex mb-1">
             <p class="h2 flex-auto">{{ shift.doctors.last }}, {{ shift.doctors.first}}<p>
-            <% if (typeof admin == 'undefined' ) { %>     
-                <span v-if="state.pointer == index" class="IssueLabel IssueLabel--big color-fg-on-emphasis color-bg-attention-emphasis">Up Next</span>
+            <% if (role=='user') { %>     
+                <span v-if="state.pointer == index" class="IssueLabel IssueLabel--big color-fg-on-emphasis color-bg-success-emphasis">Up Next</span>
             <% } %>
             
-            <% if (typeof admin != 'undefined' ) { %>     
+            <% if (role=='admin') { %>     
                 <button v-if="state.pointer == index" class="btn btn-primary" type="button" @click="assign">Assign Patient</button>
             <% } %>
-
-
         </div>
         <%- include('patient_types_buttons') %>
     </div>
 
-    <!-- Decrement Admin Row  -->
-    <div class="Box-row pt-3 Box-row--yellow" v-if="decrementToolFlag">
-        <p>Decrease Buttons</p>
-        <div class="BtnGroup">
-            <button v-for="type in ptTypes" class="BtnGroup-item btn btn-outline btn-sm" @click="decrement(type, shift.id)">
-                {{ type }} <span class="Counter">{{ shift[type] }}</span>
-            </button>
-        </div>
-        <button class="btn btn-outline btn-small" @click="decrement('turn', shift.id)">
-            Turn<span class="Counter">{{ shift.turn }}</span>
-        </button>
-    </div>
+    <% if (role == 'admin') { %> 
+        <%- include('decrease_pt_types_buttons') %>
+    <% } %>
 </div>
-
 </template>

@@ -1,0 +1,12 @@
+<!-- Decrement Admin Row  -->
+<div class="Box-row pt-3 Box-row--yellow" v-if="decrementToolFlag">
+    <p>Decrease Buttons</p>
+    <div class="BtnGroup">
+        <button v-for="type in ptTypesAdmin" class="BtnGroup-item btn btn-outline btn-sm" @click="decrement(type, shift.id)">
+            {{ type }} <span class="Counter">{{ shift[type] }}</span>
+        </button>
+    </div>
+    <button class="btn btn-outline btn-small" @click="decrement('turn', shift.id)">
+        Turn<span class="Counter">{{ shift.turn }}</span>
+    </button>
+</div>
