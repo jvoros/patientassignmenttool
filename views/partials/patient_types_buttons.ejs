@@ -1,16 +1,19 @@
-<% if (role == 'user') { %>
+<% if (user.role == 'user') { %>
     <div class="d-flex">
         <div class="flex-auto">
             <span class="Label Label--accent Label--large flex-auto">Pts: {{ shift.patient }}</span>
         </div>
         
-        <div class="BtnGroup">
+        <div v-if="doctor_id == shift.doc_id" class="BtnGroup">
             <button v-for="type in ptTypes" :title="'Increase count of '+type+' patients'" class="BtnGroup-item btn btn-outline btn-sm" @click="increment(type, shift.id)">{{ type }} <span class="Counter">{{ shift[type] }}</span></button>
+        </div>
+        <div v-if="doctor_id != shift.doc_id">
+            <span v-for="type in ptTypes" class="Label Label--large flex-auto mr-1">{{ type }}: {{ shift[type] }}</span>
         </div>
     </div>
 <% } %>
 
-<% if (role == 'admin') { %>
+<% if (user.role == 'admin') { %>
     <div class="BtnGroup">
         <button v-for="type in ptTypesAdmin" :title="'Increase count of '+type+' patients'" class="BtnGroup-item btn btn-outline btn-sm" @click="increment(type, shift.id)">{{ type }} <span class="Counter">{{ shift[type] }}</span></button>
     </div>

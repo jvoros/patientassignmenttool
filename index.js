@@ -96,11 +96,11 @@ app.get('/logout', (req, res) => {
 app.use('/api', api);
 
 app.get('/doctor', (req, res) => {
-    res.render('board', { role: 'user', user: req.user.displayName });
+    res.render('board', { user: req.user });
 });
 
 app.get('/triage', (req, res) => {
-    res.render('board', { role: 'admin', user: req.user.displayName });
+    res.render('board', { user: req.user });
 });
 
 const port = process.env.PORT || 4000;

@@ -12,12 +12,10 @@ export default {
     date: '',
     datestring: '',
     pointer: 0,
-    doctors: [],
     shift_details: [],
     shifts: {},
 
     async initialize(db) {
-        this.doctors = await db.getDoctors();
         this.shift_details = await db.getShiftDetails();
         this.shifts = await db.getShifts(this.date);
         this.newDates();
@@ -57,7 +55,6 @@ export default {
         });
         return arr;
     },
-
 
     moveRotationOrder(shift, dir) {
         const order = shift.rotation_order;

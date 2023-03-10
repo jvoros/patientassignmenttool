@@ -20,7 +20,12 @@ const googleStrategy = new GoogleStrategy.Strategy({
         if (profile._json.hd !== 'carepointhc.com') {
             done(new Error("Wrong domain. Use an @carepointhc.com email address"));
         } else {
-            done(null, profile);
+            // set up user fields that app needs
+            done(null, { 
+                id: profile.id, 
+                name: profile.displayName, 
+                role: 'user' 
+            });
         }
   }
 );
@@ -32,13 +37,11 @@ const localStrategy = new LocalStrategy.Strategy({
     console.log('localStrategy happening...');
     // stupidly simple password compare
     // return object same shape as Google Strategy added to req.user by middleware
-    // add localRole property for admin middleware
     if (username == 'triage' && password == process.env.PASS) {
         return done(null, {
-            "id": "1",
-            "displayName":"Triage Nurse",
-            "name": {"familyName":"Nurse", "givenName":"Triage"},
-            "localRole": 'admin'
+            id: "1",
+            name: "Triage Nurse",
+            role: 'admin'
         });
     } else {
         console.log('failed authentication');

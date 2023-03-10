@@ -4,7 +4,8 @@ import { createApp } from 'https://unpkg.com/petite-vue?module';
 
 createApp({
     state: null,
-    doctor: '<%= user %>',
+    doctor: '<%= user.name %>',
+    doctor_id: '<%= user.id %>',
     newDoctor: '',
     newShift: '',
     resetBoardFlag: false,
@@ -46,10 +47,9 @@ createApp({
     },
 
     async joinrotation(loader) {
-        if (this.newDoctor == '' || this.newShift == '') return;
+        if (this.newShift == '') return;
         this.loaders.push('join');
-        await this.apifetch('/api/logindoctor/'+this.newDoctor+'/shift/'+this.newShift+'/pointer/'+this.state.pointer);
-        this.newDoctor = '';
+        await this.apifetch('/api/join/'+this.doctor_id+'/'+this.doctor+'/shift/'+this.newShift+'/pointer/'+this.state.pointer);
         this.newShift = '';
     },
  
@@ -92,7 +92,6 @@ createApp({
         await this.apifetch('/api/resetboard');
         this.apifetch('/api', 'GET');
         this.resetBoardFlag = false;
-        this.newDoctor = '';
         this.newShift = '';
     },
 

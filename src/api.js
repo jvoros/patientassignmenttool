@@ -13,16 +13,17 @@ api.get('/', async (req, res) => {
 });
 
 // new shift
-api.post('/logindoctor/:id/shift/:shift/pointer/:pointer', async (req, res) => {
+api.post('/join/:id/:name/shift/:shift/pointer/:pointer', async (req, res) => {
     // update doctor
-    const doc = await db.updateDoctor(req.params.id);
+    //const doc = await db.updateDoctor(req.params.id);
     
     // increment row orders
     const orders = await db.newRowOrders(state.newRotationOrdersOnNew());
 
     // add the new shift
     const params = {
-        doctor_id: req.params.id,
+        doc_id: req.params.id,
+        doc_name: req.params.name,
         shift_id: req.params.shift,
         rotation_order: req.params.pointer,
         date: state.date
@@ -31,7 +32,7 @@ api.post('/logindoctor/:id/shift/:shift/pointer/:pointer', async (req, res) => {
 
     // update state
     state.shifts = await db.getShifts();
-    state.doctors = await db.getDoctors();
+    //state.doctors = await db.getDoctors();
     
     // send back new state
     res.send(true);
@@ -125,18 +126,10 @@ api.post('/skip', (req, res) =>{
     res.io.emit('new state', state);
 });
 
-// reset doctors
-api.get('/resetdoctors', async (req, res) => {
-    const data = await db.resetDoctors(state.resetDocQuery());
-    state.doctors = await db.getDoctors();
-    res.send(true);
-    res.io.emit('new state', state);
-});
-
 // reset board
 api.post('/resetboard', async (req, res) => {
-    const data = await db.resetBoard(state.resetDocQuery(), state.resetShiftQuery());
-    state.doctors = await db.getDoctors();
+    const data = await db.resetBoard(state.resetShiftQuery());
+    // state.doctors = await db.getDoctors();
     state = await state.initialize(db);
     res.send(true);
     res.io.emit('new state', state);

@@ -8,7 +8,10 @@ export const supabase = createClient(
 );
 
 function handleDataError(data, error, message) {
-    if (error) throw new Error(message, error);
+    if (error) {
+        console.log(message, error);
+        throw new Error(message, error);
+    }
     return data;
 }
 
@@ -19,7 +22,6 @@ export default {
             .from('shifts')
             .select(`
                 *,
-                doctors(first, last),
                 shift_details(name)
             `)
             .eq('archived', false)
@@ -31,7 +33,6 @@ export default {
             .from('shifts')
             .select(`
                 *,
-                doctors(first, last),
                 shift_details(name, start)
             `)
             .eq('archived', false)
@@ -53,30 +54,6 @@ export default {
             return handleDataError(data, error, 'getShiftDetails');
     },
 
-    async updateDoctor(doc_id) {
-        const { data, error } = await supabase
-            .from('doctors')
-            .update({ working: true })
-            .eq('id', doc_id)
-            .select();
-        return handleDataError(data, error, 'updateDoctors');
-    },
-
-    async getDoctors() {
-        const { data, error } = await supabase
-            .from('doctors')
-            .select()
-            .order('last');
-        return handleDataError(data, error, 'getDoctors');
-    },
-
-    async resetDoctors(params) {
-        const { data, error } = await supabase
-            .from('doctors')
-            .upsert(params)
-        return handleDataError(data, error, 'resetDoctors');
-    },
-
     async newRowOrders(neworder) {
         const { data, error } = await supabase
             .from('shifts')
@@ -84,7 +61,6 @@ export default {
             .select();
         return handleDataError(data, error, 'newRowOrders');
     },
-
     
     async newShift(params) {
         const { data, error } = await supabase
@@ -138,16 +114,12 @@ export default {
         return handleDataError(data, error, 'decrementCount');
     },
 
-    async resetBoard(docQuery, shiftQuery) {
+    async resetBoard(shiftQuery) {
         const { data, error } = await supabase
             .from('shifts')
             .upsert(shiftQuery)
             .select();
-        
-        const doc_data = await this.resetDoctors(docQuery);
-
-        if (error) throw new Error('resetBoard: ', error);
-        return true;
+        return handleDataError(data, error, 'resetBoard');
     }
     
 }
