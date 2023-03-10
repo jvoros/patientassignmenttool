@@ -7,13 +7,14 @@
 
 <div>
     <div class="d-flex">
-        <label class="flex-auto"  for="physician-select">Physician: </label>
-        <select class="form-select" v-model="newDoctor" id="physician-select">
+        <label class="flex-auto"  for="physician-select">User: </label>
+        <p class="h4">{{ doctor }}</p>
+        <!-- <select class="form-select" v-model="newDoctor" id="physician-select">
             <option diasabled value=""></option>
             <option v-for="doc in state.doctors.filter(d=>!d.working)" :value="doc.id">
                 {{ doc.last }}, {{ doc.first }}
             </option>
-        </select>
+        </select> -->
     </div>
     <div class="d-flex mt-2">
         <label class="flex-auto" for="shift-select">Shift Start Time:</label>
