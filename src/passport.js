@@ -25,15 +25,23 @@ const googleStrategy = new GoogleStrategy.Strategy({
   }
 );
 
-const localStrategy = new LocalStrategy((username, password, done) => {
+const localStrategy = new LocalStrategy.Strategy({
+        usernameField: "username",
+        passwordField: "password"
+    },(username, password, done) => {
+    console.log('localStrategy happening...');
     // stupidly simple password compare
     // return object same shape as Google Strategy added to req.user by middleware
+    // add localRole property for admin middleware
     if (username == 'triage' && password == process.env.PASS) {
         return done(null, {
+            "id": "1",
             "displayName":"Triage Nurse",
-            "name": {"familyName":"Nurse", "givenName":"Triage"}
+            "name": {"familyName":"Nurse", "givenName":"Triage"},
+            "localRole": 'admin'
         });
     } else {
+        console.log('failed authentication');
         return done(null, false,{ message: 'Incorrect username or password.' });
     }    
 });

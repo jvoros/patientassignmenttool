@@ -8,11 +8,23 @@
         <h3 class="blankslate-heading">Welcome to the Patient Assignment Tool</h3>
         <p>Please login for the appropriate role.</p>
         <div class="blankslate-action">
-          <a class="btn btn-outline" href="/doctor">Doctor</a>
+          <a class="btn btn-outline" href="/auth">Doctor Login</a>
         </div>
-        <div class="blankslate-action">
-            <a class="btn btn-outline" href="/triage">Triage/Charge Nurse</a>
-          </div>
+        <div class="mt-7">
+            <p class="h4">Triage/Charge Nurse Login</p>
+            <form action="/login/password" method="post">
+                <!-- <section>
+                    <label for="username">Username</label>
+                    </section> -->
+                <section class="mt-2">
+                    <label for="current-password">Password</label>
+                    <input id="current-password" class="form-control" name="password" type="password" autocomplete="current-password" required>
+                </section>
+                <input id="username" class="form-control" name="username" type="text" autocomplete="username" value="triage" hidden>
+                <button class="btn mt-2" type="submit">Sign in</button>
+            </form>
+            
+        </div>
     </div>
 </body>
 </html>
