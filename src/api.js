@@ -9,14 +9,11 @@ const api = express.Router();
 api.get('/', async (req, res) => {
     res.send(true);
     res.io.emit('new state', state);
-    //res.json({ state: state });
+
 });
 
 // new shift
-api.post('/join/:id/:name/shift/:shift/pointer/:pointer', async (req, res) => {
-    // update doctor
-    //const doc = await db.updateDoctor(req.params.id);
-    
+api.post('/join/:id/:name/shift/:shift/pointer/:pointer', async (req, res) => {   
     // increment row orders
     const orders = await db.newRowOrders(state.newRotationOrdersOnNew());
 
@@ -32,7 +29,6 @@ api.post('/join/:id/:name/shift/:shift/pointer/:pointer', async (req, res) => {
 
     // update state
     state.shifts = await db.getShifts();
-    state.working.push(req.params.id);
     
     // send back new state
     res.send(true);
@@ -128,16 +124,15 @@ api.post('/skip', (req, res) =>{
 
 api.post('/changeshiftstart/:start_id/:shift_id', async (req,res) => {
     const params = {'shift_id': req.params.start_id};
-    console.log(params);
     const newshift = await db.updateShift(req.params.shift_id, params);
     state.shifts = await db.getShifts();
+    res.send(true);
+    res.io.emit('new state', state);
 });
 
 // reset board
 api.post('/resetboard', async (req, res) => {
     const data = await db.resetBoard(state.resetShiftQuery());
-    // state.doctors = await db.getDoctors();
-    state.working = [];
     state = await state.initialize(db);
     res.send(true);
     res.io.emit('new state', state);
@@ -145,7 +140,6 @@ api.post('/resetboard', async (req, res) => {
 
 api.get('/supatest', async (req, res) => {
     res.json({ state: state });
-    //res.json(state.resetShiftQuery());
 });
 
 export default api;

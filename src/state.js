@@ -14,7 +14,6 @@ export default {
     pointer: 0,
     shift_details: [],
     shifts: {},
-    working: [],
 
     async initialize(db) {
         this.shift_details = await db.getShiftDetails();

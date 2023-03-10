@@ -6,7 +6,6 @@ createApp({
     state: null,
     doctor: '<%= user.name %>',
     doctor_id: '<%= user.id %>',
-    newDoctor: '',
     newShift: '',
     resetBoardFlag: false,
     decrementToolFlag: false,
@@ -34,6 +33,12 @@ createApp({
     handleState(state) {
         this.resetLoaders();
         this.state = state;
+    },
+
+    isDocWorking() {
+        if (this.state.shifts.on_rotation.some(s=>s.doc_id==doctor_id)) return true;
+        if (this.state.shifts.off_rotation.some(s=>s.doc_id==doctor_id)) return true;
+        return false;
     },
 
     // database transmission methods
