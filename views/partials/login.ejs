@@ -1,5 +1,5 @@
 <div class="Subhead Subhead">
-    <h2 class="Subhead-heading">Join Rotation</h2>
+    <p class="Subhead-heading h2">Join Rotation</p>
     <span class="Subhead-actions State State--draft mr-2" v-if="loaders.includes('join')">
         Loading<span class="AnimatedEllipsis"></span>
     </span>
@@ -19,7 +19,7 @@
     <div class="d-flex mt-2">
         <label class="flex-auto" for="shift-select">Shift Start Time:</label>
         <select v-model="newShift" class="form-select float-right" id="shift-select">
-            <option v-for="detail in state.shift_details" :value="detail.id">{{ detail.name }}</option>
+            <option v-for="detail in state.shift_details" :value="detail.id" :selected="detail.id==2">{{ detail.name }}</option>
         </select>
     </div>
 

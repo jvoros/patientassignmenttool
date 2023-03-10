@@ -87,6 +87,10 @@ createApp({
         this.apifetch('/api/decrement/'+type+'/shift/'+id);
     },
 
+    changeShiftStart(event, shift_id) {
+        this.apifetch('/api/changeshiftstart/'+event.target.value+'/'+shift_id);
+    },
+
     async resetBoard() {
         this.loaders.push('reset');
         await this.apifetch('/api/resetboard');

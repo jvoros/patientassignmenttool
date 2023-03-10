@@ -14,11 +14,13 @@
                 <p class="h3 color-fg-muted">{{ shift.doc_name }}</p>
                 <p class="text-small color-fg-subtle">{{ shift.shift_details.name }}</p>
             </div>
-            <button v-if="doctor_id == shift.doc_id" class="btn btn-sm btn-outline" @click="rejoin(shift.id)">Rejoin</button>
+            <button v-if="doctor_id == shift.doc_id || doctor_id =='1'" class="btn btn-sm btn-outline" @click="rejoin(shift.id)">Rejoin</button>
         </div> 
-        <%- include('patient_types_buttons') %>  
+        <% if (user.role == 'user') { %> 
+            <%- include('patient_types_buttons') %>  
+            <% } %>
     </div>
     <% if (user.role == 'admin') { %> 
-        <%- include('decrease_pt_types_buttons') %>
+        <%- include('admin_pt_types_buttons') %>
     <% } %>
 </div>

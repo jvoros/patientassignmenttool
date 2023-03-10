@@ -4,10 +4,12 @@
 <%- include('partials/nav_header_blank') %>
     
     <div v-cloak>
-        <main class="d-flex flex-row" v-if="state">
+        <main class="d-flex flex-row flex-justify-center" v-if="state">
+
 
             <!-- LEFT COLUMN -->
-            <section class="col-3 m-3">
+            <% if (user.role == 'admin' ) { %>
+            <section class="col-2 m-3">
                 <!-- <p class="rounded color-bg-accent h1 p-3">Patient<br>Assignment<br>Tool</p> -->
                 <div class="p-3 color-bg-inset rounded">
                     <!-- Login -->
@@ -15,21 +17,29 @@
                 </div>
 
                 <!-- Admin -->
-                <% if (user.role == 'admin' ) { %> 
+                
                     <div class="mt-3 p-3 color-bg-danger rounded">
                     <%- include('partials/admin') %>
                     </div>
-                <% } %>
+                
             </section>
+            <% } %>
 
             <!-- MIDDLE COLUMN -->
             <section class="col-5 p-3">
+                <!-- Login Form for Users  -->
+                <% if (user.role == 'user' ) { %>
+                    <div v-if="!state.working.includes(doctor_id)" class="p-3 mb-4 color-bg-inset rounded">
+                        <%- include('partials/login') %>
+                    </div>
+                <% } %>
                 <!-- On Rotation -->
                 <%- include('partials/on_rotation') %>
             </section>
 
             <!-- RIGHT COLUMN  -->
             <section class="col-4 p-3">
+                
                 <!-- Off Rotation -->
                 <%- include('partials/off_rotation') %>
             </section>
