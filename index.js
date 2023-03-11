@@ -5,14 +5,11 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import http from 'http';
-import path from 'path';
-import basicAuth from 'express-basic-auth';
 import cookieSession from 'cookie-session';
 import { Server } from "socket.io";
 
 // passport setup
 import passport from './src/passport.js';
-import mw from './src/middleware.js'
 
 // api routes
 import api from './src/api.js';
