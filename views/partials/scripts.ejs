@@ -93,6 +93,7 @@ createApp({
     },
 
     changeShiftStart(event, shift_id) {
+        this.loaders.push('on');
         this.apifetch('/api/changeshiftstart/'+event.target.value+'/'+shift_id);
     },
 

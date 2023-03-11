@@ -56,7 +56,7 @@ app.get('/auth', passport.authenticate('google', { hd: 'carepointhc.com', prompt
 app.get('/auth/error', (req, res) => res.send('Unknown Error'))
 app.get('/account/google', passport.authenticate('google', { failureRedirect: '/auth/error' }),
   function(req, res) {
-    res.redirect('/doctor');
+    res.redirect('/');
   }
 );
 
@@ -68,10 +68,6 @@ app.use(express.static('public'));
 //     res.sendFile(ROOT_PATH + '/index.html')
 // })
 
-app.get('/', (req, res) => {
-    res.json( req.user );
-});
-
 app.get('/testauth', (req, res) => {
     res.json('failure' );
     // res.render('login');
@@ -82,8 +78,8 @@ app.get('/login', (req,res) => {
 });
 
 app.post('/login/password', passport.authenticate('local', {
-    successRedirect: '/triage',
-    failureRedirect: '/testauth'
+    successRedirect: '/',
+    failureRedirect: '/login'
   }));
 
 // behind authentication
@@ -95,11 +91,7 @@ app.get('/logout', (req, res) => {
 
 app.use('/api', api);
 
-app.get('/doctor', (req, res) => {
-    res.render('board', { user: req.user });
-});
-
-app.get('/triage', (req, res) => {
+app.get('/', (req, res) => {
     res.render('board', { user: req.user });
 });
 
