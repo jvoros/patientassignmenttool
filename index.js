@@ -60,16 +60,6 @@ app.get('/account/google', passport.authenticate('google', { failureRedirect: '/
 // routes
 app.use(express.static('public'));
 
-// const ROOT_PATH = new URL(path.dirname(import.meta.url)).pathname;
-// app.get('/', (req, res) => {
-//     res.sendFile(ROOT_PATH + '/index.html')
-// })
-
-app.get('/testauth', (req, res) => {
-    res.json('failure' );
-    // res.render('login');
-});
-
 app.get('/login', (req,res) => {
     res.render('login');
 });
@@ -81,16 +71,17 @@ app.post('/login/password', passport.authenticate('local', {
 
 // behind authentication
 app.use(ensureAuthenticated);
+
+app.get('/', (req, res) => {
+    res.render('board', { user: req.user });
+});
+
 app.get('/logout', (req, res) => {
     req.logout();
     res.redirect('/login');
 });
 
 app.use('/api', api);
-
-app.get('/', (req, res) => {
-    res.render('board', { user: req.user });
-});
 
 const port = process.env.PORT || 4000;
 server.listen(port, () => {
