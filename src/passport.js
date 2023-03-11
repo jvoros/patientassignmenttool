@@ -15,7 +15,7 @@ passport.deserializeUser(function(user, done) {
 const googleStrategy = new GoogleStrategy.Strategy({
     clientID: process.env.GOOGLE_CLIENT,    
     clientSecret: process.env.GOOGLE_SECRET,
-    callbackURL: "http://localhost:4000/account/google"  },
+    callbackURL: "https://patient-assignment-tool.onrender.com/account/google"  },
     function(accessToken, refreshToken, profile, done) {
         if (profile._json.hd !== 'carepointhc.com') {
             done(new Error("Wrong domain. Use an @carepointhc.com email address"));
