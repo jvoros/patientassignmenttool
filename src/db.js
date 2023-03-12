@@ -47,11 +47,13 @@ export default {
     },
 
     async getShiftDetails() {
+        return 'abc';
         const { data, error } = await supabase
             .from('shift_details')
             .select()
             .order('order')
-            return handleDataError(data, error, 'getShiftDetails');
+        
+        return handleDataError(data, error, 'getShiftDetails');
     },
 
     async newRowOrders(neworder) {
