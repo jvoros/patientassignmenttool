@@ -14,7 +14,7 @@
 <% } %>
 
 <% if (user.role == 'admin') { %>
-    <div class="BtnGroup">
+    <div class="BtnGroup mb-2">
         <button v-for="type in ptTypesAdmin" :title="'Increase count of '+type+' patients'" class="BtnGroup-item btn btn-outline btn-sm" @click="increment(type, shift.id)">+ {{ type }} <span class="Counter">{{ shift[type] }}</span></button>
     </div>
 <% } %>
