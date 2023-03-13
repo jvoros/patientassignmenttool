@@ -3,10 +3,10 @@
         <span class="Label Label--accent Label--large flex-auto">Pts: {{ shift.patient }}</span>
     </div>
     <div v-if="doctor_id == shift.doc_id" class="BtnGroup">
-        <button v-for="type in ptTypes" :title="'Increase count of '+type+' patients'" class="BtnGroup-item btn btn-outline btn-sm" @click="increment(type, shift.id)">{{ type }} <span class="Counter">{{ shift[type] }}</span></button>
+        <button v-for="ptType in ptTypes" :title="'Increase count of '+ptType+' patients'" class="BtnGroup-item btn btn-outline btn-sm" @click="increment(ptType, shift.id)">{{ ptType }} <span class="Counter">{{ shift[ptType] }}</span></button>
     </div>
     <div v-if="doctor_id != shift.doc_id">
-        <span v-for="type in ptTypes" class="Label Label--large flex-auto mr-1">{{ type }}: {{ shift[type] }}</span>
+        <span v-for="ptType in ptTypes" class="Label Label--large flex-auto mr-1">{{ ptType }}: {{ shift[ptType] }}</span>
     </div>
 </div>
 

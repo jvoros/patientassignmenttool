@@ -2,13 +2,13 @@
 <div class="Box-row pt-3 Box-row--blue" v-if="decrementToolFlag">
     <p class="h5">Change Counts:</p>
     <div class="BtnGroup mb-2">
-        <button v-for="type in ptTypesAdmin" :title="'Increase count of '+type+' patients'" class="BtnGroup-item btn btn-outline btn-sm" @click="increment(type, shift.id)">
-            + {{ type }} <span class="Counter">{{ shift[type] }}</span>
+        <button v-for="ptType in ptTypesAdmin" :title="'Increase count of '+ptType+' patients'" class="BtnGroup-item btn btn-outline btn-sm" @click="increment(ptType, shift.id)">
+            + {{ ptType }} <span class="Counter">{{ shift[ptType] }}</span>
         </button>
     </div>
     <div class="BtnGroup ml-0">
-        <button v-for="type in ptTypesAdmin" class="BtnGroup-item btn btn-outline btn-sm" @click="decrement(type, shift.id)">
-            - {{ type }} <span class="Counter">{{ shift[type] }}</span>
+        <button v-for="ptType in ptTypesAdmin" class="BtnGroup-item btn btn-outline btn-sm" @click="decrement(ptType, shift.id)">
+            - {{ ptType }} <span class="Counter">{{ shift[ptType] }}</span>
         </button>
     </div>
     <button class="btn btn-outline btn-sm" @click="decrement('turn', shift.id)">
