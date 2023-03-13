@@ -47,7 +47,6 @@ export default {
     },
 
     async getShiftDetails() {
-        return 'abc';
         const { data, error } = await supabase
             .from('shift_details')
             .select()
