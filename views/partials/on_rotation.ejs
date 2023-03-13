@@ -47,9 +47,8 @@
                 <button v-if="state.pointer == index" class="btn btn-primary" type="button" @click="assign">Assign Patient</button>
             <% } %>
         </div>
-        <% if (user.role=='user') { %>
-            <%- include('patient_types_buttons') %>
-        <% } %>
+        <%- include('patient_types_buttons') %>
+
     </div>
 
     <% if (user.role == 'admin') { %> 

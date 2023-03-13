@@ -1,7 +1,11 @@
 <!-- Admin Row  -->
 <div class="Box-row pt-3 Box-row--blue" v-if="decrementToolFlag">
     <p class="h5">Change Counts:</p>
-    <%- include('patient_types_buttons') %>
+    <div class="BtnGroup mb-2">
+        <button v-for="type in ptTypesAdmin" :title="'Increase count of '+type+' patients'" class="BtnGroup-item btn btn-outline btn-sm" @click="increment(type, shift.id)">
+            + {{ type }} <span class="Counter">{{ shift[type] }}</span>
+        </button>
+    </div>
     <div class="BtnGroup ml-0">
         <button v-for="type in ptTypesAdmin" class="BtnGroup-item btn btn-outline btn-sm" @click="decrement(type, shift.id)">
             - {{ type }} <span class="Counter">{{ shift[type] }}</span>

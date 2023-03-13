@@ -23,11 +23,6 @@
             </div>
             <button v-if="doctor_id == shift.doc_id || doctor_id =='1'" class="btn btn-sm btn-outline" @click="rejoin(shift.id)">Rejoin</button>
         </div> 
-        <% if (user.role == 'user') { %> 
-            <%- include('patient_types_buttons') %>  
-            <% } %>
+        <%- include('patient_types_buttons') %>  
     </div>
-    <% if (user.role == 'admin') { %> 
-        <%- include('admin_pt_types_buttons') %>
-    <% } %>
 </div>
