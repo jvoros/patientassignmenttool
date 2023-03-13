@@ -4,6 +4,8 @@ import passport from 'passport';
 import GoogleStrategy from 'passport-google-oauth20';
 import LocalStrategy from 'passport-local';
 
+const env = process.env.NODE_ENV || 'development';
+
 passport.serializeUser(function(user, done) {
     done(null, user);
 });
@@ -15,7 +17,7 @@ passport.deserializeUser(function(user, done) {
 const googleStrategy = new GoogleStrategy.Strategy({
     clientID: process.env.GOOGLE_CLIENT,    
     clientSecret: process.env.GOOGLE_SECRET,
-    callbackURL: "https://patient-assignment-tool.onrender.com/account/google"  },
+    callbackURL: (env == 'development') ? "https://localhost:4000/account/google" : process.env.GOOGLE_CALLBACK  },
     function(accessToken, refreshToken, profile, done) {
         if (profile._json.hd !== 'carepointhc.com') {
             done(new Error("Wrong domain. Use an @carepointhc.com email address"));

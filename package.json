@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "test",
-    "serve": "node index.js",
+    "start": "NODE_ENV=production node index.js",
     "dev": "nodemon index.js"
   },
   "author": "Jeremy Voros",
