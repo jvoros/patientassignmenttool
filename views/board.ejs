@@ -1,9 +1,14 @@
 <%- include('partials/html_head') %>
 
 <body v-scope @vue:mounted="mounted">
-<%- include('partials/nav_header_blank') %>
-    
     <div v-cloak>
+    <%- include('partials/nav_header_blank') %>
+    <div class="blankslate" v-if="!state">
+        <h3 class="blankslate-heading">Loading<span class="AnimatedEllipsis"></span></h3>
+        <p>Retrieving content from server</p>
+    </div>
+    
+    
         <main class="d-flex flex-row flex-justify-center" v-if="state">
 
 
@@ -45,8 +50,8 @@
 
             </section>
         </main>
-    </div>
 
+    </div>
 </body>
 <%- include('partials/scripts') %>
 </html>

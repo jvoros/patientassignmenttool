@@ -1,31 +1,34 @@
 <%- include('partials/html_head') %>
-<body>
-    <div class="Header color-epg-pink">
-        <div class="Header-item h3"><span>Patient Assignment Tool</span></div>
-    </div>
+<body v-scope @vue:mounted="mounted">
+    <%- include('partials/nav_header_blank') %>
     <section class="d-flex flex-justify-center">
-    <div class="blankslate blankslate-large col-4">
-        <img src="https://ghicons.github.com/assets/images/blue/png/Developers.png" alt="" class="blankslate-image" />
-        <h3 class="blankslate-heading">Welcome to Patient Assignment Tool</h3>
-        <div class="blankslate-action">
-          <a class="btn btn-outline btn-large" href="/auth">Doctor Login</a>
+    <div class="blankslate blankslate-large col-4 text-left">
+        <div class="Subhead">
+            <p class="Subhead-heading h2">Triage</p>
         </div>
-        <div class="mt-7 p-5 color-bg-inset">
-            <p class="h4">Triage/Charge Nurse Login</p>
+        <div class="p-2 pb-4 pl-4 color-bg-inset ">
             <form action="/login/password" method="post">
-                <!-- <section>
-                    <label for="username">Username</label>
-                    </section> -->
                 <section class="mt-2">
                     <label for="current-password">Password</label><br>
                     <input id="current-password" class="form-control" name="password" type="password" autocomplete="current-password" required>
+                    <button class="btn" type="submit">Sign in</button>
+                    <input id="username" class="form-control" name="username" type="text" autocomplete="username" value="triage" hidden>
                 </section>
-                <input id="username" class="form-control" name="username" type="text" autocomplete="username" value="triage" hidden>
-                <button class="btn mt-2" type="submit">Sign in</button>
             </form>
-            
         </div>
+
+        <div class="Subhead Subhead--spacious">
+            <p class="Subhead-heading h2">Physician</p>
+        </div>
+        <div class="flash-messages">
+            <div class="flash">
+              Use your <strong>@carepointhc.com</strong> email address
+            </div>
+          </div>
+        <a class="btn btn-outline btn-large" href="/auth">Sign In</a>
+
     </div>
 </section>
 </body>
+<%- include('partials/scripts') %>
 </html>
