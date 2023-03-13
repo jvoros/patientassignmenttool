@@ -1,9 +1,15 @@
 <!-- Header  -->
+
 <div class="Subhead">
     <p class="Subhead-heading h2">Off Rotation</p>
     <span class="Subhead-actions State State--draft mr-2" v-if="loaders.includes('off')">
         Loading<span class="AnimatedEllipsis"></span>
     </span>
+</div>
+
+<!-- Blankslate  -->
+<div v-if="state.shifts.off_rotation.length < 1" class="blankslate color-bg-inset rounded">
+    <p class="h4" class="blankslate-heading">No doctors off rotation</p>
 </div>
 
 <!-- Boxes  -->

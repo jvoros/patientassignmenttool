@@ -17,7 +17,7 @@ passport.deserializeUser(function(user, done) {
 const googleStrategy = new GoogleStrategy.Strategy({
     clientID: process.env.GOOGLE_CLIENT,    
     clientSecret: process.env.GOOGLE_SECRET,
-    callbackURL: (env == 'development') ? "https://localhost:4000/account/google" : process.env.GOOGLE_CALLBACK  },
+    callbackURL: (env == 'development') ? "http://localhost:4000/account/google" : process.env.GOOGLE_CALLBACK  },
     function(accessToken, refreshToken, profile, done) {
         if (profile._json.hd !== 'carepointhc.com') {
             done(new Error("Wrong domain. Use an @carepointhc.com email address"));

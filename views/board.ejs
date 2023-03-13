@@ -27,21 +27,23 @@
 
             <!-- MIDDLE COLUMN -->
             <section class="col-5 p-3">
-                <!-- Login Form for Users  -->
-                <% if (user.role == 'user' ) { %>
-                    <div v-if="!isDocWorking()" class="p-3 mb-4 color-bg-inset rounded">
-                        <%- include('partials/login') %>
-                    </div>
-                <% } %>
                 <!-- On Rotation -->
                 <%- include('partials/on_rotation') %>
             </section>
 
             <!-- RIGHT COLUMN  -->
             <section class="col-4 p-3">
+                <!-- Login Form for Users  -->
+                <% if (user.role == 'user' ) { %>
+                    <div v-if="!isDocWorking()" class="p-3 mb-4 color-bg-inset rounded">
+                        <%- include('partials/login') %>
+                    </div>
+                <% } %>
                 
                 <!-- Off Rotation -->
+                <div v-if="state.shifts.off_rotation.length > 0">
                 <%- include('partials/off_rotation') %>
+                </div>
             </section>
         </main>
     </div>

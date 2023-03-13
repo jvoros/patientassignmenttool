@@ -13,7 +13,7 @@
     <div class="d-flex mt-2">
         <label class="flex-auto" for="shift-select">Shift Start Time:</label>
         <select v-model="newShift" class="form-select float-right" id="shift-select">
-            <option v-for="detail in state.shift_details" :value="detail.id" :selected="detail.id==2">{{ detail.name }}</option>
+            <option v-for="detail in state.shift_details" :value="detail.id">{{ detail.name }}</option>
         </select>
     </div>
 
