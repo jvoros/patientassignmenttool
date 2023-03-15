@@ -33,6 +33,9 @@ createApp({
     handleState(state) {
         this.resetLoaders();
         this.newInitials = '';
+        this.newDoctor = '';
+        this.newShift = '';
+        this.resetBoardFlag = false;
         this.state = state;
     },
 
@@ -50,7 +53,6 @@ createApp({
         if (this.newShift == '') return;
         this.loaders.push('join');
         await this.apifetch('/api/join/'+this.newDoctor+'/shift/'+this.newShift+'/pointer/'+this.state.pointer);
-        this.newShift = '';
     },
  
     goOffRotation(id, status = 2, loader = 'on') {
@@ -100,11 +102,8 @@ createApp({
 
     async resetBoard() {
         this.loaders.push('reset');
-        await this.apifetch('/api/resetboard');
         this.apifetch('/api', 'GET');
-        this.resetBoardFlag = false;
-        this.newShift = '';
-        this.newInitials = '';
+        await this.apifetch('/api/resetboard');
     },
 
     async resetTimeline() {
