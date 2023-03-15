@@ -49,10 +49,10 @@ createApp({
             });
     },
 
-    async joinrotation(loader) {
+    joinrotation(loader) {
         if (this.newShift == '') return;
         this.loaders.push('join');
-        await this.apifetch('/api/join/'+this.newDoctor+'/shift/'+this.newShift+'/pointer/'+this.state.pointer);
+        this.apifetch('/api/join/'+this.newDoctor+'/shift/'+this.newShift+'/pointer/'+this.state.pointer);
     },
  
     goOffRotation(id, status = 2, loader = 'on') {
@@ -100,15 +100,14 @@ createApp({
         this.apifetch('/api/changeshiftdetails/'+event.target.value+'/'+shift_id);
     },
 
-    async resetBoard() {
+    resetBoard() {
         this.loaders.push('reset');
-        this.apifetch('/api', 'GET');
-        await this.apifetch('/api/resetboard');
+        this.apifetch('/api/resetboard');
     },
 
-    async resetTimeline() {
+    resetTimeline() {
         this.loaders.push('reset');
-        await this.apifetch('/api/resettimeline');
+        this.apifetch('/api/resettimeline');
     },
 
     async mounted() {
