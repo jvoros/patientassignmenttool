@@ -17,10 +17,12 @@
                 <p class="h3 color-fg-muted">{{ shift.doctor.first }} {{ shift.doctor.last }}</p>
                 <p class="text-small color-fg-subtle">{{ shift.shift_details.name }}</p>
             </div>
+            <% if (user.role == 'admin') { %> 
             <div class="BtnGroup">
                 <button class="btn btn-sm btn-outline BtnGroup-item" @click="rejoin(shift.id)">On Rotation</button>
                 <button class="btn btn-sm btn-outline BtnGroup-item" @click="goOffRotation(shift.id, 3, 'off')">Fast Track</button>
             </div>
+            <% } %>  
         </div> 
         <% if (user.role == 'user') { %> 
             <%- include('patient_types_buttons') %>
