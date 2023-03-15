@@ -6,6 +6,7 @@ createApp({
     state: null,
     newShift: '',
     newDoctor: '',
+    newInitials: '',
     resetBoardFlag: false,
     decrementToolFlag: false,
     loaders: [],
@@ -31,13 +32,8 @@ createApp({
 
     handleState(state) {
         this.resetLoaders();
+        this.newInitials = '';
         this.state = state;
-    },
-
-    isDocWorking() {
-        // if (this.state.shifts.on_rotation.some(s=>s.doc_id==doctor_id)) return true;
-        // if (this.state.shifts.off_rotation.some(s=>s.doc_id==doctor_id)) return true;
-        // return false;
     },
 
     // database transmission methods
@@ -80,8 +76,9 @@ createApp({
     },
 
     assign() {
+        if (!this.newInitials) return;
         this.loaders.push('on');
-        this.apifetch('/api/assignpatient');
+        this.apifetch('/api/assignpatient/'+this.newInitials);
     },
 
     skip() {
@@ -107,6 +104,12 @@ createApp({
         this.apifetch('/api', 'GET');
         this.resetBoardFlag = false;
         this.newShift = '';
+        this.newInitials = '';
+    },
+
+    async resetTimeline() {
+        this.loaders.push('reset');
+        await this.apifetch('/api/resettimeline');
     },
 
     async mounted() {

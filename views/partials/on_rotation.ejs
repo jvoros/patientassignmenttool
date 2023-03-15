@@ -15,7 +15,6 @@
 
 <!-- Shift Boxes  -->
 <template v-for="(shift, index) in state.shifts.on_rotation">
-
 <div class="Box Box--condensed Box--blue mb-2" >
     <!-- Row Header  -->
     <% if (user.role=='admin') { %>
@@ -46,23 +45,33 @@
     <div class="Box-row pt-3"  :class="{'Box-row--yellow' : isNext(index) }">
         <div class="d-flex mb-1">
             <div class="flex-auto">
-                <p class="h2">{{ shift.doctor.first }} {{ shift.doctor.last }}<p></p>
-                <p class="h5">{{ shift.shift_details.name }}</p>
+                <p class="h2">
+                    {{ shift.doctor.first }} {{ shift.doctor.last }}  
+                </p>
+                <p class="h5">
+                    {{ shift.shift_details.name }}
+                    <span v-if="shift.turn == 0"> - First Turn</span>
+                </p>
             </div>
             <div>
                 <% if (user.role=='user') { %>     
                     <span v-if="state.pointer == index" class="IssueLabel IssueLabel--big color-fg-on-emphasis color-bg-success-emphasis">Up Next</span>
                 <% } %>
                 
-                <% if (user.role=='admin') { %>     
-                    <button v-if="state.pointer == index" class="btn btn-primary" type="button" @click="assign">Assign Patient</button>
-                <% } %>
+                <% if (user.role=='admin') { %>  
+
+                    <div v-if="state.pointer == index" class="text-right">
+                        <label>Initials:</label>
+                        <input v-model="newInitials" class="form-control mb-1" type="text" size="4"/><br>
+                        <button class="btn btn-primary mt-0" type="button" :aria-disabled="!newInitials" @click="assign">Assign Patient</button>
+                    </div>  
+
+                    <% } %>
             </div>
         </div>
         <% if (user.role == 'user') { %> 
             <%- include('patient_types_buttons') %>
         <% } %>
-
     </div>
 
     <% if (user.role == 'admin') { %> 

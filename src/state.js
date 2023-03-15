@@ -22,28 +22,37 @@ export default {
         this.shifts = await db.getShifts();
         this.doctors = await db.getDoctors();
         this.newDates();
-        this.timeline.push(this.createAction('patient', 166, 'JV'));
         return this;
     },
 
+    
     newDates() {
         const d = new Date();
         this.date = d.toLocaleDateString("fr-CA", {timeZone: "America/Denver"});
         this.datestring = d.toLocaleDateString("en-US", {timeZone: "America/Denver"});
     },
 
-    createAction(act, shift_id, text) {
+    // TIMELINE
+    createAction(act, shift_id, msg, initials = 'Anon') {
+        const time = new Date();
         return {
             action: act,
             shift_id: shift_id,
-            doctor: this.getShiftById(shift_id).doctor,
-            text: text
+            doctor: shift_id == 0 ? {last: 'Nurse', first: 'Triage'} : this.getShiftById(shift_id).doctor,
+            msg: msg,
+            initials: initials,
+            time: time.toLocaleString('en-US', {timeZone: "America/Denver", timeStyle: 'short'})
         }
     },
 
-    newAction(act, shift_id, text) {
+    newAction(act, shift_id, msg, initials) {
         if (this.timeline.length >= TIMELINE_LIMIT) this.timeline.pop();
-        this.timeline.push(action(act, shift_id, text));
+        this.timeline.unshift(this.createAction(act, shift_id, msg, initials));
+    },
+
+    resetTimeline() {
+        this.timeline = [];
+        this.newAction('reset', 0, 'reset by');
     },
     
     // POINTER
@@ -57,8 +66,14 @@ export default {
         this.pointer = (this.pointer + 1) % this.shifts.on_rotation.length;
     },
 
+    skip() {
+        const shift = this.getPointerShift();
+        this.newAction('skip', shift.id);
+        this.advancePointer();
+    },
+
     // ASSIGN
-    async assignPatient() {
+    async assignPatient(initials = 'Anon') {
         const shift = this.getPointerShift();
 
         // first turn
@@ -72,6 +87,7 @@ export default {
             this.advancePointer();
         }
         this.shifts = await db.getShifts();
+        this.newAction('patient', shift.id, 'assigned to', initials);
         return;
     },
 
@@ -186,9 +202,9 @@ export default {
 
     async increment(shift_id, type) {
         const shift = this.getShiftById(shift_id);
-        console.log(shift_id)
         const data = await db.incrementCount(shift, type);
         this.shifts = await db.getShifts();
+        this.newAction(type, shift_id, 'picked up by')
         return;
     },
 

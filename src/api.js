@@ -29,8 +29,9 @@ api.post('/move/:dir/:index', async (req, res) => {
     res.io.emit('new state', state);
 });
 
-api.post('/assignpatient', async (req, res) => {
-    await state.assignPatient();
+api.post('/assignpatient/:initials?', async (req, res) => {
+    const initials = req.params.initials ? req.params.initials : 'Anon';
+    await state.assignPatient(initials);
     res.io.emit('new state', state);
 });
 
@@ -45,7 +46,7 @@ api.post('/decrement/:type/shift/:shift_id', async (req, res) => {
 });
 
 api.post('/skip', (req, res) =>{
-    state.advancePointer();
+    state.skip();
     res.io.emit('new state', state);
 });
 
@@ -58,6 +59,11 @@ api.post('/resetboard', async (req, res) => {
     await state.resetBoard();
     res.io.emit('new state', state);
 });
+
+api.post('/resettimeline', (req, res) => {
+    state.resetTimeline();
+    res.io.emit('new state', state);
+})
 
 api.get('/supatest', async (req, res) => {
     res.json(state.resetShiftQuery());
