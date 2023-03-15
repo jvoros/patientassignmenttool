@@ -1,6 +1,6 @@
 <!-- Heading -->
 <div class="Subhead">
-    <p class="Subhead-heading h2">On Rotation: {{ state.datestring }}  Pointer: {{ state.pointer }}</p>
+    <p class="Subhead-heading h2">On Rotation: {{ state.datestring }}</p>
     <span class="Subhead-actions State State--draft mr-2" v-if="loaders.includes('on')">
         Loading<span class="AnimatedEllipsis"></span>
     </span>
@@ -36,7 +36,7 @@
                 Off
             </button>
             <button title="Go off rotation" type="button" class="BtnGroup-item btn btn-sm"  @click="goOffRotation(shift.id, 3)">
-                FastTrack
+                Fast
             </button>
         </div>
         
@@ -46,7 +46,7 @@
     <!-- Main Row  -->
     <div class="Box-row pt-3"  :class="{'Box-row--yellow' : isNext(index) }">
         <div class="d-flex mb-1">
-            <p class="h2 flex-auto">{{ shift.doctor.first }} {{ shift.doctor.last }} {{shift.rotation_order}}<p>
+            <p class="h2 flex-auto">{{ shift.doctor.first }} {{ shift.doctor.last }}<p>
             <% if (user.role=='user') { %>     
                 <span v-if="state.pointer == index" class="IssueLabel IssueLabel--big color-fg-on-emphasis color-bg-success-emphasis">Up Next</span>
             <% } %>

@@ -80,12 +80,11 @@ export default {
     },
 
     getShiftById(id) {
-        let index = this.shifts.on_rotation.findIndex(s=>s.id == id);
-        if (index > -1) {
-            return this.shifts.on_rotation[index];
+        for (let group in this.shifts) {
+            const index = this.shifts[group].findIndex(s=>s.id==id);
+            if (index > -1) return this.shifts[group][index];
         }
-        index = this.shifts.off_rotation.findIndex(s=>s.id == id);
-        return this.shifts.off_rotation[index]
+        return false;
     },
 
     resetDocQuery() {

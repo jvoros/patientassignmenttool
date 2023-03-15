@@ -100,6 +100,7 @@ api.post('/assignpatient', async (req, res) => {
     res.io.emit('new state', state);
 });
 
+
 // increment other patient types
 api.post('/increment/:type/shift/:shift_id', async (req, res) => {
     const shift = state.getShiftById(req.params.shift_id);

@@ -13,18 +13,19 @@
 </div>
 
 <!-- Boxes  -->
-<div class="Box mb-2" v-for="(shift, index) in state.shifts.ft_rotation">
+<div class="Box mb-2" v-for="shift in state.shifts.ft_rotation">
     <div class="Box-row p-2 color-bg-success">
         <div class="d-flex flex-items-center">
             <div class="flex-auto">
                 <p class="h3">{{ shift.doctor.first }} {{ shift.doctor.last }}</p>
                 <p class="text-small color-fg-subtle">{{ shift.shift_details.name }}</p>
             </div>
+            <% if (user.role=='admin') { %>
             <div class="BtnGroup">
                 <button class="btn btn-sm btn-outline BtnGroup-item" @click="rejoin(shift.id)">On</button>
                 <button class="btn btn-sm btn-outline BtnGroup-item" @click="goOffRotation(shift.id, 2, 'off')">Off</button>
             </div>
-            
+            <% } %>
         </div> 
         <% if (user.role == 'user') { %> 
             <%- include('patient_types_buttons') %>
