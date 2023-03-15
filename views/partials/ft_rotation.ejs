@@ -22,8 +22,8 @@
             </div>
             <% if (user.role=='admin') { %>
             <div class="BtnGroup">
-                <button class="btn btn-sm btn-outline BtnGroup-item" @click="rejoin(shift.id)">On</button>
-                <button class="btn btn-sm btn-outline BtnGroup-item" @click="goOffRotation(shift.id, 2, 'off')">Off</button>
+                <button class="btn btn-sm btn-outline BtnGroup-item" @click="rejoin(shift.id)">On Rotation</button>
+                <button class="btn btn-sm btn-outline BtnGroup-item" @click="goOffRotation(shift.id, 2, 'off')">Off Rotation</button>
             </div>
             <% } %>
         </div> 

@@ -18,8 +18,8 @@
                 <p class="text-small color-fg-subtle">{{ shift.shift_details.name }}</p>
             </div>
             <div class="BtnGroup">
-                <button class="btn btn-sm btn-outline BtnGroup-item" @click="rejoin(shift.id)">On</button>
-                <button class="btn btn-sm btn-outline BtnGroup-item" @click="goOffRotation(shift.id, 3, 'off')">Fast</button>
+                <button class="btn btn-sm btn-outline BtnGroup-item" @click="rejoin(shift.id)">On Rotation</button>
+                <button class="btn btn-sm btn-outline BtnGroup-item" @click="goOffRotation(shift.id, 3, 'off')">Fast Track</button>
             </div>
         </div> 
         <% if (user.role == 'user') { %> 
