@@ -18,32 +18,23 @@ function handleDataError(data, error, message) {
 export default {
     
     async getShifts() {
-        const { data:on, error } = await supabase
+        const { data, error } = await supabase
             .from('shifts')
             .select(`
                 *,
-                shift_details(name)
+                shift_details(*),
+                doctor:doctors(*),
+                status:statuses(status)
             `)
-            .eq('archived', false)
-            .eq('on_rotation', true)
             .order('rotation_order')
-        if (error) { throw new Error(error); }
+            
+        if (error) { console.log(error); throw new Error(error); }
 
-        const { data:off, error:err_off } = await supabase
-            .from('shifts')
-            .select(`
-                *,
-                shift_details(name, start)
-            `)
-            .eq('archived', false)
-            .eq('on_rotation', false)
-            .order('id') //orders by id, surrogate for ordering by when they logged in
-        if (err_off) throw new Error(err_off)
-
-        return ({ 
-            on_rotation: on,
-            off_rotation: off
-        });
+        return {
+            on_rotation: data.filter(s=>s.status_id == 1),
+            off_rotation: data.filter(s=>s.status_id == 2),
+            ft_rotation: data.filter(s=>s.status_id == 3)
+        };
     },
 
     async getShiftDetails() {
@@ -53,6 +44,14 @@ export default {
             .order('order')
         
         return handleDataError(data, error, 'getShiftDetails');
+    },
+
+    async getDoctors() {
+        const { data, error } = await supabase 
+            .from('doctors')
+            .select()
+            .order('last')
+        return handleDataError(data, error, 'getDoctors');
     },
 
     async newRowOrders(neworder) {
@@ -80,10 +79,10 @@ export default {
         return handleDataError(data, error, 'updateShift');
     },
 
-    async goOffRotation(shift_id) {
+    async goOffRotation(shift_id, status_id = 2) {
         const { data, error } = await supabase
             .from('shifts')
-            .update({ on_rotation: false, rotation_order: null })
+            .update({ status_id: status_id, rotation_order: null })
             .eq('id', shift_id)
             .select()
         return handleDataError(data, error, 'goOffRotation');

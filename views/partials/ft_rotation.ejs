@@ -1,30 +1,34 @@
 <!-- Header  -->
 <div class="Subhead">
-    <p class="Subhead-heading h2">Off Rotation</p>
+    <p class="Subhead-heading h2">Fast Track</p>
+    <span class="Subhead-actions State State--draft mr-2" v-if="loaders.includes('off')">
+        Loading<span class="AnimatedEllipsis"></span>
+    </span>
 </div>
 
 <!-- Blankslate  -->
-<div v-if="state.shifts.off_rotation.length == 0" class="blankslate color-bg-inset rounded">
+<div v-if="state.shifts.ft_rotation.length == 0" class="blankslate color-bg-inset rounded">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>
-    <p class="h4" class="blankslate-heading">No doctors off rotation</p>
+    <p class="h4" class="blankslate-heading">No doctors on Fast Track</p>
 </div>
 
 <!-- Boxes  -->
-<div class="Box Box--condensed mb-2" v-for="(shift, index) in state.shifts.off_rotation">
-    <div class="Box-row Box-row--gray p-2">
+<div class="Box mb-2" v-for="(shift, index) in state.shifts.ft_rotation">
+    <div class="Box-row p-2 color-bg-success">
         <div class="d-flex flex-items-center">
             <div class="flex-auto">
-                <p class="h3 color-fg-muted">{{ shift.doctor.first }} {{ shift.doctor.last }}</p>
+                <p class="h3">{{ shift.doctor.first }} {{ shift.doctor.last }}</p>
                 <p class="text-small color-fg-subtle">{{ shift.shift_details.name }}</p>
             </div>
             <div class="BtnGroup">
                 <button class="btn btn-sm btn-outline BtnGroup-item" @click="rejoin(shift.id)">On</button>
-                <button class="btn btn-sm btn-outline BtnGroup-item" @click="goOffRotation(shift.id, 3, 'off')">Fast</button>
+                <button class="btn btn-sm btn-outline BtnGroup-item" @click="goOffRotation(shift.id, 2, 'off')">Off</button>
             </div>
+            
         </div> 
         <% if (user.role == 'user') { %> 
             <%- include('patient_types_buttons') %>
-        <% } %>  
+        <% } %> 
     </div>
     <% if (user.role == 'admin') { %> 
         <%- include('admin_pt_types_buttons') %>

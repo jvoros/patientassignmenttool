@@ -32,21 +32,23 @@ const googleStrategy = new GoogleStrategy.Strategy({
   }
 );
 
+const userTable = {
+    'triage': { 'pass': process.env.PASS, 'role': 'admin' },
+    'doctor': { 'pass': process.env.DOC_PASS, 'role': 'user' }
+}
 const localStrategy = new LocalStrategy.Strategy({
         usernameField: "username",
         passwordField: "password"
     },(username, password, done) => {
-    console.log('localStrategy happening...');
     // stupidly simple password compare
     // return object same shape as Google Strategy added to req.user by middleware
-    if (username == 'triage' && password == process.env.PASS) {
+    if (password == userTable[username].pass) {
         return done(null, {
-            id: "1",
-            name: "Triage Nurse",
-            role: 'admin'
+            name: username,
+            role: userTable[username].role
         });
     } else {
-        console.log('failed authentication');
+        console.log('failed authentication: ', username);
         return done(null, false,{ message: 'Incorrect username or password.' });
     }    
 });

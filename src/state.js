@@ -14,10 +14,12 @@ export default {
     pointer: 0,
     shift_details: [],
     shifts: {},
+    doctors: [],
 
     async initialize(db) {
         this.shift_details = await db.getShiftDetails();
-        this.shifts = await db.getShifts(this.date);
+        this.shifts = await db.getShifts();
+        this.doctors = await db.getDoctors();
         this.newDates();
         return this;
     },
@@ -91,7 +93,8 @@ export default {
     },
 
     resetShiftQuery() {
-        const a = [...this.shifts.on_rotation, ...this.shifts.off_rotation]
-        return a.map(s=>({id: s.id, archived: true, on_rotation: false, rotation_order: null}));
+        const a = [...this.shifts.on_rotation, ...this.shifts.off_rotation, ...this.shifts.ft_rotation]
+        return a.map(s=>({id: s.id, status_id: 4, rotation_order: null}));
     }
+    
 }

@@ -4,9 +4,8 @@ import { createApp } from 'https://unpkg.com/petite-vue?module';
 
 createApp({
     state: null,
-    doctor: '<%= user.name %>',
-    doctor_id: '<%= user.id %>',
     newShift: '',
+    newDoctor: '',
     resetBoardFlag: false,
     decrementToolFlag: false,
     loaders: [],
@@ -36,9 +35,9 @@ createApp({
     },
 
     isDocWorking() {
-        if (this.state.shifts.on_rotation.some(s=>s.doc_id==doctor_id)) return true;
-        if (this.state.shifts.off_rotation.some(s=>s.doc_id==doctor_id)) return true;
-        return false;
+        // if (this.state.shifts.on_rotation.some(s=>s.doc_id==doctor_id)) return true;
+        // if (this.state.shifts.off_rotation.some(s=>s.doc_id==doctor_id)) return true;
+        // return false;
     },
 
     // database transmission methods
@@ -54,13 +53,18 @@ createApp({
     async joinrotation(loader) {
         if (this.newShift == '') return;
         this.loaders.push('join');
-        await this.apifetch('/api/join/'+this.doctor_id+'/'+this.doctor+'/shift/'+this.newShift+'/pointer/'+this.state.pointer);
+        await this.apifetch('/api/join/'+this.newDoctor+'/shift/'+this.newShift+'/pointer/'+this.state.pointer);
         this.newShift = '';
     },
  
-    goOffRotation(id) {
-        this.loaders.push('on');
-        this.apifetch('/api/gooffrotation/'+id);
+    goOffRotation(id, status = 2, loader = 'on') {
+        this.loaders.push(loader);
+        this.apifetch('/api/gooffrotation/'+id+'/'+status);
+    },
+
+    changeShiftStatus(id, status_id, loader) {
+        this.loaders.push(loader);
+        this.apifetch('/api/changestatus/'+id+'/status'+status_id);
     },
 
    rejoin(id) {
@@ -111,7 +115,7 @@ createApp({
             
             // establish sockets to listen
             socket.on('new state', (state) => {
-                console.log('new state...');
+                console.log('new state...', state);
                 this.handleState(state);
             });
 

@@ -61,7 +61,7 @@ app.get('/account/google', passport.authenticate('google', { failureRedirect: '/
 app.use(express.static('public'));
 
 app.get('/login', (req,res) => {
-    res.render('login', { user: ''});
+    res.render('login', { user: 'none'});
 });
 
 app.post('/login/password', passport.authenticate('local', {

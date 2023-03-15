@@ -1,18 +1,24 @@
 <div class="Subhead Subhead">
-    <p class="Subhead-heading h2">Join Rotation</p>
+    <p class="Subhead-heading h2">Add to Rotation</p>
     <span class="Subhead-actions State State--draft mr-2" v-if="loaders.includes('join')">
         Loading<span class="AnimatedEllipsis"></span>
     </span>
 </div>
 
 <div>
-    <div class="d-flex">
-        <label class="flex-auto"  for="physician-select">User: </label>
-        <p class="h4">{{ doctor }}</p>
+    <div>
+        <label for="physician-select">Doctor:</label>
     </div>
-    <div class="d-flex mt-2">
+    <div>
+        <select v-model="newDoctor" class="form-select" id="shift-select">
+            <option v-for="d in state.doctors" :value="d.id">{{ d.last }}, {{ d.first }}</option>
+        </select>
+    </div>
+    <div class="mt-2">
         <label class="flex-auto" for="shift-select">Shift Start Time:</label>
-        <select v-model="newShift" class="form-select float-right" id="shift-select">
+    </div>
+    <div>
+        <select v-model="newShift" class="form-select" id="shift-select">
             <option v-for="detail in state.shift_details" :value="detail.id">{{ detail.name }}</option>
         </select>
     </div>
@@ -26,9 +32,8 @@
         <p class="mt-2">If you already reset the board, go ahead and <strong>Join Rotation</strong></p>
     </div>
 
-    <div class="d-flex mt-3">
-        <div class="flex-auto"></div>
-        <button class="btn" @click="joinrotation" :aria-disabled="newShift == ''">Join Rotation</button>
-    </div>
+
+        <button class="btn mt-3" @click="joinrotation" :aria-disabled="newShift == ''">Add to Rotation</button>
+
 
 </div>

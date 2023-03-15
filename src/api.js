@@ -13,14 +13,13 @@ api.get('/', async (req, res) => {
 });
 
 // new shift
-api.post('/join/:id/:name/shift/:shift/pointer/:pointer', async (req, res) => {   
+api.post('/join/:id/shift/:shift/pointer/:pointer', async (req, res) => {   
     // increment row orders
     const orders = await db.newRowOrders(state.newRotationOrdersOnNew());
 
     // add the new shift
     const params = {
-        doc_id: req.params.id,
-        doc_name: req.params.name,
+        doctor_id: req.params.id,
         shift_id: req.params.shift,
         rotation_order: req.params.pointer,
         date: state.date
@@ -36,16 +35,20 @@ api.post('/join/:id/:name/shift/:shift/pointer/:pointer', async (req, res) => {
 });
 
 // off rotation
-api.post('/gooffrotation/:index', async (req, res) => {
-    const index = req.params.index;
-    const shift = state.shifts.on_rotation[index];
-    if (state.pointer > index) { 
-        state.pointer--;
-    } else if (state.pointer == index && state.pointer == state.shifts.on_rotation.length-1) {
-        state.pointer = 0;
+api.post('/gooffrotation/:id/:status', async (req, res) => {
+    const shift_id = req.params.id;
+    const shiftIndex = state.shifts.on_rotation.findIndex(s=>s.id == shift_id);
+    // if shift index -1, not in on_rotation, only move pointer and reorder rotation if >= 0
+    if (shiftIndex >= 0) {
+        // if last item in index
+        if (state.pointer == shiftIndex && state.pointer == state.shifts.on_rotation.length-1) {
+            state.pointer = 0;
+        } else if (state.pointer > shiftIndex) { 
+            state.pointer--;
+        }
+        const order = await db.newRowOrders(state.newRotationOrderOnOff(shiftIndex));
     }
-    const off = await db.goOffRotation(shift.id);
-    const order = await db.newRowOrders(state.newRotationOrderOnOff(req.params.index));
+    const off = await db.goOffRotation(shift_id, req.params.status);
     state.shifts = await db.getShifts();
     res.send(true);
     res.io.emit('new state', state);
@@ -53,7 +56,7 @@ api.post('/gooffrotation/:index', async (req, res) => {
 
 // rejoin rotation
 api.post('/rejoin/:id', async (req, res) => {
-    const params = {'on_rotation': true, 'rotation_order': state.pointer}
+    const params = {'status_id': 1, 'rotation_order': state.pointer}
     const orders = await db.newRowOrders(state.newRotationOrdersOnNew());
     const newshift = await db.updateShift(req.params.id, params);
     state.shifts = await db.getShifts();
@@ -139,7 +142,7 @@ api.post('/resetboard', async (req, res) => {
 });
 
 api.get('/supatest', async (req, res) => {
-    res.json({ state: state });
+    res.json(await db.getShifts());
 });
 
 export default api;

@@ -20,15 +20,24 @@
         <div class="Subhead Subhead--spacious">
             <p class="Subhead-heading h2">Physician</p>
         </div>
-        <div class="flash-messages">
+        <div class="p-2 pb-4 pl-4 color-bg-inset ">
+            <form action="/login/password" method="post">
+                <section class="mt-2">
+                    <label for="current-password">Password</label><br>
+                    <input id="current-password" class="form-control" name="password" type="password" autocomplete="current-password" required>
+                    <button class="btn" type="submit">Sign in</button>
+                    <input id="username" class="form-control" name="username" type="text" autocomplete="username" value="doctor" hidden>
+                </section>
+            </form>
+        </div>
+        <!-- <div class="flash-messages">
             <div class="flash">
               Use your <strong>@carepointhc.com</strong> email address
             </div>
           </div>
-        <a class="btn btn-outline btn-large" href="/auth">Sign In</a>
+        <a class="btn btn-outline btn-large" href="/auth">Sign In</a> -->
 
     </div>
 </section>
 </body>
-<%- include('partials/scripts') %>
 </html>
