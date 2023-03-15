@@ -42,7 +42,6 @@ app.use((req, res, next) => {
 app.use(cookieSession({
     name: 'session',
     keys: ['key1key1', 'key2key2'],
-  
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
 
