@@ -79,3 +79,17 @@
     <% } %>
 </div>
 </template>
+
+<% if (user.role == 'admin') { %> 
+<!-- Admin -->      
+<div class="d-flex flex-row flex-justify-center mt-6">
+    <div class="col-6 p-3 m-2 color-bg-inset rounded">
+        <!-- Login -->
+        <%- include('login') %>
+    </div>
+
+    <div class="m-2 p-3 col-6 color-bg-danger rounded">  
+        <%- include('admin') %>
+    </div>
+</div>
+<% } %>
