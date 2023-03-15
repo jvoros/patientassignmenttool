@@ -65,9 +65,9 @@ api.post('/rejoin/:id', async (req, res) => {
 });
 
 // move shift up and down
-api.post('/move/:dir/:i', async (req, res) => {
-    // i is index of shifts array, not shift.id
-    const i = parseInt(req.params.i);
+api.post('/move/:dir/:index', async (req, res) => {
+    // index is index of shifts array, not shift.id
+    const i = parseInt(req.params.index);
     const shift = state.shifts.on_rotation[i];
     if (req.params.dir == 'up' && i == 0) { 
         res.send(true);
@@ -143,7 +143,8 @@ api.post('/resetboard', async (req, res) => {
 });
 
 api.get('/supatest', async (req, res) => {
-    res.json(await db.getShifts());
+
+    res.json(state.resetShiftQuery());
 });
 
 export default api;

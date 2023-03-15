@@ -35,12 +35,10 @@ export default {
     },
 
     newRotationOrdersOnNew() {
-        const arr = []
-        this.shifts.on_rotation.forEach((d)=> {
-            if (d.rotation_order < this.pointer) arr.push({id: d.id, rotation_order: d.rotation_order});
-            if (d.rotation_order >= this.pointer) arr.push({ id: d.id, rotation_order: d.rotation_order+1});
-        });
-        return arr;
+        return this.shifts.on_rotation.map(d => ({
+            id: d.id,
+            rotation_order: d.rotation_order < this.pointer ? d.rotation_order : d.rotation_order + 1
+          }));
     },
 
     newRotationOrderOnOff(order) {
@@ -62,38 +60,26 @@ export default {
         const order = shift.rotation_order;
         const neworder = (dir == 'up' ? order-1 : order+1)
         // get  displaced shift
-        let moveShift = this.shifts.on_rotation[neworder];
+        const moveShift = this.shifts.on_rotation[neworder];
         // update query for each shift
-        const arr = [
+        return [
             { id: shift.id, rotation_order: neworder},
             { id: moveShift.id, rotation_order: order}
         ];
-        return arr;
     },
 
     advancePointer() {
-        if (this.pointer == this.shifts.on_rotation.length-1) {
-            this.pointer = 0; 
-        } else { 
-            this.pointer++;
-        }
+        // 3 mod 5 returns 3, 5 mod 5 returns 0
+        // modulo wraps back to zero at the end
+        this.pointer = (this.pointer + 1) % this.shifts.on_rotation.length;
     },
 
     getShiftById(id) {
-        for (let group in this.shifts) {
-            const index = this.shifts[group].findIndex(s=>s.id==id);
-            if (index > -1) return this.shifts[group][index];
-        }
-        return false;
-    },
-
-    resetDocQuery() {
-        return this.doctors.map(d=>({id: d.id, working: false}));
+        return Object.values(this.shifts).flat().find(s=>s.id === id) || false;
     },
 
     resetShiftQuery() {
-        const a = [...this.shifts.on_rotation, ...this.shifts.off_rotation, ...this.shifts.ft_rotation]
-        return a.map(s=>({id: s.id, status_id: 4, rotation_order: null}));
+        return Object.values(this.shifts).flat().map(s=>({id: s.id, status_id: 4, rotation_order: null}));
     }
     
 }
