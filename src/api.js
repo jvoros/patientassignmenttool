@@ -56,6 +56,7 @@ api.post('/changeshiftdetails/:start_id/:shift_id', async (req,res) => {
 });
 
 api.post('/resetboard', async (req, res) => {
+    state.resetTimeline();
     await state.resetBoard();
     res.io.emit('new state', state);
 });
