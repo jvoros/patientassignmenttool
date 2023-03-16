@@ -101,8 +101,8 @@ export default {
         const undo = this.timeline.splice(index, 1)[0];
         const undoShift = this.getShiftById(undo.shift_id);
         const data = await db.decrementCount(undoShift, 'patient');
-        this.shifts = await db.getShifts();
         this.lowerPointer();
+        this.shifts = await db.getShifts();
         return;
     },
 
