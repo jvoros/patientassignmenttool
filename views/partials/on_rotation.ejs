@@ -61,7 +61,7 @@
                 <% if (user.role=='admin') { %>  
 
                     <div v-if="state.pointer == index" class="text-right">
-                        <label>Initials:</label>
+                        <label>Identifier:</label>
                         <input v-model="newInitials" class="form-control mb-1" type="text" size="4"/><br>
                         <button class="btn btn-primary mt-0" type="button" :aria-disabled="!newInitials" @click="assign">Assign Patient</button>
                     </div>  
