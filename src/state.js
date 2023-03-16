@@ -66,6 +66,10 @@ export default {
         this.pointer = (this.pointer + 1) % this.shifts.on_rotation.length;
     },
 
+    lowerPointer() {
+        this.pointer == this.pointer == 0 ? this.shifts.on_rotation.length : this.pointer-1;
+    },
+
     skip() {
         const shift = this.getPointerShift();
         this.newAction('skip', shift.id);
@@ -98,7 +102,7 @@ export default {
         const undoShift = this.getShiftById(undo.shift_id);
         const data = await db.decrementCount(undoShift, 'patient');
         this.shifts = await db.getShifts();
-        this.pointer--;
+        this.lowerPointer();
         return;
     },
 
