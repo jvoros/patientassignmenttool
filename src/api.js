@@ -35,6 +35,11 @@ api.post('/assignpatient/:initials?', async (req, res) => {
     res.io.emit('new state', state);
 });
 
+api.post('/undolastassign', async (req, res) => {
+    await state.undoLastAssign();
+    res.io.emit('new state', state);
+})
+
 api.post('/increment/:type/shift/:shift_id', async (req, res) => {
     await state.increment(req.params.shift_id, req.params.type);
     res.io.emit('new state', state);

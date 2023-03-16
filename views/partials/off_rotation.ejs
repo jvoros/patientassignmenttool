@@ -5,8 +5,17 @@
 
 <!-- Blankslate  -->
 <div v-if="state.shifts.off_rotation.length == 0" class="blankslate color-bg-inset rounded">
-    <p>Use the <strong>Off Rotation button</strong> to move<br>any physician Off Rotation.</p>
+    <% if (user.role == 'admin') { %> 
+        <p>Use the <strong>Off Rotation button</strong> to move<br>any physician Off Rotation.</p>
+    <% } %>
+
+    <% if (user.role == 'user') { %> 
+        <p>No doctors <strong>Off Rotation</strong>.</p>
+    <% } %>
+
+
 </div>
+
 
 <!-- Boxes  -->
 <div class="Box Box--condensed mb-2" v-for="(shift, index) in state.shifts.off_rotation">

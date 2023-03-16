@@ -83,6 +83,11 @@ createApp({
         this.apifetch('/api/assignpatient/'+this.newInitials);
     },
 
+    undoLastAssign() {
+        this.loaders.push('on');
+        this.apifetch('/api/undolastassign');
+    },
+
     skip() {
         this.apifetch('/api/skip');
     },

@@ -91,6 +91,17 @@ export default {
         return;
     },
 
+    async undoLastAssign() {
+        const index = this.timeline.findIndex(a=>a.action == 'patient');
+        if (index < 0) return;
+        const undo = this.timeline.splice(index, 1)[0];
+        const undoShift = this.getShiftById(undo.shift_id);
+        const data = await db.decrementCount(undoShift, 'patient');
+        this.shifts = await db.getShifts();
+        this.pointer--;
+        return;
+    },
+
     // ROTATION
     newRotationOrdersOnNew() {
         return this.shifts.on_rotation.map(d => ({
