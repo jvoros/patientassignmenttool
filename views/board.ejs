@@ -17,7 +17,7 @@
             <!-- MIDDLE COLUMN -->
             <section class="col-5 p-3">
                 <%- include('partials/on_rotation') %>
-                <%- include('partials/tips') %>
+                
                 <% if (user.role == 'admin') { %> 
                     <!-- Admin -->      
                     <div class="d-flex flex-row flex-justify-center mt-6">
@@ -37,6 +37,7 @@
                 <%- include('partials/ft_rotation') %>
                 <div class="mt-5"></div>
                 <%- include('partials/off_rotation') %>
+                <%- include('partials/tips') %>
             </section>
         </main>
     </div>
