@@ -67,7 +67,7 @@ export default {
     },
 
     lowerPointer() {
-        this.pointer == this.pointer == 0 ? this.shifts.on_rotation.length : this.pointer-1;
+        this.pointer == this.pointer == 0 ? this.shifts.on_rotation.length-1 : this.pointer-1;
     },
 
     skip() {
