@@ -92,6 +92,10 @@ createApp({
         this.apifetch('/api/skip');
     },
 
+    goback() {
+        this.apifetch('/api/goback');
+    },
+
     increment(type, id) {
         this.apifetch('/api/increment/'+type+'/shift/'+id);
     },

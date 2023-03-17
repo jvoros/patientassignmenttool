@@ -33,7 +33,7 @@ export default {
     },
 
     // TIMELINE
-    createAction(act, shift_id, msg, initials = 'Anon') {
+    createAction(act, shift_id, msg, initials = 'Anon', pointer = false, turn = false) {
         const time = new Date();
         return {
             action: act,
@@ -41,13 +41,15 @@ export default {
             doctor: shift_id == 0 ? {last: 'Nurse', first: 'Triage'} : this.getShiftById(shift_id).doctor,
             msg: msg,
             initials: initials,
-            time: time.toLocaleString('en-US', {timeZone: "America/Denver", timeStyle: 'short'})
+            time: time.toLocaleString('en-US', {timeZone: "America/Denver", timeStyle: 'short'}),
+            pointer: pointer,
+            turn: turn,
         }
     },
 
-    newAction(act, shift_id, msg, initials) {
+    newAction(act, shift_id, msg, initials, pointer, turn) {
         if (this.timeline.length >= TIMELINE_LIMIT) this.timeline.pop();
-        this.timeline.unshift(this.createAction(act, shift_id, msg, initials));
+        this.timeline.unshift(this.createAction(act, shift_id, msg, initials, pointer, turn));
     },
 
     resetTimeline() {
@@ -76,6 +78,12 @@ export default {
         this.advancePointer();
     },
 
+    goback() {
+        const shift = this.getPointerShift();
+        this.newAction('back', shift.id, 'from')
+        this.lowerPointer();
+    },
+
     // ASSIGN
     async assignPatient(initials = 'Anon') {
         const shift = this.getPointerShift();
@@ -84,14 +92,15 @@ export default {
         if (shift.turn == 0 && shift.patient < FIRST_TURN_BONUS) {
             // increment just patient count
             const data = await db.incrementCount(shift, 'patient')
+            this.newAction('patient', shift.id, 'assigned to', initials)
         } else {
         // other turns
             // increment patient count and turn and pointer
             const data = await db.incrementCount(shift, 'patient', true)
             this.advancePointer();
+            this.newAction('patient', shift.id, 'assigned to', initials, true, true);
         }
         this.shifts = await db.getShifts();
-        this.newAction('patient', shift.id, 'assigned to', initials);
         return;
     },
 
@@ -99,10 +108,8 @@ export default {
         const index = this.timeline.findIndex(a=>a.action == 'patient');
         if (index < 0) return;
         const undo = this.timeline.splice(index, 1)[0];
-        const undoShift = this.getShiftById(undo.shift_id);
-        const data = await db.decrementCount(undoShift, 'patient');
-        this.lowerPointer();
-        this.shifts = await db.getShifts();
+        const data = await this.decrement(undo.shift_id, 'patient', undo.turn);
+        if (undo.pointer) this.lowerPointer();
         return;
     },
 
@@ -215,6 +222,7 @@ export default {
         return;
     },
 
+
     async increment(shift_id, type) {
         const shift = this.getShiftById(shift_id);
         const data = await db.incrementCount(shift, type);
@@ -223,9 +231,9 @@ export default {
         return;
     },
 
-    async decrement(shift_id, type) {
+    async decrement(shift_id, type, turn = false) {
         const shift = this.getShiftById(shift_id);
-        const data = await db.decrementCount(shift, type);
+        const data = await db.decrementCount(shift, type, turn);
         this.shifts = await db.getShifts();
         return;
     },

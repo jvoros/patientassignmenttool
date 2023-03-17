@@ -19,14 +19,17 @@
                 <%- include('partials/on_rotation') %>
                 
                 <% if (user.role == 'admin') { %> 
-                    <!-- Admin --> 
-                    <hr class="mt-12">     
-                    <div class="d-flex flex-row flex-justify-center mt-6">
+                    <%- include('partials/on_rotation_admin') %>
+
+                    <!-- Admin -->   
+                    <div class="d-flex flex-row flex-justify-center mt-10">
                         <div class="col-6 p-3 m-2 color-bg-inset rounded">
                             <!-- Login -->
                             <%- include('partials/login') %>
                         </div>
+                        
                         <div class="m-2 p-3 col-6 color-bg-danger rounded">  
+                            <!-- Admin Controls -->
                             <%- include('partials/admin') %>
                         </div>
                     </div>

@@ -2,5 +2,10 @@
     <div class="Header-item Header-item--full h3 color-fg-on-emphasis">
         <svg width="56" height="56" xmlns="http://www.w3.org/2000/svg"><g transform="translate(4 4)" stroke="#FFF" stroke-width="2" fill="none" fill-rule="evenodd"><g opacity=".504"><path d="M31.019 21.057a9.001 9.001 0 11-9.963 9.95M34 34c-.267-1.727-1.973-3-4-3-2.08 0-3.787 1.318-4 3m4-9a3 3 0 100 6 3 3 0 000-6z" stroke-linecap="round" stroke-linejoin="round"/><circle cx="36" cy="12" r="3"/><circle cx="3" cy="3" r="3"/><path d="M43 38V9a6 6 0 00-6-6H6" stroke-linecap="round"/><path d="M36 9a6 6 0 00-6-6h-3"/></g><g stroke-linecap="round" stroke-linejoin="round"><path d="M22 22c-.267-1.727-1.973-3-4-3-2.08 0-3.787 1.318-4 3m4-9a3 3 0 100 6 3 3 0 000-6z"/><path d="M18 9a9 9 0 110 18 9 9 0 110-18z"/></g><circle cx="12" cy="36" r="3"/><circle cx="45" cy="45" r="3"/><path d="M5 10v29a6 6 0 006 6h31" stroke-linecap="round"/><path d="M12 38v1a6 6 0 006 6h3"/></g></svg>
         <span>Patient Assignment Tools</span></div>
-    <% if (user != 'none') { %><a class="btn btn-danger" href="/logout">Logout</a><% } %>
+    <% if (user != 'none') { %>
+        <a class="btn btn-danger" href="/logout">
+            Logout
+            <svg class="ml-2 octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path d="M2 2.75C2 1.784 2.784 1 3.75 1h2.5a.75.75 0 0 1 0 1.5h-2.5a.25.25 0 0 0-.25.25v10.5c0 .138.112.25.25.25h2.5a.75.75 0 0 1 0 1.5h-2.5A1.75 1.75 0 0 1 2 13.25Zm10.44 4.5-1.97-1.97a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215l3.25 3.25a.75.75 0 0 1 0 1.06l-3.25 3.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734l1.97-1.97H6.75a.75.75 0 0 1 0-1.5Z"></path></svg>
+        </a>
+    <% } %>
 </div>

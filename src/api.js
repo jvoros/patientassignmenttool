@@ -55,6 +55,11 @@ api.post('/skip', (req, res) =>{
     res.io.emit('new state', state);
 });
 
+api.post('/goback', (req, res) => {
+    state.goback();
+    res.io.emit('new state', state);
+})
+
 api.post('/changeshiftdetails/:start_id/:shift_id', async (req,res) => {
     await state.changeShiftDetails(req.params.start_id, req.params.shift_id)
     res.io.emit('new state', state);

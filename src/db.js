@@ -107,10 +107,16 @@ export default {
         return handleDataError(data, error, 'incrementCount');
     },
 
-    async decrementCount(shift, type) {
+    async decrementCount(shift, type, turn = false) {
+        let updateQuery;
+        if (turn) {
+            updateQuery = { [type]: shift[type]-1, turn: shift.turn-1 };
+        } else {
+            updateQuery = { [type]: shift[type]-1 };
+        }
         const { data, error } = await supabase
             .from('shifts')
-            .update({[type]: shift[type]-1})
+            .update(updateQuery)
             .eq('id', shift.id)
             .select();
         return handleDataError(data, error, 'decrementCount');
