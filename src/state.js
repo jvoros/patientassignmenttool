@@ -4,8 +4,6 @@ import db from './db.js';
 const TIMELINE_LIMIT = 20;
 const FIRST_TURN_BONUS = 2;
 
-
-
 export default {
     error: '',
     date: '',
@@ -25,7 +23,6 @@ export default {
         return this;
     },
 
-    
     newDates() {
         const d = new Date();
         this.date = d.toLocaleDateString("fr-CA", {timeZone: "America/Denver"});
