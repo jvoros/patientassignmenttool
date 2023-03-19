@@ -145,6 +145,7 @@ export default {
         ];
     },
 
+    
     async joinRotation(doctor_id, shift_id, pointer) {
         // increment row orders
         const orders = await db.newRowOrders(this.newRotationOrdersOnNew());

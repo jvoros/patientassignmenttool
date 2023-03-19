@@ -1,51 +1,39 @@
 <%- include('partials/html_head') %>
 
-<body v-scope @vue:mounted="mounted">
-    <div v-cloak>
-        <%- include('partials/nav_header_blank') %>
-        <div class="blankslate" v-if="!state">
-            <h3 class="blankslate-heading">Loading<span class="AnimatedEllipsis"></span></h3>
-            <p>Retrieving content from server</p>
-        </div>
+<body v-scope @vue:mounted="mounted" v-cloak>
 
-        <main class="d-flex flex-row flex-justify-center" v-if="state">
-            <!-- LEFT COLUMN -->
-            <section class="col-3 m-3">
-                <%- include('partials/timeline') %>
-            </section>
-            
-            <!-- MIDDLE COLUMN -->
-            <section class="col-5 p-3">
-                <%- include('partials/on_rotation') %>
-                
-                <% if (user.role == 'admin') { %> 
-                    <%- include('partials/on_rotation_admin') %>
+    <%- include('partials/nav_header_blank') %>
+    <%- include('partials/error_bar') %>
+    <%- include('partials/main_blank') %>
 
-                    <!-- Admin -->   
-                    <div class="d-flex flex-row flex-justify-center mt-10">
-                        <div class="col-6 p-3 m-2 color-bg-inset rounded">
-                            <!-- Login -->
-                            <%- include('partials/login') %>
-                        </div>
-                        
-                        <div class="m-2 p-3 col-6 color-bg-danger rounded">  
-                            <!-- Admin Controls -->
-                            <%- include('partials/admin') %>
-                        </div>
-                    </div>
-                    <% } %>
-            </section>
+    <main class="d-flex flex-row flex-justify-center" >
+        <!-- LEFT COLUMN -->
+        <section class="col-3 m-3">
+            <!-- Error Test -->
+            <!-- <button @click="errortest">Error Test</button> -->
+            <%- include('partials/timeline') %>
+        </section>
+        
+        <!-- MIDDLE COLUMN -->
+        <section class="col-5 p-3">
+            <%- include('partials/on_rotation') %>
+            <% if (user.role == 'admin') { %> 
+                <%- include('partials/on_rotation_admin') %>
+                <%- include('partials/admin_boxes') %>
+            <% } %>
+        </section>
 
-            <!-- RIGHT COLUMN  -->
-            <section class="col-4 p-3">
-                <%- include('partials/ft_rotation') %>
-                <div class="mt-5"></div>
-                <%- include('partials/off_rotation') %>
-                <%- include('partials/tips') %>
-            </section>
-        </main>
-    </div>
+        <!-- RIGHT COLUMN  -->
+        <section class="col-4 p-3">
+            <%- include('partials/ft_rotation') %>
+            <div class="mt-5"></div>
+            <%- include('partials/off_rotation') %>
+            <%- include('partials/tips') %>
+        </section>
+
+    </main>
+    
 </body>
 
-<%- include('partials/scripts') %>
+<%- include('scripts') %>
 </html>

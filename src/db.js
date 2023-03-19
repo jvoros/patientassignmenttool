@@ -10,8 +10,10 @@ export const supabase = (ENV == 'production') ?
 
 function handleDataError(data, error, message) {
     if (error) {
-        console.log(message, error);
-        throw new Error(message, error);
+        // log the supabase error
+        // throw error message to client via express middleware
+        console.log(error);
+        throw new Error(message);
     }
     return data;
 }
@@ -29,7 +31,10 @@ export default {
             `)
             .order('rotation_order')
             
-        if (error) { console.log(error); throw new Error(error); }
+        if (error) { 
+            console.error(error);
+            throw new Error('Server error getting shifts. Refresh to try again.'); 
+        }
 
         return {
             on_rotation: data.filter(s=>s.status_id == 1),
@@ -44,7 +49,7 @@ export default {
             .select()
             .order('order')
         
-        return handleDataError(data, error, 'getShiftDetails');
+        return handleDataError(data, error, 'Server error getting shift details.');
     },
 
     async getDoctors() {
@@ -52,7 +57,7 @@ export default {
             .from('doctors')
             .select()
             .order('last')
-        return handleDataError(data, error, 'getDoctors');
+        return handleDataError(data, error, 'Server error getting doctor list.');
     },
 
     async newRowOrders(neworder) {
@@ -60,7 +65,7 @@ export default {
             .from('shifts')
             .upsert(neworder)
             .select();
-        return handleDataError(data, error, 'newRowOrders');
+        return handleDataError(data, error, 'Server error updating row orders.');
     },
     
     async newShift(params) {
@@ -68,7 +73,7 @@ export default {
             .from('shifts')
             .insert([params])
             .select();
-        return handleDataError(data, error, 'newShift');
+        return handleDataError(data, error, 'Server error adding a new shift.');
     },
 
     async updateShift(shift_id, params) {
@@ -77,7 +82,7 @@ export default {
             .update(params)
             .eq('id', shift_id)
             .select();
-        return handleDataError(data, error, 'updateShift');
+        return handleDataError(data, error, 'Server error updating shifts.');
     },
 
     async goOffRotation(shift_id, status_id = 2) {
@@ -86,7 +91,7 @@ export default {
             .update({ status_id: status_id, rotation_order: null })
             .eq('id', shift_id)
             .select()
-        return handleDataError(data, error, 'goOffRotation');
+        return handleDataError(data, error, 'Server error moving shift off rotation.');
     },
 
     // if turn true, also increments turn
@@ -103,7 +108,7 @@ export default {
             .update(updateQuery)
             .eq('id', shift.id)
             .select();
-        return handleDataError(data, error, 'incrementCount');
+        return handleDataError(data, error, `Server error incrementing count for ${type}`);
     },
 
     async decrementCount(shift, type, turn = false) {
@@ -118,7 +123,7 @@ export default {
             .update(updateQuery)
             .eq('id', shift.id)
             .select();
-        return handleDataError(data, error, 'decrementCount');
+        return handleDataError(data, error, `Server error decrementing count for ${type}`);
     },
 
     async resetBoard(shiftQuery) {
@@ -126,7 +131,7 @@ export default {
             .from('shifts')
             .upsert(shiftQuery)
             .select();
-        return handleDataError(data, error, 'resetBoard');
+        return handleDataError(data, error, 'Server error resetting board.');
     }
     
 }

@@ -82,6 +82,16 @@ app.get('/logout', (req, res) => {
 
 app.use('/api', api);
 
+// error handling?
+app.use(function(err, req, res, next) {
+  // catches the error message from db functions
+  // https://stackoverflow.com/a/44078785
+  res.status(500).json({ 
+    id: Date.now().toString(36) + Math.random().toString(36).substring(2), 
+    message: err.message 
+  });
+});
+
 const port = process.env.PORT || 4000;
 server.listen(port, () => {
     console.log(`listening on ${port}`);

@@ -4,6 +4,7 @@ import { createApp } from 'https://unpkg.com/petite-vue?module';
 
 createApp({
     state: null,
+    error: '',
     newShift: '',
     newDoctor: '',
     newInitials: '',
@@ -29,6 +30,9 @@ createApp({
     decrementFlagToggle() {
         this.decrementToolFlag = !this.decrementToolFlag
     },
+    dismissError() {
+        this.error = '';
+    },
 
     handleState(state) {
         this.resetLoaders();
@@ -41,12 +45,22 @@ createApp({
 
     // database transmission methods
     //utility state handler, promise style async
-    apifetch(url, method = 'POST') {
-        return fetch(url, { method: method })
-            .then(res => res.ok)
-            .catch(err => {
-                console.error('Error: ', err);
-            });
+    async apifetch(url, method = 'POST') {
+        try {
+            const response = await fetch(url, { method: method });
+            if (!response.ok) {
+                const error = await response.json();
+                console.log(error);
+                this.error = error;
+            } else {
+                return response.json();
+            }
+        }
+        catch(err) {
+            const msg = 'Fetch API error';
+            const error = { id: Date.now().toString(36) + Math.random().toString(36).substring(2), message: msg };
+            console.error(error);
+        } 
     },
 
     joinrotation(loader) {
@@ -132,6 +146,10 @@ createApp({
             // fire off first event after socket set up
             this.apifetch('/api', 'GET');
         });
+    },
+
+    async errortest() {
+        this.error={message: 'error test'}
     }
 }).mount();
 
