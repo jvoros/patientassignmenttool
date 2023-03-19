@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
-// setup express
+
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -19,6 +19,9 @@ const app = express();
 app.set('view engine', 'ejs');
 const server = http.createServer(app);
 const io = new Server(server);
+
+// timeout middleware???
+// https://stackoverflow.com/a/21708822
 
 // custom middleware
 function ensureAuthenticated(req, res, next) {
@@ -82,7 +85,8 @@ app.get('/logout', (req, res) => {
 
 app.use('/api', api);
 
-// error handling?
+// ERROR HANDLING
+// comes after routes so it can catch any errors they throw
 app.use(function(err, req, res, next) {
   // catches the error message from db functions
   // https://stackoverflow.com/a/44078785
@@ -92,6 +96,7 @@ app.use(function(err, req, res, next) {
   });
 });
 
+// start server
 const port = process.env.PORT || 4000;
 server.listen(port, () => {
     console.log(`listening on ${port}`);
