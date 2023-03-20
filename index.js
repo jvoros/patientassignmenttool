@@ -20,9 +20,6 @@ app.set('view engine', 'ejs');
 const server = http.createServer(app);
 const io = new Server(server);
 
-// timeout middleware???
-// https://stackoverflow.com/a/21708822
-
 // custom middleware
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {

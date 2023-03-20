@@ -47,6 +47,7 @@ createApp({
     //utility state handler, promise style async
     async apifetch(url, method = 'POST') {
         try {
+            
             const response = await fetch(url, { method: method });
             if (!response.ok) {
                 const error = await response.json();
@@ -139,12 +140,11 @@ createApp({
             
             // establish sockets to listen
             socket.on('new state', (state) => {
-                console.log('new state...', state);
                 this.handleState(state);
             });
 
             // fire off first event after socket set up
-            this.apifetch('/api', 'GET');
+            this.apifetch('/api');
         });
     },
 
