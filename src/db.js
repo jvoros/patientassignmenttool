@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const ENV = process.env.NODE_ENV || 'development';
 
-export const supabase = (ENV == 'production') ? 
+const supabase = (ENV == 'production') ? 
     createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY) :
     createClient(process.env.DEV_URL, process.env.DEV_KEY);
 
@@ -18,6 +18,7 @@ function handleDataError(data, error, message) {
     return data;
 }
 
+// DB Methods
 export default {
     
     async getShifts() {

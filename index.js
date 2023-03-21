@@ -8,6 +8,10 @@ import http from 'http';
 import cookieSession from 'cookie-session';
 import { Server } from "socket.io";
 
+// https://stackoverflow.com/a/57527735
+// will catch async errors and pass to error middleware without try/catch blocks
+import 'express-async-errors'; 
+
 // passport setup
 import passport from './src/passport.js';
 
@@ -45,7 +49,7 @@ app.use(cookieSession({
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
 
-// passport
+// passport google setup
 app.use(passport.initialize());
 app.use(passport.session());
 app.get('/auth', passport.authenticate('google', { hd: 'carepointhc.com', prompt: 'select_account', scope: ['profile', 'email'] }));
@@ -82,7 +86,7 @@ app.get('/logout', (req, res) => {
 
 app.use('/api', api);
 
-// ERROR HANDLING
+// error handling
 // comes after routes so it can catch any errors they throw
 app.use(function(err, req, res, next) {
   // catches the error message from db functions

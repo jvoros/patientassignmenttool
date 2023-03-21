@@ -11,6 +11,7 @@
     </div>
     <div>
         <select v-model="newDoctor" class="form-select" id="shift-select">
+            <option disabled value="" selected>Select Doctor:</option>
             <option v-for="d in state.doctors" :value="d.id">{{ d.last }}, {{ d.first }}</option>
         </select>
     </div>
@@ -19,6 +20,7 @@
     </div>
     <div>
         <select v-model="newShift" class="form-select" id="shift-select">
+            <option disabled value="" selected>Select Start:</option>
             <option v-for="detail in state.shift_details" :value="detail.id">{{ detail.name }}</option>
         </select>
     </div>

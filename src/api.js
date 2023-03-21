@@ -1,7 +1,5 @@
 import express from 'express';
-import State from './state.js';
-
-let state;
+import state from './state.js';
 
 const api = express.Router();
 
@@ -12,118 +10,76 @@ function responder(res) {
     res.io.emit('new state', state);
 }
 
+// api endpoints
+
 api.post('/', async (req, res, next) => {
-    try {
-        state = await State.initialize();
-        responder(res);
-    } catch (error) {
-        next(error)
-    }
+    await state.initialize();
+    responder(res);
 });
 
-api.post('/join/:id/shift/:shift/pointer/:pointer', async (req, res, next) => {  
-    try {
-        await state.joinRotation(req.params.id, req.params.shift, req.params.pointer);
-        responder(res);
-    } catch (error) {
-        next(error);
-    } 
+api.post('/join/:doc_id/shift/:shift_id/pointer/:pointer', async (req, res) => {  
+    await state.joinRotation(req.params.doc_id, req.params.shift_id, req.params.pointer);
+    responder(res);
 });
 
-api.post('/gooffrotation/:id/:status', async (req, res, next) => {
-    try {
-        await state.goOffRotation(req.params.id, req.params.status);
-        responder(res);
-    } catch (error) {
-        next(error);
-    }   
+api.post('/gooffrotation/:shift_id/:status', async (req, res) => {
+    await state.goOffRotation(req.params.shift_id, req.params.status);
+    responder(res);
 });
 
-api.post('/rejoin/:id', async (req, res, next) => {
-    try {
-        await state.rejoin(req.params.id);
-        responder(res);
-    } catch (error) {
-        next(error);
-    } 
+api.post('/rejoin/:shift_id', async (req, res) => {
+    await state.rejoin(req.params.shift_id);
+    responder(res);
 });
 
-api.post('/move/:dir/:index', async (req, res, next) => {
-    try {
-        await state.moveRotation(req.params.dir, req.params.index);
-        responder(res);
-    } catch (error) {
-        next(error);
-    } 
+api.post('/move/:dir/:index', async (req, res) => {
+    await state.moveRotation(req.params.dir, req.params.index);
+    responder(res);
 });
 
-api.post('/assignpatient/:initials?', async (req, res, next) => {
-    try {
-        const initials = req.params.initials ? req.params.initials : 'Anon';
-        await state.assignPatient(initials);
-        responder(res);
-    } catch (error) {
-        next(error);
-    } 
+api.post('/assignpatient/:initials?', async (req, res) => {
+    const initials = req.params.initials ? req.params.initials : 'Anon';
+    await state.assignPatient(initials);
+    responder(res);
 });
 
-api.post('/undolastassign', async (req, res, next) => {
-    try {
-        await state.undoLastAssign();
-        responder(res);
-    } catch (error) {
-        next(error);
-    }
+api.post('/undolastassign', async (req, res) => {
+    await state.undoLastAssign();
+    responder(res);
 });
 
-api.post('/increment/:type/shift/:shift_id', async (req, res, next) => {
-    try {
-        await state.increment(req.params.shift_id, req.params.type);
-        responder(res);
-    } catch (error) {
-        next(error);
-    } 
+api.post('/increment/:type/shift/:shift_id', async (req, res) => {
+    await state.increment(req.params.shift_id, req.params.type);
+    responder(res);
 });
 
-api.post('/decrement/:type/shift/:shift_id', async (req, res, next) => {
-    try {
-        await state.decrement(req.params.shift_id, req.params.type);
-        responder(res);
-    } catch (error) {
-        next(error);
-    } 
+api.post('/decrement/:type/shift/:shift_id', async (req, res) => {
+    await state.decrement(req.params.shift_id, req.params.type);
+    responder(res);
 });
 
-api.post('/skip', (req, res, next) => {
+api.post('/skip', async (req, res) => {
     state.skip();
     responder(res);
 });
 
-api.post('/goback', (req, res) => {
+api.post('/goback', async (req, res) => {
     state.goback();
     responder(res);
-})
-
-api.post('/changeshiftdetails/:start_id/:shift_id', async (req,res, next) => {
-    try {
-        await state.changeShiftDetails(req.params.start_id, req.params.shift_id)
-        responder(res);
-    } catch (error) {
-        next(error);
-    } 
 });
 
-api.post('/resetboard', async (req, res, next) => {
-    try {
-        await state.resetBoard();
-        state.resetTimeline();
-        responder(res);
-    } catch(error) {
-        next(error);
-    }
+api.post('/changeshiftdetails/:start_id/:shift_id', async (req,res) => {
+    await state.changeShiftDetails(req.params.start_id, req.params.shift_id)
+    responder(res);
 });
 
-api.post('/resettimeline', (req, res, next) => {
+api.post('/resetboard', async (req, res) => {
+    await state.resetBoard();
+    state.resetTimeline();
+    responder(res);
+});
+
+api.post('/resettimeline', async (req, res) => {
     state.resetTimeline();
     responder(res);
 })

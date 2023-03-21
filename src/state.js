@@ -5,7 +5,6 @@ const TIMELINE_LIMIT = 20;
 const FIRST_TURN_BONUS = 2;
 
 export default {
-    error: '',
     date: '',
     datestring: '',
     pointer: 0,
@@ -13,13 +12,16 @@ export default {
     shifts: {},
     doctors: [],
     timeline: [],
+    initialized: false,
 
     // UTILITIES
     async initialize() {
+        if (typeof initialized !== 'undefined') return this;
         this.shift_details = await db.getShiftDetails();
         this.shifts = await db.getShifts();
         this.doctors = await db.getDoctors();
         this.newDates();
+        this.initialized = true;
         return this;
     },
 
@@ -209,10 +211,6 @@ export default {
         return Object.values(this.shifts).flat().find(s=>s.id == id) || false;
     },
 
-    resetShiftQuery() {
-        return Object.values(this.shifts).flat().map(s=>({id: s.id, status_id: 4, rotation_order: null}));
-    },
-
     async changeShiftDetails(shift_details_id, shift_id) {
         const params = {'shift_id': shift_details_id};
         const newshift = await db.updateShift(shift_id, params);
@@ -238,7 +236,8 @@ export default {
 
     // RESET
     async resetBoard() {
-        const data = await db.resetBoard(this.resetShiftQuery());
+        const query = Object.values(this.shifts).flat().map(s=>({id: s.id, status_id: 4, rotation_order: null}));
+        const data = await db.resetBoard(query);
         await this.initialize();
         return;
     }
