@@ -24,7 +24,7 @@ app.set('view engine', 'ejs');
 const server = http.createServer(app);
 const io = new Server(server);
 
-// custom middleware
+// custom auth middleware
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
       return next();

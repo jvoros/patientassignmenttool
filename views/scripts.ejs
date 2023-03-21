@@ -47,7 +47,6 @@ createApp({
     //utility state handler, promise style async
     async apifetch(url, method = 'POST') {
         try {
-            
             const response = await fetch(url, { method: method });
             if (!response.ok) {
                 const error = await response.json();
@@ -148,9 +147,6 @@ createApp({
         });
     },
 
-    async errortest() {
-        this.error={message: 'error test'}
-    }
 }).mount();
 
 </script>
