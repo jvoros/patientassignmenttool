@@ -20,7 +20,23 @@ function handleDataError(data, error, message) {
 
 // DB Methods
 export default {
+    async getShiftDetails() {
+        const { data, error } = await supabase
+            .from('shift_details')
+            .select()
+            .order('order')
+        return handleDataError(data, error, 'Server error getting shift details.');
+    },
+
+    async getDoctors() {
+        const { data, error } = await supabase 
+            .from('doctors')
+            .select()
+            .order('last')
+        return handleDataError(data, error, 'Server error getting doctor list.');
+    },
     
+    // SHIFTS
     async getShifts() {
         const { data, error } = await supabase
             .from('shifts')
@@ -44,31 +60,6 @@ export default {
         };
     },
 
-    async getShiftDetails() {
-        const { data, error } = await supabase
-            .from('shift_details')
-            .select()
-            .order('order')
-        
-        return handleDataError(data, error, 'Server error getting shift details.');
-    },
-
-    async getDoctors() {
-        const { data, error } = await supabase 
-            .from('doctors')
-            .select()
-            .order('last')
-        return handleDataError(data, error, 'Server error getting doctor list.');
-    },
-
-    async newRowOrders(neworder) {
-        const { data, error } = await supabase
-            .from('shifts')
-            .upsert(neworder)
-            .select();
-        return handleDataError(data, error, 'Server error updating row orders.');
-    },
-    
     async newShift(params) {
         const { data, error } = await supabase
             .from('shifts')
@@ -77,22 +68,21 @@ export default {
         return handleDataError(data, error, 'Server error adding a new shift.');
     },
 
-    async updateShift(shift_id, params) {
+    async updateShift(shift_id, params, msg = 'Server error updating shift.') {
         const { data, error } = await supabase
             .from('shifts')
             .update(params)
             .eq('id', shift_id)
             .select();
-        return handleDataError(data, error, 'Server error updating shifts.');
+        return handleDataError(data, error, msg);
     },
 
-    async goOffRotation(shift_id, status_id = 2) {
+    async updateShifts(shiftQuery, msg) {
         const { data, error } = await supabase
             .from('shifts')
-            .update({ status_id: status_id, rotation_order: null })
-            .eq('id', shift_id)
-            .select()
-        return handleDataError(data, error, 'Server error moving shift off rotation.');
+            .upsert(shiftQuery)
+            .select();
+        return handleDataError(data, error, msg);
     },
 
     // if turn true, also increments turn
@@ -103,13 +93,7 @@ export default {
         } else {
             updateQuery = { [type]: shift[type]+1 };
         }
-
-        const { data, error } = await supabase
-            .from('shifts')
-            .update(updateQuery)
-            .eq('id', shift.id)
-            .select();
-        return handleDataError(data, error, `Server error incrementing count for ${type}`);
+        return this.updateShift(shift.id, updateQuery, `Server error incrementing count for ${type}`);
     },
 
     async decrementCount(shift, type, turn = false) {
@@ -119,20 +103,6 @@ export default {
         } else {
             updateQuery = { [type]: shift[type]-1 };
         }
-        const { data, error } = await supabase
-            .from('shifts')
-            .update(updateQuery)
-            .eq('id', shift.id)
-            .select();
-        return handleDataError(data, error, `Server error decrementing count for ${type}`);
-    },
-
-    async resetBoard(shiftQuery) {
-        const { data, error } = await supabase
-            .from('shifts')
-            .upsert(shiftQuery)
-            .select();
-        return handleDataError(data, error, 'Server error resetting board.');
-    }
-    
+        return this.updateShift(shift.id, updateQuery, `Server error decrementing count for ${type}`);
+    },    
 }

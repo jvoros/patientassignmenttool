@@ -6,7 +6,6 @@ const FIRST_TURN_BONUS = 2;
 
 export default {
     date: '',
-    datestring: '',
     pointer: 0,
     shift_details: [],
     shifts: {},
@@ -14,27 +13,21 @@ export default {
     timeline: [],
     initialized: false,
 
-    // UTILITIES
     async initialize() {
-        if (typeof initialized !== 'undefined') return this;
+        if (this.initialized === true) return this;
+        const d = new Date();
+        this.date = d.toLocaleDateString("fr-CA", {timeZone: "America/Denver"});
         this.shift_details = await db.getShiftDetails();
         this.shifts = await db.getShifts();
         this.doctors = await db.getDoctors();
-        this.newDates();
         this.initialized = true;
         return this;
     },
 
-    newDates() {
-        const d = new Date();
-        this.date = d.toLocaleDateString("fr-CA", {timeZone: "America/Denver"});
-        this.datestring = d.toLocaleDateString("en-US", {timeZone: "America/Denver"});
-    },
-
     // TIMELINE
-    createAction(act, shift_id, msg, initials = 'Anon', pointer = false, turn = false) {
+    newAction(act, shift_id, msg, initials, pointer, turn) {
         const time = new Date();
-        return {
+        const newAction = {
             action: act,
             shift_id: shift_id,
             doctor: shift_id == 0 ? {last: 'Nurse', first: 'Triage'} : this.getShiftById(shift_id).doctor,
@@ -44,11 +37,8 @@ export default {
             pointer: pointer,
             turn: turn,
         }
-    },
-
-    newAction(act, shift_id, msg, initials, pointer, turn) {
         if (this.timeline.length >= TIMELINE_LIMIT) this.timeline.pop();
-        this.timeline.unshift(this.createAction(act, shift_id, msg, initials, pointer, turn));
+        this.timeline.unshift(newAction);
     },
 
     resetTimeline() {
@@ -61,34 +51,34 @@ export default {
         return this.shifts.on_rotation[this.pointer];
     },
 
-    advancePointer() {
-        // 3 mod 5 returns 3, 5 mod 5 returns 0
-        // modulo wraps back to zero at the end
-        this.pointer = (this.pointer + 1) % this.shifts.on_rotation.length;
-    },
-
-    lowerPointer() {
-        this.pointer = this.pointer == 0 ? this.shifts.on_rotation.length-1 : this.pointer-1;
+    movePointer(dir = 'up') {
+        const length = this.shifts.on_rotation.length-1;
+        if (dir === 'down') {
+            this.pointer = this.pointer == 0 ? length : this.pointer-1;
+        } else {
+            this.pointer = this.pointer == length ? 0 : this.pointer+1
+        }
     },
 
     skip() {
         const shift = this.getPointerShift();
         this.newAction('skip', shift.id);
-        this.advancePointer();
+        this.movePointer('up');
     },
 
     goback() {
         const shift = this.getPointerShift();
         this.newAction('back', shift.id, 'from')
-        this.lowerPointer();
+        this.movePointer('down');
     },
 
-    // ASSIGN
+    // ASSIGNING PATIENTS
     async assignPatient(initials = 'Anon') {
         const shift = this.getPointerShift();
-
         // first turn
-        if (shift.turn == 0 && shift.patient < FIRST_TURN_BONUS) {
+        // only one bonus for overnight shift
+        if (shift.turn == 0 && shift.shift_details.id == 7 && shift.patient < 1 || 
+            shift.turn == 0 && shift.shift_details.id != 7 && shift.patient < FIRST_TURN_BONUS) {
             // increment just patient count
             const data = await db.incrementCount(shift, 'patient')
             this.newAction('patient', shift.id, 'assigned to', initials)
@@ -96,7 +86,7 @@ export default {
         // other turns
             // increment patient count and turn and pointer
             const data = await db.incrementCount(shift, 'patient', true)
-            this.advancePointer();
+            this.movePointer('up');
             this.newAction('patient', shift.id, 'assigned to', initials, true, true);
         }
         this.shifts = await db.getShifts();
@@ -105,14 +95,15 @@ export default {
 
     async undoLastAssign() {
         const index = this.timeline.findIndex(a=>a.action == 'patient');
+        // -1 if none found
         if (index < 0) return;
         const undo = this.timeline.splice(index, 1)[0];
         const data = await this.decrement(undo.shift_id, 'patient', undo.turn);
-        if (undo.pointer) this.lowerPointer();
+        if (undo.pointer) this.movePointer('down');
         return;
     },
 
-    // ROTATION
+    // ROTATION ORDERS
     newRotationOrdersOnNew() {
         return this.shifts.on_rotation.map(d => ({
             id: d.id,
@@ -147,10 +138,25 @@ export default {
         ];
     },
 
-    
+    // MOVING AROUND ROTATION
+    async moveRotation(dir, index) {
+        // index is index of shifts array, not shift.id
+        const i = parseInt(index);
+        const shift = this.shifts.on_rotation[i];
+        if (dir == 'up' && i == 0) { 
+            return;
+        } else if (dir == 'down' && i == this.shifts.on_rotation.length-1) { 
+            return;
+        } else {
+            const orders = await db.updateShifts(this.moveRotationOrder(shift, dir));
+            this.shifts = await db.getShifts();
+            return;
+        }
+    },
+
     async joinRotation(doctor_id, shift_id, pointer) {
         // increment row orders
-        const orders = await db.newRowOrders(this.newRotationOrdersOnNew());
+        const orders = await db.updateShifts(this.newRotationOrdersOnNew());
 
         // add the new shift
         const params = {
@@ -168,7 +174,7 @@ export default {
 
     async goOffRotation(shift_id, status) {
         const shiftIndex = this.shifts.on_rotation.findIndex(s=>s.id == shift_id);
-        // if shift index -1, not in on_rotation, only move pointer, reorder rotation if >= 0
+        // if shift index -1, not in on_rotation, only move pointer and reorder rotation if >= 0
         if (shiftIndex >= 0) {
             // if last item in index
             if (this.pointer == shiftIndex && this.pointer == this.shifts.on_rotation.length-1) {
@@ -176,37 +182,23 @@ export default {
             } else if (this.pointer > shiftIndex) { 
                 this.pointer--;
             }
-            const order = await db.newRowOrders(this.newRotationOrderOnOff(shiftIndex));
+            const order = await db.updateShifts(this.newRotationOrderOnOff(shiftIndex));
         }
-        const off = await db.goOffRotation(shift_id, status);
+        const query = { status_id: status, rotation_order: null };
+        const off = await db.updateShift(shift_id, query, 'Server error going off rotation');
         this.shifts = await db.getShifts();
         return;
     },
 
     async rejoin(shift_id) {
         const params = {'status_id': 1, 'rotation_order': this.pointer}
-        const orders = await db.newRowOrders(this.newRotationOrdersOnNew());
+        const orders = await db.updateShifts(this.newRotationOrdersOnNew());
         const newshift = await db.updateShift(shift_id, params);
         this.shifts = await db.getShifts();
         return;
     },
 
-    async moveRotation(dir, index) {
-        // index is index of shifts array, not shift.id
-        const i = parseInt(index);
-        const shift = this.shifts.on_rotation[i];
-        if (dir == 'up' && i == 0) { 
-            return;
-        } else if (dir == 'down' && i == this.shifts.on_rotation.length-1) { 
-            return;
-        } else {
-            const orders = await db.newRowOrders(this.moveRotationOrder(shift, dir));
-            this.shifts = await db.getShifts();
-            return;
-        }
-    },
-
-    // SHIFTS
+    // SHIFT PROPERTIES
     getShiftById(id) {
         return Object.values(this.shifts).flat().find(s=>s.id == id) || false;
     },
@@ -217,7 +209,6 @@ export default {
         this.shifts = await db.getShifts();
         return;
     },
-
 
     async increment(shift_id, type) {
         const shift = this.getShiftById(shift_id);
@@ -237,7 +228,8 @@ export default {
     // RESET
     async resetBoard() {
         const query = Object.values(this.shifts).flat().map(s=>({id: s.id, status_id: 4, rotation_order: null}));
-        const data = await db.resetBoard(query);
+        const data = await db.updateShifts(query);
+        this.initialized = false;
         await this.initialize();
         return;
     }
