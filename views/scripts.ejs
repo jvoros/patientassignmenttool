@@ -79,39 +79,39 @@ createApp({
     this.apifetch('/api/changestatus/'+id+'/status'+status_id);
   },
 
-   rejoin(id) {
-        this.loaders.push('off');
-        this.apifetch('/api/rejoin/'+id);
-    },
+  rejoin(id) {
+    this.loaders.push('off');
+    this.apifetch('/api/rejoin/'+id);
+  },
 
-    move(dir, id) {
-        if (dir == 'up' && id == 0) return;
-        if (dir == 'down' && id == this.state.shifts.on_rotation.length-1) return;
-        this.loaders.push('on');
-        this.apifetch(`/api/move/${dir}/${id}`);
-    },
+  move(dir, id) {
+    if (dir == 'up' && id == 0) return;
+    if (dir == 'down' && id == this.state.shifts.on_rotation.length-1) return;
+    this.loaders.push('on');
+    this.apifetch(`/api/move/${dir}/${id}`);
+  },
 
-    assign() {
-        if (!this.newInitials) return;
-        this.loaders.push('on');
-        this.apifetch('/api/assignpatient/'+this.newInitials);
-    },
+  assign() {
+    if (!this.newInitials) return;
+    this.loaders.push('on');
+    this.apifetch('/api/assignpatient/'+this.newInitials);
+  },
 
-    undoLastAssign() {
-        this.loaders.push('on');
-        this.apifetch('/api/undolastassign');
-    },
+  undoLastAssign() {
+    this.loaders.push('on');
+    this.apifetch('/api/undolastassign');
+  },
 
-    skip() {
-        this.apifetch('/api/skip');
-    },
+  skip() {
+    this.apifetch('/api/skip');
+  },
 
-    goback() {
-        this.apifetch('/api/goback');
-    },
+  goback() {
+    this.apifetch('/api/goback');
+  },
 
-    increment(type, id) {
-        this.apifetch('/api/increment/'+type+'/shift/'+id);
+  increment(type, id) {
+    this.apifetch('/api/increment/'+type+'/shift/'+id);
   },
 
   decrement(type, id) {
