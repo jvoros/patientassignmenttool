@@ -3,81 +3,81 @@
 import { createApp } from 'https://unpkg.com/petite-vue?module';
 
 createApp({
-    state: null,
-    error: '',
-    newShift: '',
-    newDoctor: '',
-    newInitials: '',
-    resetBoardFlag: false,
-    decrementToolFlag: false,
-    loaders: [],
-    ptTypes: ['fasttrack', 'pit', 'biscuit'],
-    ptTypesAdmin: ['patient', 'fasttrack', 'pit', 'biscuit'],
+  state: null,
+  error: '',
+  newShift: '',
+  newDoctor: '',
+  newInitials: '',
+  resetBoardFlag: false,
+  decrementToolFlag: false,
+  loaders: [],
+  ptTypes: ['fasttrack', 'pit', 'biscuit'],
+  ptTypesAdmin: ['patient', 'fasttrack', 'pit', 'biscuit'],
 
-    // interface flags and methods
-    resetLoaders() {
-        this.loaders = [];
-    },
-    isNext(id) { 
-        return this.state.pointer == id 
-    },
-    resetBoardFlagToggle() {
-        this.resetBoardFlag = !this.resetBoardFlag;
-    },
-    sixamAlert() {
-        this.newShift = null;
-    },
-    decrementFlagToggle() {
-        this.decrementToolFlag = !this.decrementToolFlag
-    },
-    dismissError() {
-        this.error = '';
-    },
+  // interface flags and methods
+  resetLoaders() {
+    this.loaders = [];
+  },
+  isNext(id) { 
+    return this.state.pointer == id 
+  },
+  resetBoardFlagToggle() {
+    this.resetBoardFlag = !this.resetBoardFlag;
+  },
+  sixamAlert() {
+    this.newShift = null;
+  },
+  decrementFlagToggle() {
+    this.decrementToolFlag = !this.decrementToolFlag
+  },
+  dismissError() {
+    this.error = '';
+  },
 
-    handleState(state) {
-        this.resetLoaders();
-        this.newInitials = '';
-        this.newDoctor = '';
-        this.newShift = '';
-        this.resetBoardFlag = false;
-        this.state = state;
-    },
+  handleState(state) {
+    this.resetLoaders();
+    this.newInitials = '';
+    this.newDoctor = '';
+    this.newShift = '';
+    this.resetBoardFlag = false;
+    this.state = state;
+  },
 
-    // database transmission methods
-    //utility state handler, promise style async
-    async apifetch(url, method = 'POST') {
-        try {
-            const response = await fetch(url, { method: method });
-            if (!response.ok) {
-                const error = await response.json();
-                console.log(error);
-                this.error = error;
-            } else {
-                return response.json();
-            }
-        }
-        catch(err) {
-            const msg = 'Fetch API error';
-            const error = { id: Date.now().toString(36) + Math.random().toString(36).substring(2), message: msg };
-            console.error(error);
-        } 
-    },
+  // database transmission methods
+  //utility state handler, promise style async
+  async apifetch(url, method = 'POST') {
+    try {
+      const response = await fetch(url, { method: method });
+      if (!response.ok) {
+        const error = await response.json();
+        console.log(error);
+        this.error = error;
+      } else {
+        return response.json();
+      }
+    }
+    catch(err) {
+      const msg = 'Fetch API error';
+      const error = { id: Date.now().toString(36) + Math.random().toString(36).substring(2), message: msg };
+      console.error(error);
+    } 
+  },
 
-    joinrotation(loader) {
-        if (this.newShift == '') return;
-        this.loaders.push('join');
-        this.apifetch('/api/join/'+this.newDoctor+'/shift/'+this.newShift+'/pointer/'+this.state.pointer);
-    },
+  joinrotation(loader) {
+    if (this.newShift == '') return;
+    this.loaders.push('join');
+    this.apifetch('/api/join/'+this.newDoctor+'/shift/'+this.newShift+'/pointer/'+this.state.pointer);
+  },
  
-    goOffRotation(id, status = 2, loader = 'on') {
-        this.loaders.push(loader);
-        this.apifetch('/api/gooffrotation/'+id+'/'+status);
-    },
+  goOffRotation(id, status = 2, loader = 'on') {
+    this.loaders.push(loader);
+    this.apifetch('/api/gooffrotation/'+id+'/'+status);
+  },
 
-    changeShiftStatus(id, status_id, loader) {
-        this.loaders.push(loader);
-        this.apifetch('/api/changestatus/'+id+'/status'+status_id);
-    },
+  changeShiftStatus(id, status_id, loader) {
+    this.loaders.push(loader);
+    this.apifetch('/api/changestatus/'+id+'/status'+status_id);
+  },
 
    rejoin(id) {
         this.loaders.push('off');
@@ -112,40 +112,39 @@ createApp({
 
     increment(type, id) {
         this.apifetch('/api/increment/'+type+'/shift/'+id);
-    },
+  },
 
-    decrement(type, id) {
-        this.apifetch('/api/decrement/'+type+'/shift/'+id);
-    },
+  decrement(type, id) {
+    this.apifetch('/api/decrement/'+type+'/shift/'+id);
+  },
 
-    changeShiftStart(event, shift_id) {
-        this.loaders.push('on');
-        this.apifetch('/api/changeshiftdetails/'+event.target.value+'/'+shift_id);
-    },
+  changeShiftStart(event, shift_id) {
+    this.loaders.push('on');
+    this.apifetch('/api/changeshiftdetails/'+event.target.value+'/'+shift_id);
+  },
 
-    resetBoard() {
-        this.loaders.push('reset');
-        this.apifetch('/api/resetboard');
-    },
+  resetBoard() {
+    this.loaders.push('reset');
+    this.apifetch('/api/resetboard');
+  },
 
-    resetTimeline() {
-        this.loaders.push('reset');
-        this.apifetch('/api/resettimeline');
-    },
+  resetTimeline() {
+    this.loaders.push('reset');
+    this.apifetch('/api/resettimeline');
+  },
 
-    async mounted() {
-        const socket = io();
-        socket.on('connect', () => {
-            
-            // establish sockets to listen
-            socket.on('new state', (state) => {
-                this.handleState(state);
-            });
+  async mounted() {
+    const socket = io();
+    socket.on('connect', () => { 
+      // establish sockets to listen
+      socket.on('new state', (state) => {
+        this.handleState(state);
+      });
 
-            // fire off first event after socket set up
-            this.apifetch('/api');
-        });
-    },
+      // fire off first event after socket set up
+      this.apifetch('/api');
+    });
+  },
 
 }).mount();
 
