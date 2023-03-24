@@ -6,11 +6,11 @@ const FIRST_TURN_BONUS = 2;
 
 export default class {
   constructor() {
-    this.pointer = 0;
-    this.timeline = [];
     this.date = new Date().toLocaleDateString("fr-CA", {
       timeZone: "America/Denver",
     });
+    this.pointer = 0;
+    this.timeline = [];
     this.shifts = {};
     this.shift_details = [];
     this.doctors = [];
@@ -27,7 +27,7 @@ export default class {
   }
 
   // TIMELINE
-  newAction(act, shift_id, msg, initials, pointer, turn) {
+  newAction(act, shift_id, msg, initials, pointer = false, turn = false) {
     const time = new Date();
     const newAction = {
       action: act,
