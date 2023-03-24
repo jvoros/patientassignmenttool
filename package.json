@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "test",
+    "test": "npx mocha",
     "start": "NODE_ENV=production node index.js",
     "dev": "nodemon index.js"
   },
@@ -27,9 +27,12 @@
     "socket.io": "^4.6.1"
   },
   "devDependencies": {
+    "chai": "^4.3.7",
     "eslint": "^8.36.0",
     "eslint-plugin-vue": "^9.10.0",
+    "mocha": "^10.2.0",
     "prettier": "^2.8.7",
+    "sinon": "^15.0.2",
     "vue-eslint-parser": "^9.1.0"
   }
 }

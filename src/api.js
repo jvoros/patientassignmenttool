@@ -1,7 +1,8 @@
 import express from "express";
-import state from "./state.js";
+import State from "./state.js";
 
 const api = express.Router();
+const state = new State();
 
 function responder(res) {
   // client browser needs a response to know transmission complete

@@ -4,25 +4,27 @@ import db from "./db.js";
 const TIMELINE_LIMIT = 20;
 const FIRST_TURN_BONUS = 2;
 
-export default {
-  date: "",
-  pointer: 0,
-  shift_details: [],
-  shifts: {},
-  doctors: [],
-  timeline: [],
-  initialized: false,
+export default class {
+  constructor() {
+    this.pointer = 0;
+    this.timeline = [];
+    this.date = new Date().toLocaleDateString("fr-CA", {
+      timeZone: "America/Denver",
+    });
+    this.shifts = {};
+    this.shift_details = [];
+    this.doctors = [];
+    this.initialized = false;
+  }
 
   async initialize() {
-    if (this.initialized === true) return this;
-    const d = new Date();
-    this.date = d.toLocaleDateString("fr-CA", { timeZone: "America/Denver" });
+    if (this.initialized === true) return;
     this.shift_details = await db.getShiftDetails();
     this.shifts = await db.getShifts();
     this.doctors = await db.getDoctors();
     this.initialized = true;
-    return this;
-  },
+    return;
+  }
 
   // TIMELINE
   newAction(act, shift_id, msg, initials, pointer, turn) {
@@ -45,17 +47,17 @@ export default {
     };
     if (this.timeline.length >= TIMELINE_LIMIT) this.timeline.pop();
     this.timeline.unshift(newAction);
-  },
+  }
 
   resetTimeline() {
     this.timeline = [];
     this.newAction("reset", 0, "reset by");
-  },
+  }
 
   // POINTER
   getPointerShift() {
     return this.shifts.on_rotation[this.pointer];
-  },
+  }
 
   movePointer(dir = "up") {
     const length = this.shifts.on_rotation.length - 1;
@@ -64,19 +66,19 @@ export default {
     } else {
       this.pointer = this.pointer == length ? 0 : this.pointer + 1;
     }
-  },
+  }
 
   skip() {
     const shift = this.getPointerShift();
     this.newAction("skip", shift.id);
     this.movePointer("up");
-  },
+  }
 
   goback() {
     const shift = this.getPointerShift();
     this.newAction("back", shift.id, "from");
     this.movePointer("down");
-  },
+  }
 
   // ASSIGNING PATIENTS
   async assignPatient(initials = "Anon") {
@@ -101,7 +103,7 @@ export default {
     }
     this.shifts = await db.getShifts();
     return;
-  },
+  }
 
   async undoLastAssign() {
     const index = this.timeline.findIndex((a) => a.action == "patient");
@@ -111,7 +113,7 @@ export default {
     await this.decrement(undo.shift_id, "patient", undo.turn);
     if (undo.pointer) this.movePointer("down");
     return;
-  },
+  }
 
   // ROTATION ORDERS
   newRotationOrdersOnNew() {
@@ -122,7 +124,7 @@ export default {
           ? d.rotation_order
           : d.rotation_order + 1,
     }));
-  },
+  }
 
   newRotationOrderOnOff(order) {
     const arr = this.shifts.on_rotation.map((s) => {
@@ -137,7 +139,7 @@ export default {
       return { id: s.id, rotation_order: new_order };
     });
     return arr;
-  },
+  }
 
   moveRotationOrder(shift, dir) {
     const order = shift.rotation_order;
@@ -149,7 +151,7 @@ export default {
       { id: shift.id, rotation_order: neworder },
       { id: moveShift.id, rotation_order: order },
     ];
-  },
+  }
 
   // MOVING AROUND ROTATION
   async moveRotation(dir, index) {
@@ -165,7 +167,7 @@ export default {
       this.shifts = await db.getShifts();
       return;
     }
-  },
+  }
 
   async joinRotation(doctor_id, shift_id, pointer) {
     // increment row orders
@@ -183,7 +185,7 @@ export default {
     // update state
     this.shifts = await db.getShifts();
     return;
-  },
+  }
 
   async goOffRotation(shift_id, status) {
     const shiftIndex = this.shifts.on_rotation.findIndex(
@@ -206,7 +208,7 @@ export default {
     await db.updateShift(shift_id, query, "Server error going off rotation");
     this.shifts = await db.getShifts();
     return;
-  },
+  }
 
   async rejoin(shift_id) {
     const params = { status_id: 1, rotation_order: this.pointer };
@@ -214,7 +216,7 @@ export default {
     await db.updateShift(shift_id, params);
     this.shifts = await db.getShifts();
     return;
-  },
+  }
 
   // SHIFT PROPERTIES
   getShiftById(id) {
@@ -223,14 +225,14 @@ export default {
         .flat()
         .find((s) => s.id == id) || false
     );
-  },
+  }
 
   async changeShiftDetails(shift_details_id, shift_id) {
     const params = { shift_id: shift_details_id };
     await db.updateShift(shift_id, params);
     this.shifts = await db.getShifts();
     return;
-  },
+  }
 
   async increment(shift_id, type) {
     const shift = this.getShiftById(shift_id);
@@ -238,14 +240,14 @@ export default {
     this.shifts = await db.getShifts();
     this.newAction(type, shift_id, "picked up by");
     return;
-  },
+  }
 
   async decrement(shift_id, type, turn = false) {
     const shift = this.getShiftById(shift_id);
     await db.decrementCount(shift, type, turn);
     this.shifts = await db.getShifts();
     return;
-  },
+  }
 
   // RESET
   async resetBoard() {
@@ -256,13 +258,5 @@ export default {
     this.initialized = false;
     await this.initialize();
     return;
-  },
-
-  linter() {
-    if (this.state === {}) {
-      console.log("working");
-    } else {
-      return null;
-    }
-  },
-};
+  }
+}
