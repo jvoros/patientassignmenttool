@@ -252,4 +252,41 @@ describe("State Class Tests", () => {
       expect(state.pointer).to.equal(4);
     });
   });
+
+  describe("# undoLastAssign", () => {
+    before(async () => {
+      sinon.stub(state, "decrement");
+      state.pointer = 2;
+      state.timeline = [
+        { action: "pit", message: "pit" },
+        {
+          action: "patient",
+          message: "patient1",
+          shift_id: 1,
+          turn: true,
+          pointer: true,
+        },
+        { action: "patient", message: "patient2" },
+      ];
+      await state.undoLastAssign();
+      return;
+    });
+
+    after(() => {
+      state.decrement.restore();
+    });
+
+    it("should remove the earliest patient assignment from timeline", async () => {
+      expect(state.timeline.length).to.equal(2);
+      expect(state.timeline[1].message).to.equal("patient2");
+    });
+    it("should call decrement with shift_id, patient, and turn", () => {
+      expect(state.decrement.calledOnceWith(1, "patient", 2)).to.be.true;
+    });
+    it("should decrement pointer only if pointer flag", () => {
+      expect(state.pointer).to.equal(1);
+      state.undoLastAssign();
+      expect(state.pointer).to.equal(1);
+    });
+  });
 });
