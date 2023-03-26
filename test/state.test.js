@@ -296,7 +296,7 @@ describe("State Class Tests", () => {
     });
   });
 
-  describe("newRotationOrdersOnNew", () => {
+  describe("# newRotationOrdersOnNew", () => {
     beforeEach(() => {
       state.shifts = db.getShifts();
       state.pointer = 2;
