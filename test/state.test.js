@@ -1,4 +1,4 @@
-import { describe, it, before, after } from "mocha";
+import { describe, it, before, after, beforeEach } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
 
@@ -17,6 +17,7 @@ describe("State Class Tests", () => {
         id: 1,
         doctor: { last: "Watson", first: "John" },
         shift_details: { id: 1 },
+        rotation_order: 0,
         turn: 0,
         patient: 1,
       },
@@ -24,6 +25,7 @@ describe("State Class Tests", () => {
         id: 2,
         doctor: { last: "McCoy", first: "Leonard" },
         shift_details: { id: 2 },
+        rotation_order: 1,
         turn: 0,
         patient: 2,
       },
@@ -31,6 +33,7 @@ describe("State Class Tests", () => {
         id: 3,
         doctor: { last: "Blake", first: "Kelly" },
         shift_details: { id: 7 },
+        rotation_order: 2,
         turn: 0,
         patient: 0,
       },
@@ -38,10 +41,11 @@ describe("State Class Tests", () => {
         id: 4,
         doctor: { last: "Nicolai", first: "Rocki" },
         shift_details: { id: 7 },
+        rotation_order: 3,
         turn: 0,
         patient: 1,
       },
-      { id: 5 },
+      { id: 5, rotation_order: 4 },
     ],
     off_rotation: [{ id: 3 }],
     ft_rotation: [{ id: 4 }],
@@ -280,13 +284,45 @@ describe("State Class Tests", () => {
       expect(state.timeline.length).to.equal(2);
       expect(state.timeline[1].message).to.equal("patient2");
     });
+
     it("should call decrement with shift_id, patient, and turn", () => {
-      expect(state.decrement.calledOnceWith(1, "patient", 2)).to.be.true;
+      expect(state.decrement.calledOnceWith(1, "patient", true)).to.be.true;
     });
+
     it("should decrement pointer only if pointer flag", () => {
       expect(state.pointer).to.equal(1);
       state.undoLastAssign();
       expect(state.pointer).to.equal(1);
+    });
+  });
+
+  describe("newRotationOrdersOnNew", () => {
+    beforeEach(() => {
+      state.shifts = db.getShifts();
+      state.pointer = 2;
+    });
+
+    after(() => {
+      state.shifts = db.getShifts();
+      state.pointer = 0;
+    });
+
+    it("should return an array of objects with id and rotation_order", () => {
+      const newOrder = state.newRotationOrdersOnNew();
+      const keyCheck = newOrder.every(
+        (s) =>
+          JSON.stringify(Object.keys(s)) ==
+          JSON.stringify(["id", "rotation_order"])
+      );
+      expect(keyCheck).to.be.true;
+    });
+
+    it("should only increase rotation_order if >= pointer", () => {
+      const newOrder = state.newRotationOrdersOnNew();
+      const orderCheck = newOrder.map((s) => s.rotation_order);
+      expect(JSON.stringify(orderCheck)).to.equal(
+        JSON.stringify([0, 1, 3, 4, 5])
+      );
     });
   });
 });
