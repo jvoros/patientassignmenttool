@@ -163,7 +163,7 @@ export default class {
       return;
     } else {
       await db.updateShifts(this.moveRotationOrder(shift, dir));
-      this.shifts = await db.getShifts();
+      this.refreshShifts();
       return;
     }
   }
@@ -182,7 +182,7 @@ export default class {
     await db.newShift(params);
 
     // update state
-    this.shifts = await db.getShifts();
+    this.refreshShifts();
     return;
   }
 
@@ -213,7 +213,7 @@ export default class {
     const params = { status_id: 1, rotation_order: this.pointer };
     await db.updateShifts(this.newRotationOrdersOnNew());
     await db.updateShift(shift_id, params);
-    this.shifts = await db.getShifts();
+    this.refreshShifts();
     return;
   }
 
