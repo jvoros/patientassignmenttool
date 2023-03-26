@@ -26,8 +26,19 @@ export default class {
     return;
   }
 
+  async refreshShifts() {
+    this.shifts = await db.getShifts();
+  }
+
   // TIMELINE
-  newAction(act, shift_id, msg, initials, pointer = false, turn = false) {
+  newAction(
+    act,
+    shift_id,
+    msg,
+    initials = "Anon",
+    pointer = false,
+    turn = false
+  ) {
     const time = new Date();
     const newAction = {
       action: act,
@@ -83,25 +94,13 @@ export default class {
   // ASSIGNING PATIENTS
   async assignPatient(initials = "Anon") {
     const shift = this.getPointerShift();
-    // first turn
-    // only one bonus for overnight shift
-    if (
-      (shift.turn == 0 && shift.shift_details.id == 7 && shift.patient < 1) ||
-      (shift.turn == 0 &&
-        shift.shift_details.id != 7 &&
-        shift.patient < FIRST_TURN_BONUS)
-    ) {
-      // increment just patient count
-      await db.incrementCount(shift, "patient");
-      this.newAction("patient", shift.id, "assigned to", initials);
-    } else {
-      // other turns
-      // increment patient count and turn and pointer
-      await db.incrementCount(shift, "patient", true);
-      this.movePointer("up");
-      this.newAction("patient", shift.id, "assigned to", initials, true, true);
-    }
-    this.shifts = await db.getShifts();
+    const isOvernight = shift.shift_details.id === 7;
+    const bonus = !isOvernight ? FIRST_TURN_BONUS : FIRST_TURN_BONUS - 1;
+    const isTurn = shift.patient >= bonus;
+
+    await this.increment(shift.id, "patient", initials, isTurn);
+    if (isTurn) this.movePointer("up");
+
     return;
   }
 
@@ -230,22 +229,22 @@ export default class {
   async changeShiftDetails(shift_details_id, shift_id) {
     const params = { shift_id: shift_details_id };
     await db.updateShift(shift_id, params);
-    this.shifts = await db.getShifts();
+    await this.refreshShifts();
     return;
   }
 
-  async increment(shift_id, type) {
+  async increment(shift_id, type, initials = "Anon", isTurn = false) {
     const shift = this.getShiftById(shift_id);
-    await db.incrementCount(shift, type);
-    this.shifts = await db.getShifts();
-    this.newAction(type, shift_id, "picked up by");
+    await db.incrementCount(shift, type, isTurn);
+    this.newAction(type, shift_id, "picked up by", initials);
+    await this.refreshShifts();
     return;
   }
 
   async decrement(shift_id, type, turn = false) {
     const shift = this.getShiftById(shift_id);
     await db.decrementCount(shift, type, turn);
-    this.shifts = await db.getShifts();
+    await this.refreshShifts();
     return;
   }
 

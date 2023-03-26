@@ -1,4 +1,4 @@
-import { describe, it } from "mocha";
+import { describe, it, before, after } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
 
@@ -13,10 +13,34 @@ describe("State Class Tests", () => {
   sinon.stub(db, "getShifts");
   db.getShifts.returns({
     on_rotation: [
-      { id: 1, doctor: { last: "Watson", first: "John" } },
-      { id: 2, doctor: { last: "McCoy", first: "Leonard" } },
-      { id: 3 },
-      { id: 4 },
+      {
+        id: 1,
+        doctor: { last: "Watson", first: "John" },
+        shift_details: { id: 1 },
+        turn: 0,
+        patient: 1,
+      },
+      {
+        id: 2,
+        doctor: { last: "McCoy", first: "Leonard" },
+        shift_details: { id: 2 },
+        turn: 0,
+        patient: 2,
+      },
+      {
+        id: 3,
+        doctor: { last: "Blake", first: "Kelly" },
+        shift_details: { id: 7 },
+        turn: 0,
+        patient: 0,
+      },
+      {
+        id: 4,
+        doctor: { last: "Nicolai", first: "Rocki" },
+        shift_details: { id: 7 },
+        turn: 0,
+        patient: 1,
+      },
       { id: 5 },
     ],
     off_rotation: [{ id: 3 }],
@@ -30,23 +54,27 @@ describe("State Class Tests", () => {
   const state = new State();
 
   describe("# initialize()", () => {
-    it("should initialize with appropriate properties", (done) => {
-      state.initialize().then(() => {
-        expect(state.timeline).to.be.empty;
-        expect(state.pointer).to.be.equal(0);
-        expect(state.date).to.equal(
-          d.toLocaleDateString("fr-CA", { timeZone: "America/Denver" })
-        );
-        expect(state.shift_details[0]).to.have.keys("name");
-        expect(state.shifts).to.have.keys(
-          "on_rotation",
-          "off_rotation",
-          "ft_rotation"
-        );
-        expect(state.doctors[0]).to.have.keys("first", "last");
-        expect(state.initialized).to.equal(true);
-        done();
-      });
+    it("should initialize with appropriate starting properties", async () => {
+      // db calls returning mocked values
+      const shape = {
+        timeline: [],
+        pointer: 0,
+        date: d.toLocaleDateString("fr-CA", { timeZone: "America/Denver" }),
+        shift_details: db.getShiftDetails(),
+        shifts: db.getShifts(),
+        doctors: db.getDoctors(),
+        initialized: true,
+      };
+      await state.initialize();
+      expect(state).to.deep.equal(shape);
+    });
+  });
+
+  describe("# refreshShifts", () => {
+    it("should update state.shifts", async () => {
+      state.shifts = {};
+      await state.refreshShifts();
+      expect(state.shifts).to.deep.equal(db.getShifts());
     });
   });
 
@@ -93,7 +121,7 @@ describe("State Class Tests", () => {
       expect(state.timeline[0].msg).to.equal("length test");
     });
 
-    it("should get doctor name from getShiftById", () => {
+    it("should get doctor name for shift != 0", () => {
       state.newAction("patient", 1, "length test", "AA", true, true);
       expect(state.timeline[0].doctor).to.deep.equal({
         last: "Watson",
@@ -150,14 +178,78 @@ describe("State Class Tests", () => {
   });
 
   describe("# skip()", () => {
-    it("should get the shift at the pointer", () => {});
-    it("should add a 'skip' action to timeline for that shift's doctor", () => {});
-    it("should advance the pointer", () => {});
+    it("should add a 'skip' action to timeline with pointer shift and doctor", () => {
+      state.pointer = 1;
+      state.skip();
+      expect(state.timeline[0].action).to.equal("skip");
+      expect(state.timeline[0].shift_id).to.equal(2);
+      expect(state.timeline[0].doctor).to.deep.equal({
+        last: "McCoy",
+        first: "Leonard",
+      });
+    });
+
+    it("should advance the pointer", () => {
+      expect(state.pointer).to.equal(2);
+    });
   });
 
   describe("# goback()", () => {
-    it("should get the shift at the pointer", () => {});
-    it("should add a 'skip' action to timeline for that shift's doctor", () => {});
-    it("should lower the pointer", () => {});
+    it("should add a 'back' action to timeline with pointer shift and doctor", () => {
+      state.pointer = 0;
+      state.goback();
+      expect(state.timeline[0].action).to.equal("back");
+      expect(state.timeline[0].shift_id).to.equal(1);
+      expect(state.timeline[0].doctor).to.deep.equal({
+        last: "Watson",
+        first: "John",
+      });
+    });
+
+    it("should lower the pointer", () => {
+      expect(state.pointer).to.equal(4);
+    });
+  });
+
+  describe("# assignPatient", async () => {
+    before(() => {
+      // sinon.stub(state, "newAction");
+      // sinon.stub(state, "refreshShifts");
+      sinon.stub(state, "increment");
+    });
+
+    after(() => {
+      // state.newAction.restore();
+      // state.refreshShifts.restore();
+      state.increment.restore();
+    });
+
+    it("should call increment", async () => {
+      state.pointer = 0;
+      await state.assignPatient("JJ");
+      expect(state.increment.calledOnce).to.be.true;
+    });
+
+    it("should not have moved pointer if day shift bonus < 2", () => {
+      expect(state.pointer).to.equal(0);
+    });
+
+    it("should move pointer if day shift bonus >=2", async () => {
+      state.pointer = 1;
+      await state.assignPatient("JJ");
+      expect(state.pointer).to.equal(2);
+    });
+
+    it("should not move pointer if night shift bonus < 1", async () => {
+      state.pointer = 2;
+      await state.assignPatient();
+      expect(state.pointer).to.equal(2);
+    });
+
+    it("should move pointer if night shift bonus >= 1", async () => {
+      state.pointer = 3;
+      await state.assignPatient();
+      expect(state.pointer).to.equal(4);
+    });
   });
 });

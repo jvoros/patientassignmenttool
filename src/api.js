@@ -9,7 +9,6 @@ function responder(res) {
   res.json({ message: "success" });
   // state payload sent to client by socket.io
   res.io.emit("new state", state);
-  console.log(state.shifts.on_rotation);
 }
 
 // api endpoints
