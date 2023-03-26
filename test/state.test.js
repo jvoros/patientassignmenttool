@@ -325,4 +325,34 @@ describe("State Class Tests", () => {
       );
     });
   });
+
+  describe("# newRotationOrderOnOff", () => {
+    beforeEach(() => {
+      state.shifts = db.getShifts();
+      state.pointer = 2;
+    });
+
+    after(() => {
+      state.shifts = db.getShifts();
+      state.pointer = 0;
+    });
+
+    it("should return an array of objects with id and rotation_order", () => {
+      const newOrder = state.newRotationOrderOnOff(0);
+      const keyCheck = newOrder.every(
+        (s) =>
+          JSON.stringify(Object.keys(s)) ==
+          JSON.stringify(["id", "rotation_order"])
+      );
+      expect(keyCheck).to.be.true;
+    });
+
+    it("should decrease rotation_order if > arg, set null if == arg", () => {
+      const newOrder = state.newRotationOrderOnOff(2);
+      const orderCheck = newOrder.map((s) => s.rotation_order);
+      expect(JSON.stringify(orderCheck)).to.equal(
+        JSON.stringify([0, 1, null, 2, 3])
+      );
+    });
+  });
 });
