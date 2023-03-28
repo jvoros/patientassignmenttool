@@ -3,6 +3,8 @@
 <body v-scope @vue:mounted="mounted" v-cloak>
 
     <%- include('partials/nav_header_blank') %>
+    <%- include('partials/login_bar') %>
+    <%- include('partials/admin_bar') %>
     <%- include('partials/error_bar') %>
     <%- include('partials/main_blank') %>
 
@@ -17,8 +19,7 @@
             <%- include('partials/on_rotation') %>
             <% if (user.role == 'admin') { %> 
                 <%- include('partials/on_rotation_admin') %>
-                <%- include('partials/admin_boxes') %>
-                <%- include('partials/tips') %>
+                <%- include('partials/tips') %>                
             <% } %>
         </section>
 
