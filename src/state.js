@@ -19,6 +19,7 @@ export default class {
 
   async initialize() {
     if (this.initialized === true) return;
+    this.pointer = 0;
     this.shift_details = await db.getShiftDetails();
     this.shifts = await db.getShifts();
     this.doctors = await db.getDoctors();
@@ -254,6 +255,7 @@ export default class {
       .flat()
       .map((s) => ({ id: s.id, status_id: 4, rotation_order: null }));
     await db.updateShifts(query);
+    this.pointer = 0;
     this.initialized = false;
     await this.initialize();
     return;
