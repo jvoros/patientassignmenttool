@@ -40,19 +40,23 @@
             </div>
             <% } %>
         </div> 
+        <div class="d-none d-sm-block">
         <% if (user.role == 'user') { %> 
             <%- include('patient_types_buttons') %>
         <% } %> 
+        </div>
     </div>
 
-    <% if (user.role == 'user') { %> 
-        <div class="Box-row color-bg-success">
-            Cover <strong>Triage A, B, Room 23</strong> or any other <strong>ESI 4s or 5s</strong>.
-        </div>
-        <div class="Box-row color-bg-success">
-            Do <strong>Provider-in-Triage</strong> work (greet and initial orders) at Triage Desk for waiting room patients, or in main ED.
-        </div>
-    <% } %>
+    <div class="d-none d-sm-block">
+        <% if (user.role == 'user') { %> 
+            <div class="Box-row color-bg-success">
+                Cover <strong>Triage A, B, Room 23</strong> or any other <strong>ESI 4s or 5s</strong>.
+            </div>
+            <div class="Box-row color-bg-success">
+                Do <strong>Provider-in-Triage</strong> work (greet and initial orders) at Triage Desk for waiting room patients, or in main ED.
+            </div>
+        <% } %>
+    </div>
 
     <% if (user.role == 'admin') { %> 
         <%- include('admin_pt_types_buttons') %>

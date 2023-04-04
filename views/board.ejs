@@ -2,20 +2,22 @@
 
 <body v-scope @vue:mounted="mounted" v-cloak>
 
-    <%- include('partials/nav_header_blank') %>
-    <%- include('partials/login_bar') %>
-    <%- include('partials/admin_bar') %>
-    <%- include('partials/error_bar') %>
-    <%- include('partials/main_blank') %>
+    <div class="d-none d-sm-block">
+        <%- include('partials/nav_header_blank') %>
+        <%- include('partials/login_bar') %>
+        <%- include('partials/admin_bar') %>
+        <%- include('partials/error_bar') %>
+        <%- include('partials/main_blank') %>
+    </div>
 
-    <main class="d-flex flex-row flex-justify-center" >
+    <main class="d-flex flex-column flex-sm-row flex-justify-center" >
         <!-- LEFT COLUMN -->
-        <section class="col-3 py-3 px-4">
+        <section class="d-none d-sm-block col-sm-3 py-3 px-4">
             <%- include('partials/timeline') %>
         </section>
         
         <!-- MIDDLE COLUMN -->
-        <section class="col-5 p-3 pr-5">
+        <section class="col-7 col-sm-5 p-3">
             <%- include('partials/on_rotation') %>
             <% if (user.role == 'admin') { %> 
                 <%- include('partials/on_rotation_admin') %>
@@ -24,10 +26,12 @@
         </section>
 
         <!-- RIGHT COLUMN  -->
-        <section class="col-4 p-3">
+        <section class="col-7 col-sm-4 p-3">
             <%- include('partials/ft_rotation') %>
             <div class="mt-5"></div>
-            <%- include('partials/off_rotation') %>
+            <div class="d-none d-sm-block">
+                <%- include('partials/off_rotation') %>
+            </div>
         </section>
 
     </main>

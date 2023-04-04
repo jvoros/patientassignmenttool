@@ -62,7 +62,7 @@
             </div>
             <div>
                 <% if (user.role=='user') { %>     
-                    <span v-if="state.pointer == index" class="IssueLabel IssueLabel--big color-fg-on-emphasis color-bg-success-emphasis">Up Next</span>
+                    <span v-if="state.pointer == index" class="d-none d-sm-block IssueLabel IssueLabel--big color-fg-on-emphasis color-bg-success-emphasis">Up Next</span>
                 <% } %>
                 
                 <% if (user.role=='admin') { %>  
@@ -76,9 +76,11 @@
                     <% } %>
             </div>
         </div>
-        <% if (user.role == 'user') { %> 
-            <%- include('patient_types_buttons') %>
-        <% } %>
+        <div class="d-none d-sm-block">
+            <% if (user.role == 'user') { %> 
+                <%- include('patient_types_buttons') %>
+            <% } %>
+        </div>
     </div>
     <% if (user.role == 'admin') { %> 
         <%- include('admin_pt_types_buttons') %>
