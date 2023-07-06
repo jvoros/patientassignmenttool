@@ -1,9 +1,0 @@
-<div class="d-flex">
-    <div class="flex-auto">
-        <span class="Label Label--accent Label--large flex-auto">Pts: {{ shift.patient }}</span>
-    </div>
-    <div class="BtnGroup">
-        <button v-for="ptType in ptTypes" :title="'Increase count of '+ptType+' patients'" class="BtnGroup-item btn btn-outline btn-sm" @click="increment(ptType, shift.id)">{{ ptType }} <span class="Counter">{{ shift[ptType] }}</span></button>
-    </div>
-</div>
-

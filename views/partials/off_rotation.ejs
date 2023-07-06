@@ -31,10 +31,11 @@
                 <button class="btn btn-sm btn-outline BtnGroup-item" @click="goOffRotation(shift.id, 3, 'off')">Fast Track</button>
             </div>
             <% } %>  
+            
         </div> 
-        <% if (user.role == 'user') { %> 
-            <%- include('patient_types_buttons') %>
-        <% } %>  
+        <div class="d-none d-sm-block">
+            <%- include('patient_types_counts') %>
+        </div>
     </div>
     <% if (user.role == 'admin') { %> 
         <%- include('admin_pt_types_buttons') %>
