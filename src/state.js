@@ -106,12 +106,13 @@ export default class {
   }
 
   async undoLastAssign() {
-    const index = this.timeline.findIndex((a) => a.action == "patient");
-    // -1 if none found
-    if (index < 0) return;
-    const undo = this.timeline.splice(index, 1)[0];
-    await this.decrement(undo.shift_id, "patient", undo.turn);
-    if (undo.pointer) this.movePointer("down");
+    // const index = this.timeline.findIndex((a) => a.action == "patient");
+    // // -1 if none found
+    // if (index < 0) return;
+    if (this.timeline.length == 0) return;
+    const undo = this.timeline.shift();
+    await this.decrement(undo.shift_id, undo.action, undo.turn);
+    if (undo.pointer == true) this.movePointer("down");
     return;
   }
 
@@ -237,7 +238,7 @@ export default class {
   async increment(shift_id, type, initials = "Anon", isTurn = false) {
     const shift = this.getShiftById(shift_id);
     await db.incrementCount(shift, type, isTurn);
-    this.newAction(type, shift_id, "picked up by", initials);
+    this.newAction(type, shift_id, "picked up by", initials, isTurn, isTurn);
     await this.refreshShifts();
     return;
   }
