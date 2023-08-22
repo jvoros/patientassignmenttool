@@ -109,7 +109,7 @@ app.use(function (err, req, res, next) {
     id: Date.now().toString(36) + Math.random().toString(36).substring(2),
     message: err.message,
   });
-  next();
+  return next();
 });
 
 // start server

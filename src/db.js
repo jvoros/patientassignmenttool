@@ -50,6 +50,7 @@ export default {
             status:statuses(status)
         `
       )
+      .lt("status_id", 4) // only shifts with active status
       .order("rotation_order");
 
     if (error) {
