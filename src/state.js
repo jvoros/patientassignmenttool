@@ -6,9 +6,6 @@ const FIRST_TURN_BONUS = 2;
 
 export default class {
   constructor() {
-    this.date = new Date().toLocaleDateString("fr-CA", {
-      timeZone: "America/Denver",
-    });
     this.pointer = 0;
     this.timeline = [];
     this.shifts = {};
@@ -179,7 +176,9 @@ export default class {
       doctor_id: doctor_id,
       shift_id: shift_id,
       rotation_order: pointer,
-      date: this.date,
+      date: new Date().toLocaleDateString("fr-CA", {
+        timeZone: "America/Denver",
+      }),
     };
     await db.newShift(params);
 

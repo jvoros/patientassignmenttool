@@ -8,6 +8,7 @@ const supabase =
   ENV == "production"
     ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY)
     : createClient(process.env.DEV_URL, process.env.DEV_KEY);
+console.log("Connected to supabase: ", ENV);
 
 // helper handler
 function handleDataError(data, error, message) {

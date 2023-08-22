@@ -102,13 +102,14 @@ app.use("/api", api);
 
 // error handling
 // comes after routes so it can catch any errors they throw
-app.use(function (err, req, res) {
+app.use(function (err, req, res, next) {
   // catches the error message from db functions
   // https://stackoverflow.com/a/44078785
   res.status(500).json({
     id: Date.now().toString(36) + Math.random().toString(36).substring(2),
     message: err.message,
   });
+  next();
 });
 
 // start server
