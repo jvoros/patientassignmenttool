@@ -51,25 +51,9 @@ app.use(
   })
 );
 
-// passport google setup
+// passport init
 app.use(passport.initialize());
 app.use(passport.session());
-app.get(
-  "/auth",
-  passport.authenticate("google", {
-    hd: "carepointhc.com",
-    prompt: "select_account",
-    scope: ["profile", "email"],
-  })
-);
-app.get("/auth/error", (req, res) => res.send("Unknown Error"));
-app.get(
-  "/account/google",
-  passport.authenticate("google", { failureRedirect: "/auth/error" }),
-  function (req, res) {
-    res.redirect("/");
-  }
-);
 
 // routes
 app.use(express.static("public"));
@@ -78,6 +62,7 @@ app.get("/login", (req, res) => {
   res.render("login", { user: "none" });
 });
 
+// local auth
 app.post(
   "/login/password",
   passport.authenticate("local", {
