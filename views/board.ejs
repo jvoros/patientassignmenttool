@@ -1,39 +1,41 @@
 <%- include('partials/html_head') %>
 
 <body v-scope @vue:mounted="mounted" v-cloak>
+    
+
 
     <div class="d-none d-sm-block">
         <%- include('partials/nav_header') %>
         <%- include('partials/login_bar') %>
-        <%- include('partials/admin_bar') %>
         <%- include('partials/error_bar') %>
         <%- include('partials/main_blank') %>
     </div>
 
-    <main class="d-flex flex-column flex-sm-row flex-justify-center" >
-        <!-- LEFT COLUMN -->
-        <section class="d-none d-sm-block col-sm-3 py-3 px-4">
-            <%- include('partials/timeline') %>
-        </section>
-        
-        <!-- MIDDLE COLUMN -->
-        <section class="col-7 col-sm-5 p-3">
-            <%- include('partials/on_rotation') %>
-            <% if (user.role == 'admin') { %> 
-                <%- include('partials/on_rotation_admin') %>
-                <!-- <%- include('partials/tips') %>                 -->
-            <% } %>
-        </section>
+    <main class="container-fluid">
+        <div class="row p-3 gx-5">
+            <!-- LEFT COLUMN -->
+            <section class="col-3">
+                <%- include('partials/timeline') %>
+            </section>
+            
+            <!-- MIDDLE COLUMN -->
+            <section class="col-5">
+                <%- include('partials/on_rotation') %>
+                <% if (user.role == 'admin') { %> 
+                    <%- include('partials/on_rotation_admin') %>
+                    <!-- <%- include('partials/tips') %>                 -->
+                <% } %>
+            </section>
 
-        <!-- RIGHT COLUMN  -->
-        <section class="col-7 col-sm-4 p-3">
-            <%- include('partials/ft_rotation') %>
-            <div class="mt-5"></div>
-            <div class="d-none d-sm-block">
-                <%- include('partials/off_rotation') %>
-            </div>
-        </section>
-
+            <!-- RIGHT COLUMN  -->
+            <section class="col-4">
+                <%- include('partials/ft_rotation') %>
+                <div class="mt-5"></div>
+                <div class="d-none d-sm-block">
+                    <%- include('partials/off_rotation') %>
+                </div>
+            </section>
+        </div>
     </main>
     
 </body>

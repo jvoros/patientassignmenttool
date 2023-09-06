@@ -1,11 +1,10 @@
 /* Vue Mods */
 
 [v-cloak] {
-    display: none;
-  }
+  display: none;
+}
 
 /* Primer Mods */
 .color-epg-pink {
   background-color: #ff91af;
 }
-

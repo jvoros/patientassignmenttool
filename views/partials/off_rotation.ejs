@@ -1,19 +1,17 @@
 <!-- Header  -->
-<div class="Subhead">
-    <p class="Subhead-heading h2">Off Rotation</p>
-</div>
+<h4>Off Rotation</h4>
+<hr>
+
 
 <!-- Blankslate  -->
-<div v-if="state.shifts.off_rotation.length == 0" class="blankslate color-bg-inset rounded">
+<div v-if="state.shifts.off_rotation.length == 0" class="bg-light rounded p-3">
     <% if (user.role == 'admin') { %> 
-        <p>Use the <strong>Off Rotation button</strong> to move<br>any physician Off Rotation.</p>
+        Use the <strong>Off Rotation</strong> button to move any physician Off Rotation.
     <% } %>
 
     <% if (user.role == 'user') { %> 
-        <p>No doctors <strong>Off Rotation</strong>.</p>
+        No doctors <strong>Off Rotation</strong>.
     <% } %>
-
-
 </div>
 
 
