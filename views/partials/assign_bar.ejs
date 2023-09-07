@@ -1,0 +1,47 @@
+<h4>Assign Patient</h4>
+<hr>
+
+<form class="d-flex flex-row ">
+  <div class="border-end pe-5">
+    <h6>1. Patient Type</h6>
+
+    <label class="d-block mb-3 assign-walk">
+      <input class="form-check-input" type="radio" name="patient_type" value="walk" v-model="assign_type " v-on:change="getAssignDoc" />
+      <strong>Walk In</strong>
+    </label>
+
+    <label class="d-block my-3 assign-ambo">
+      <input class="form-check-input" type="radio" name="patient_type" value="ambo" v-model="assign_type" v-on:change="getAssignDoc" />
+      <strong>Ambulance</strong>
+    </label>
+
+    <label class="d-block mb-3 assign-ft">
+      <input class="form-check-input" type="radio" name="patient_type" value="fasttrack" v-model="assign_type" v-on:change="getAssignDoc" />
+      <strong>Fast Track</strong>
+    </label>
+
+  </div>
+  
+  <div class="border-end px-5">
+    <h6>2. Room</h6>
+      <div class="room-grid">
+        <div class="" v-for="room in rooms">
+          <input type="radio" name="room" :value="room" :id="'room'+room" v-model="assign_room" />
+          <label class="d-block rounded" :for="'room'+room"><strong>{{ room }}</strong></label>
+        </div>
+      </div>
+
+  </div>
+
+  
+
+  <div class="ps-5">
+    <h6>3. Physician</h6>
+    <h2>{{ assign_doc.first }} {{ assign_doc.last }}</h2>
+    <button class="btn btn-primary">Assign Patient</button>
+
+    
+  </div>
+  
+  </form>
+

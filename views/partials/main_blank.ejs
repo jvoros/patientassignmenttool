@@ -1,6 +1,6 @@
-<div class="Box m-5" v-if="!state">
-    <div class="blankslate">
-        <h3 class="blankslate-heading">Loading<span class="AnimatedEllipsis"></span></h3>
-        <p>Retrieving content from server</p>
-    </div>
+<div class="m-3 alert alert-light" v-if="!state">
+    <span class="spinner-border me-2" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </span>
+    <span class="h5">Retrieving content from server</span>
 </div>

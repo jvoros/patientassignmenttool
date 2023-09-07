@@ -4,73 +4,50 @@
 
 
 <!-- Blankslate  -->
-<div v-if="state.shifts.on_rotation.length < 1" class="blankslate color-bg-attention rounded">
+<div v-if="state.shifts.on_rotation.length < 1" class="alert alert-secondary">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M9.836 3.244c.963-1.665 3.365-1.665 4.328 0l8.967 15.504c.963 1.667-.24 3.752-2.165 3.752H3.034c-1.926 0-3.128-2.085-2.165-3.752ZM12 8.5a.75.75 0 0 0-.75.75v4.5a.75.75 0 0 0 1.5 0v-4.5A.75.75 0 0 0 12 8.5Zm1 9a1 1 0 1 0-2 0 1 1 0 0 0 2 0Z"></path></svg>   
-    <h3 class="blankslate-heading">No doctors in rotation.</h3>
+    <span class="h5 ms-3">No doctors in rotation.</span>
 </div>
 
 <!-- Shift Boxes  -->
 <template v-for="(shift, index) in state.shifts.on_rotation">
-<div class="Box Box--condensed Box--blue mb-5" >
-    <!-- Row Header  -->
-    <% if (user.role=='admin') { %>
-    <div class="Box-header d-flex">
+    <div class="card mb-3">
+        <% if (user.role=='admin') { %>
+            <div class="card-header d-flex justify-content-between">
+                <div class="btn-group flex-auto">
+                    <button title="Move up the rotation order" class="btn btn-outline-secondary btn-sm" :aria-disabled="index == 0" type="button" @click="move('up', index)">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12"><path d="M6 4c-.2 0-.4.1-.5.2L2.2 7.5c-.3.3-.3.8 0 1.1.3.3.8.3 1.1 0L6 5.9l2.7 2.7c.3.3.8.3 1.1 0 .3-.3.3-.8 0-1.1L6.6 4.3C6.4 4.1 6.2 4 6 4Z"></path></svg>
+                    </button>
+                    <button title="Move down the rotation order" class="btn btn-outline-secondary btn-sm" :aria-disabled="index == state.shifts.on_rotation.length-1" type="button" @click="move('down', index)">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12"><path d="M6 8.825c-.2 0-.4-.1-.5-.2l-3.3-3.3c-.3-.3-.3-.8 0-1.1.3-.3.8-.3 1.1 0l2.7 2.7 2.7-2.7c.3-.3.8-.3 1.1 0 .3.3.3.8 0 1.1l-3.2 3.2c-.2.2-.4.3-.6.3Z"></path></svg>
+                    </button>
+                </div>
         
-        <div class="BtnGroup flex-auto">
-            <button title="Move up the rotation order" class="BtnGroup-item btn btn-sm" :aria-disabled="index == 0" type="button" @click="move('up', index)">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12"><path d="M6 4c-.2 0-.4.1-.5.2L2.2 7.5c-.3.3-.3.8 0 1.1.3.3.8.3 1.1 0L6 5.9l2.7 2.7c.3.3.8.3 1.1 0 .3-.3.3-.8 0-1.1L6.6 4.3C6.4 4.1 6.2 4 6 4Z"></path></svg>
-            </button>
-            <button title="Move down the rotation order" class="BtnGroup-item btn btn-sm" :aria-disabled="index == state.shifts.on_rotation.length-1" type="button" @click="move('down', index)">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12"><path d="M6 8.825c-.2 0-.4-.1-.5-.2l-3.3-3.3c-.3-.3-.3-.8 0-1.1.3-.3.8-.3 1.1 0l2.7 2.7 2.7-2.7c.3-.3.8-.3 1.1 0 .3.3.3.8 0 1.1l-3.2 3.2c-.2.2-.4.3-.6.3Z"></path></svg>
-            </button>
-        </div>
-
-        <div class="BtnGroup">
-            <button title="Go off rotation" type="button" class="BtnGroup-item btn btn-sm"  @click="goOffRotation(shift.id, 2)">
-                Off Rotation
-            </button>
-            <button title="Go off rotation" type="button" class="BtnGroup-item btn btn-sm"  @click="goOffRotation(shift.id, 3)">
-                Fast Track
-            </button>
-        </div>
-        
-    </div>
-    <% } %>
-
-    <!-- Main Row  -->
-    <div class="Box-row pt-3"  :class="{'Box-row--yellow' : isNext(index) }">
-        <div class="d-flex mb-1">
-            <div class="flex-auto">
-                <p class="h2">
-                    {{ shift.doctor.first }} {{ shift.doctor.last }}
-                </p>
-                <p class="h5">
-                    {{ shift.shift_details.name }}
-                    <span v-if="shift.turn == 0"> - First Turn</span>
-                </p>
+                <div class="btn-group">
+                    <button title="Go off rotation" type="button" class="btn btn-outline-secondary btn-sm"  @click="goOffRotation(shift.id, 2)">
+                        Off Rotation
+                    </button>
+                    <button title="Go off rotation" type="button" class="btn btn-outline-secondary btn-sm"  @click="goOffRotation(shift.id, 3)">
+                        Fast Track
+                    </button>
+                </div>
             </div>
-            <div>
-                <% if (user.role=='user') { %>     
-                    <span v-if="state.pointer == index" class="d-none d-sm-block IssueLabel IssueLabel--big color-fg-on-emphasis color-bg-success-emphasis">Up Next</span>
-                <% } %>
-                
-                <% if (user.role=='admin') { %>  
+        <% } %>
 
-                    <div v-if="state.pointer == index" class="text-right">
-                        <label>Identifier:</label>
-                        <input v-effect="$el.focus()" v-model="newInitials" class="form-control mb-1" type="text" size="4" ref="" @keyup.enter="assign" /><br>
-                        <button class="btn btn-primary mt-0" type="button" :aria-disabled="!newInitials" @click="assign">Assign Patient</button>
-                    </div>  
-
-                    <% } %>
+        <div class="card-body" :class="{'bg-info-subtle' : isNext(index) }">
+            <div class="text-secondary mb-1">{{ shift.shift_details.name }}<span v-if="shift.turn == 0"> - First Turn</span></div>
+            <div class="hstack">
+                <h3 class="card-title">{{ shift.doctor.first }} {{ shift.doctor.last }}</h3>
+                <div v-if="state.pointer == index" class="ms-auto rounded bg-info py-1 px-2">Next</div>
+            </div>
+            <div >
+                <span class="badge bg-secondary-subtle text-body">Patients {{ shift.patient }}</span>
+                <span class="badge bg-secondary-subtle text-body">Fast Track {{ shift.fasttrack }}</span>
             </div>
         </div>
-        <div class="d-none d-sm-block">
-            <%- include('patient_types_counts') %>
-        </div>
+
+        <% if (user.role == 'admin') { %>
+            <%- include('admin_pt_types_buttons') %>
+        <% } %>
     </div>
-    <% if (user.role == 'admin') { %> 
-        <%- include('admin_pt_types_buttons') %>
-    <% } %>
-</div>
 </template>

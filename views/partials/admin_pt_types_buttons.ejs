@@ -1,21 +1,22 @@
 <!-- Admin Row  -->
-<div class="Box-row pt-3 Box-row--blue" v-if="decrementToolFlag">
-    <p class="h5">Change Counts:</p>
-    <div class="BtnGroup mb-2">
-        <button v-for="ptType in ptTypesAdmin" :title="'Increase count of '+ptType+' patients'" class="BtnGroup-item btn btn-outline btn-sm" @click="increment(ptType, shift.id)">
-            + {{ ptType }} <span class="Counter">{{ shift[ptType] }}</span>
+<div class="card-footer" v-if="decrementToolFlag">
+    <p class="h6">Change Counts:</p>
+    <div class="btn-group mb-2">
+        <button v-for="ptType in ptTypesAdmin" :title="'Increase count of '+ptType+' patients'" class="btn btn-outline-secondary btn-sm" @click="increment(ptType, shift.id)">
+            + {{ ptType }}
+        </button>
+        <button v-for="ptType in ptTypesAdmin" class="btn btn-outline-secondary btn-sm" @click="decrement(ptType, shift.id)">
+            - {{ ptType }}
+        </button>
+        <button class="btn btn-outline-secondary btn-sm" @click="decrement('turn', shift.id)">
+            - turn <span class="badge text-bg-secondary">{{ shift.turn }}</span>
         </button>
     </div>
-    <div class="BtnGroup ml-0">
-        <button v-for="ptType in ptTypesAdmin" class="BtnGroup-item btn btn-outline btn-sm" @click="decrement(ptType, shift.id)">
-            - {{ ptType }} <span class="Counter">{{ shift[ptType] }}</span>
-        </button>
-    </div>
-    <button class="btn btn-outline btn-sm" @click="decrement('turn', shift.id)">
-        - turn<span class="Counter">{{ shift.turn }}</span>
-    </button>
-    <div class="mt-2"><span class="h5">Change Shift Time:</span>
-        <select class="form-select" @change="changeShiftStart($event, shift.id)">
+
+    
+    <div class="mt-2">
+        Change Shift Time:
+        <select class="form-select d-inline" @change="changeShiftStart($event, shift.id)">
             <option v-for="detail in state.shift_details" :value="detail.id" :selected="detail.name == shift.shift_details.name">{{ detail.name }}</option>
         </select>
     </div>

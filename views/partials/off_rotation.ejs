@@ -4,7 +4,7 @@
 
 
 <!-- Blankslate  -->
-<div v-if="state.shifts.off_rotation.length == 0" class="bg-light rounded p-3">
+<div v-if="state.shifts.off_rotation.length == 0" class="alert alert-light">
     <% if (user.role == 'admin') { %> 
         Use the <strong>Off Rotation</strong> button to move any physician Off Rotation.
     <% } %>
@@ -14,28 +14,25 @@
     <% } %>
 </div>
 
-
-<!-- Boxes  -->
-<div class="Box Box--condensed mb-2" v-for="(shift, index) in state.shifts.off_rotation">
-    <div class="Box-row Box-row--gray p-2">
-        <div class="d-flex flex-items-center">
-            <div class="flex-auto">
-                <p class="h3 color-fg-muted">{{ shift.doctor.first }} {{ shift.doctor.last }}</p>
-                <p class="text-small color-fg-subtle">{{ shift.shift_details.name }}</p>
+<template v-for="(shift, index) in state.shifts.off_rotation">
+    <div class="card bg-light mb-3">
+        <% if (user.role=='admin') { %>
+            <div class="card-header d-flex justify-content-between">
+                <div class="btn-group ms-auto">
+                    <button class="btn btn-sm btn-outline-secondary" @click="rejoin(shift.id)">On Rotation</button>
+                    <button class="btn btn-sm btn-outline-secondary" @click="goOffRotation(shift.id, 3, 'off')">Fast Track</button>
+                </div>
             </div>
-            <% if (user.role == 'admin') { %> 
-            <div class="BtnGroup">
-                <button class="btn btn-sm btn-outline BtnGroup-item" @click="rejoin(shift.id)">On Rotation</button>
-                <button class="btn btn-sm btn-outline BtnGroup-item" @click="goOffRotation(shift.id, 3, 'off')">Fast Track</button>
-            </div>
-            <% } %>  
-            
-        </div> 
-        <div class="d-none d-sm-block">
-            <%- include('patient_types_counts') %>
+        <% } %>
+        <div class="card-body">
+            <div class="small text-secondary mb-1">{{ shift.shift_details.name }}<span v-if="shift.turn == 0"> - First Turn</span></div>
+            <div class="h5">{{ shift.doctor.first }} {{ shift.doctor.last }}</div>
+            <span class="badge bg-secondary-subtle text-body">Patients {{ shift.patient }}</span>
+            <span class="badge bg-secondary-subtle text-body">Fast Track {{ shift.fasttrack }}</span>
         </div>
+
+        <% if (user.role == 'admin') { %>
+            <%- include('admin_pt_types_buttons') %>
+        <% } %>
     </div>
-    <% if (user.role == 'admin') { %> 
-        <%- include('admin_pt_types_buttons') %>
-    <% } %>
-</div>
+</template>

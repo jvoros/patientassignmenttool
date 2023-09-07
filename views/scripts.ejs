@@ -15,6 +15,51 @@ createApp({
   loaders: [],
   ptTypes: ['fasttrack'],
   ptTypesAdmin: ['patient', 'fasttrack'],
+  assign_type: 'walk',
+  assign_room: '',
+  assign_doc: '',
+  rooms: [
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '10',
+    '11',
+    '12',
+    '13',
+    '14',
+    '15',
+    '16',
+    '17',
+    '18',
+    '19',
+    '20',
+    '21',
+    '22',
+    '23',
+    '24',
+    '25',
+    '_',
+    '27',
+    '28',
+    '29',
+    '30',
+    'T.A',
+    'T.B',
+    'T.C',
+    'H.A',
+    'H.B',
+    'H.C',
+    'H.D',
+    'H.E',
+    'H.F',
+    'Other'
+  ],
 
   // interface flags and methods
   resetLoaders() {
@@ -42,6 +87,15 @@ createApp({
     this.adminbar = !this.adminbar;
   },
 
+  getAssignDoc() {
+    if (this.assign_type == 'fasttrack' &&  this.state.shifts.ft_rotation.length > 0) {
+      this.assign_doc = this.state.shifts.ft_rotation[0].doctor;
+    } else {
+      this.assign_doc = this.state.shifts.on_rotation[this.state.pointer].doctor;
+    }
+
+  },
+
   handleState(state) {
     this.resetLoaders();
     this.newInitials = '';
@@ -49,6 +103,7 @@ createApp({
     this.newShift = '';
     this.resetBoardFlag = false;
     this.state = state;
+    this.assign_doc = this.state.shifts.on_rotation[this.state.pointer].doctor
   },
 
   // database transmission methods

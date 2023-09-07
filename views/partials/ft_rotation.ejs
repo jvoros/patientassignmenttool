@@ -10,59 +10,38 @@
 <% } %>
 
 <!-- Blankslate  -->
-<div v-if="state.shifts.ft_rotation.length == 0" class="blankslate color-bg-inset rounded">
+<div v-if="state.shifts.ft_rotation.length == 0" class="alert alert-light">
     <% if (user.role=='admin') { %>
-        <p>Use the <strong>Fast Track button</strong> to move a physician<br> out of rotation and in to Fast Track role.</p>
+        Use the <strong>Fast Track button</strong> to move a physician<br> out of rotation and in to Fast Track role.
     <% } %>
 
     <% if (user.role=='user') { %>
-        <p>No doctor assigned to <strong>Fast Track</strong>.</p>
+        No doctor assigned to <strong>Fast Track</strong>.
     <% } %>
-
 </div>
 
-<!-- Boxes  -->
-<div class="Box Box--condensed mb-2" v-for="shift in state.shifts.ft_rotation">
-    <% if (user.role=='admin') { %>
-    <div class="Box-row color-bg-success d-flex">
-        <div class="flex-auto"></div>
-        
-            <div class="BtnGroup">
-                <button class="btn btn-sm BtnGroup-item" @click="rejoin(shift.id)">On Rotation</button>
-                <button class="btn btn-sm BtnGroup-item" @click="goOffRotation(shift.id, 2, 'off')">Off Rotation</button>
-            </div>
-            
-    </div>
-    <% } %>
-    <div class="Box-row p-2 color-bg-success">
-        <div class="d-flex flex-items-center">
-            <div class="flex-auto">
-                <p class="h3">{{ shift.doctor.first }} {{ shift.doctor.last }}</p>
-                <p class="text-small color-fg-subtle">{{ shift.shift_details.name }}</p>
-            </div>
-            <% if (user.role=='admin') { %>
-                <button class="btn btn-sm mr-2 btn-primary" @click="increment('fasttrack', shift.id)">Assign FastTrack</button>
-            <% } %>
-        </div> 
-        <div class="d-none d-sm-block">
-            <%- include('patient_types_counts') %>
-        </div>
-    </div>
-
-    <!-- <div class="d-none d-sm-block">
-        <% if (user.role == 'user') { %> 
-            <div class="Box-row color-bg-success">
-                Cover <strong>Triage A, B, Room 23</strong> or any other <strong>ESI 4s or 5s</strong>.
-            </div>
-            <div class="Box-row color-bg-success">
-                Do <strong>Provider-in-Triage</strong> work (greet and initial orders) at Triage Desk for waiting room patients, or in main ED.
+<template v-for="(shift, index) in state.shifts.ft_rotation">
+    <div class="card mb-3 ">
+        <% if (user.role=='admin') { %>
+            <div class="card-header d-flex justify-content-between color-fasttrack">
+                <div class="btn-group ms-auto">
+                    <button class="btn btn-sm btn-outline-secondary" @click="rejoin(shift.id)">On Rotation</button>
+                    <button class="btn btn-sm btn-outline-secondary" @click="goOffRotation(shift.id, 2, 'off')">Off Rotation</button>
+                </div>
             </div>
         <% } %>
-    </div> -->
+        <div class="card-body color-fasttrack">
+            <div class="small text-secondary mb-1">{{ shift.shift_details.name }}<span v-if="shift.turn == 0"> - First Turn</span></div>
+            <div class="h5">{{ shift.doctor.first }} {{ shift.doctor.last }}</div>
+            <span class="badge bg-secondary-subtle text-body">Patients {{ shift.patient }}</span>
+            <span class="badge bg-secondary-subtle text-body">Fast Track {{ shift.fasttrack }}</span>
+        </div>
 
-    <% if (user.role == 'admin') { %> 
-        <%- include('admin_pt_types_buttons') %>
-    <% } %>
-</div>
+        <% if (user.role == 'admin') { %>
+            <%- include('admin_pt_types_buttons') %>
+        <% } %>
+    </div>
+</template>
 
 
+<!-- <button class="btn btn-sm mr-2 btn-primary" @click="increment('fasttrack', shift.id)">Assign FastTrack</button> -->
