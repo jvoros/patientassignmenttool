@@ -1,7 +1,7 @@
 import db from "./db.js";
 
 // utility functions & constants
-const TIMELINE_LIMIT = 20;
+const TIMELINE_LIMIT = 40;
 const FIRST_TURN_BONUS = 2;
 
 export default class {

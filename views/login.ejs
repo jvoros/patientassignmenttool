@@ -1,31 +1,29 @@
 <%- include('partials/html_head') %>
 <body v-scope @vue:mounted="mounted">
     <%- include('partials/nav_header') %>
-    <section class="d-flex flex-justify-center">
-    <div class="blankslate blankslate-large col-4 text-left">
-        <div class="Subhead">
-            <p class="Subhead-heading h2">Triage</p>
-        </div>
-        <div class="p-2 pb-4 pl-4 color-bg-inset ">
+    <section class="d-flex justify-content-center">
+    <div class="col-4 m-4">
+        <p class="h2">Triage</p>
+        <div class="p-3 pb-4 pl-4 bg-light rounded">
             <form action="/login/password" method="post">
                 <section class="mt-2">
                     <label for="current-password">Password</label><br>
                     <input id="current-password" class="form-control" name="password" type="password" autocomplete="current-password" required>
-                    <button class="btn" type="submit">Sign in</button>
+                    <button class="btn btn-secondary mt-2" type="submit">Sign in</button>
                     <input id="username" class="form-control" name="username" type="text" autocomplete="username" value="triage" hidden>
                 </section>
             </form>
         </div>
 
-        <div class="Subhead Subhead--spacious">
-            <p class="Subhead-heading h2">Physician</p>
-        </div>
-        <div class="p-2 pb-4 pl-4 color-bg-inset ">
+
+        <p class="h2 mt-5">Physician</p>
+
+        <div class="p-3 pb-4 pl-4 bg-light rounded">
             <form action="/login/password" method="post">
                 <section class="mt-2">
                     <label for="current-password">Password</label><br>
                     <input id="current-password" class="form-control" name="password" type="password" autocomplete="current-password" required>
-                    <button class="btn" type="submit">Sign in</button>
+                    <button class="btn btn-secondary mt-2" type="submit">Sign in</button>
                     <input id="username" class="form-control" name="username" type="text" autocomplete="username" value="doctor" hidden>
                 </section>
             </form>

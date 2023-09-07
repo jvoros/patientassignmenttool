@@ -13,9 +13,11 @@
     </div>
 
     <main class="container-fluid">
-        <div class="row p-3 pb-4 m-3 rounded bg-light">
-            <%- include('partials/assign_bar') %>
-        </div>
+        <% if (user.role=='admin') { %>
+            <div class="row p-3 pb-4 m-3 rounded bg-light">
+                <%- include('partials/assign_bar') %>
+            </div>
+        <% } %>
         <div class="row p-3 gx-5">
             <!-- LEFT COLUMN -->
             <section class="col-3">
