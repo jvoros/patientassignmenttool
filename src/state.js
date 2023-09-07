@@ -79,19 +79,19 @@ export default class {
 
   skip() {
     const shift = this.getPointerShift();
-    this.newAction("skip", shift.id);
+    this.newAction("skip", shift.id, "", "skip");
     this.movePointer("up");
   }
 
   goback() {
     const shift = this.getPointerShift();
-    this.newAction("back", shift.id, "from");
+    this.newAction("back", shift.id, "", "back");
     this.movePointer("down");
   }
 
   // ASSIGNING PATIENTS
   async masterAssign(type, room, shift_id) {
-    if (type == "fasttrack") return this.increment(shift_id, "fasttrack");
+    if (type == "fasttrack") return this.increment(shift_id, "fasttrack", room);
     if (type == "ambo") return this.assignPatient("Amb " + room);
     return this.assignPatient(room);
   }

@@ -27,10 +27,7 @@
     </div>
     <!-- info -->
     <div class="flex-fill p-2 ms-4">
-        <strong>
-            <span v-if="event.action == 'patient'">{{ event.initials }}</span>
-            <span v-if="event.action != 'patient'">{{ event.action }}</span>
-        </strong>
+        <strong>{{ event.initials }}</strong>
         - {{ event.doctor.first }} {{ event.doctor.last }}<br>
         <small>{{ event.time }}</small>
     </div>
