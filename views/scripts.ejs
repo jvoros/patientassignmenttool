@@ -103,7 +103,7 @@ createApp({
     this.newShift = '';
     this.resetBoardFlag = false;
     this.state = state;
-    this.assign_doc = this.state.shifts.on_rotation[this.state.pointer].doctor
+    this.assign_doc = state.shifts.on_rotation.length == 0 ? '' : state.shifts.on_rotation[state.pointer].doctor;
   },
 
   // database transmission methods

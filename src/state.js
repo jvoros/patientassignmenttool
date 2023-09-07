@@ -206,7 +206,7 @@ export default class {
     }
     const query = { status_id: status, rotation_order: null };
     await db.updateShift(shift_id, query, "Server error going off rotation");
-    this.shifts = await db.getShifts();
+    await this.refreshShifts();
     return;
   }
 
