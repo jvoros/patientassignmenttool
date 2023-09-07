@@ -17,7 +17,7 @@ createApp({
   ptTypesAdmin: ['patient', 'fasttrack'],
   assign_type: 'walk',
   assign_room: '',
-  assign_doc: '',
+  assign_shift: '',
   rooms: [
     '1',
     '2',
@@ -89,11 +89,10 @@ createApp({
 
   getAssignDoc() {
     if (this.assign_type == 'fasttrack' &&  this.state.shifts.ft_rotation.length > 0) {
-      this.assign_doc = this.state.shifts.ft_rotation[0].doctor;
+      this.assign_shift = this.state.shifts.ft_rotation[0];
     } else {
-      this.assign_doc = this.state.shifts.on_rotation[this.state.pointer].doctor;
+      this.assign_shift = this.state.shifts.on_rotation[this.state.pointer];
     }
-
   },
 
   handleState(state) {
@@ -103,7 +102,11 @@ createApp({
     this.newShift = '';
     this.resetBoardFlag = false;
     this.state = state;
-    this.assign_doc = state.shifts.on_rotation.length == 0 ? '' : state.shifts.on_rotation[state.pointer].doctor;
+    if (this.assign_type == 'fasttrack' && state.shifts.ft_rotation.length > 0) { 
+      this.assign_shift = state.shifts.ft_rotation[0]; 
+    } else {
+      this.assign_shift = state.shifts.on_rotation.length == 0 ? '' : state.shifts.on_rotation[state.pointer];
+    }
   },
 
   // database transmission methods
@@ -153,6 +156,14 @@ createApp({
     if (dir == 'down' && id == this.state.shifts.on_rotation.length-1) return;
     this.loaders.push('on');
     this.apifetch(`/api/move/${dir}/${id}`);
+  },
+
+  masterassign() {
+    this.loaders.push('on');
+    this.apifetch(`/api/masterassign/${this.assign_type}/${this.assign_room}/${this.assign_shift.id}`)
+    this.assign_type = 'walk';
+    this.assign_room = '';
+    this.assign_shift = '';
   },
 
   assign() {

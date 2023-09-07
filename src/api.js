@@ -42,6 +42,12 @@ api.post("/move/:dir/:index", async (req, res) => {
   responder(res);
 });
 
+api.post("/masterassign/:type/:room/:shift_id", async (req, res) => {
+  const { type, room, shift_id } = req.params;
+  await state.masterAssign(type, room, shift_id);
+  responder(res);
+});
+
 api.post("/assignpatient/:initials?", async (req, res) => {
   const initials = req.params.initials ? req.params.initials : "Anon";
   await state.assignPatient(initials);

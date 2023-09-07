@@ -90,6 +90,12 @@ export default class {
   }
 
   // ASSIGNING PATIENTS
+  async masterAssign(type, room, shift_id) {
+    if (type == "fasttrack") return this.increment(shift_id, "fasttrack");
+    if (type == "ambo") return this.assignPatient("Amb " + room);
+    return this.assignPatient(room);
+  }
+
   async assignPatient(initials = "Anon") {
     const shift = this.getPointerShift();
     const isOvernight = shift.shift_details.id === 7;
