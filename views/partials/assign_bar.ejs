@@ -33,9 +33,9 @@
 
   </div>
 
-  <div class="ps-5">
+  <div class="ps-5 flex-fill">
     <h6>3. Next Physician</h6>
-    <p class="h2 bg-body border-bottom border-3 p-2 ">{{ assign_shift.doctor.first }} {{ assign_shift.doctor.last }}</p>
+    <p class="h2 bg-body border-bottom border-3 p-2 d-block">{{ assign_shift.doctor.first }} {{ assign_shift.doctor.last }}</p>
     <button class="btn btn-lg btn-primary" :disabled="assign_room == ''" @click="masterassign">Assign Patient</button>
     <p class="small text-danger">&nbsp;<span v-if="assign_room == ''">Must select a room.</span></p>
     <button class="btn btn-outline-secondary" type="button" @click="undoLastAssign">
