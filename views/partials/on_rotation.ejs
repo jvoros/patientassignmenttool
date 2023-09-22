@@ -11,7 +11,7 @@
 
 <!-- Shift Boxes  -->
 <template v-for="(shift, index) in state.shifts.on_rotation">
-    <div class="card mb-3">
+    <div class="card mb-3" :class="{'border-warning' : isNext(index) }">
         <% if (user.role=='admin') { %>
             <div class="card-header d-flex justify-content-between">
                 <div class="btn-group flex-auto">
@@ -34,11 +34,11 @@
             </div>
         <% } %>
 
-        <div class="card-body" :class="{'bg-info-subtle' : isNext(index) }">
+        <div class="card-body" :class="{'bg-warning-subtle' : isNext(index) }">
             <div class="text-secondary mb-1">{{ shift.shift_details.name }}<span v-if="shift.turn == 0"> - First Turn</span></div>
             <div class="hstack">
-                <h3 class="card-title">{{ shift.doctor.first }} {{ shift.doctor.last }}</h3>
-                <div v-if="state.pointer == index" class="ms-auto rounded bg-info py-1 px-2">Next</div>
+                <div class="h4 card-title">{{ shift.doctor.first }} {{ shift.doctor.last }}</div>
+                <div v-if="state.pointer == index" class="ms-auto rounded bg-warning py-1 px-2">Next</div>
             </div>
             <div >
                 <span class="badge bg-secondary-subtle text-body">Patients {{ shift.patient }}</span>

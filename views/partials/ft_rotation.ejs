@@ -23,7 +23,7 @@
 <template v-for="(shift, index) in state.shifts.ft_rotation">
     <div class="card mb-3 ">
         <% if (user.role=='admin') { %>
-            <div class="card-header d-flex justify-content-between color-fasttrack">
+            <div class="card-header d-flex justify-content-between">
                 <div class="btn-group ms-auto">
                     <button class="btn btn-sm btn-outline-secondary" @click="rejoin(shift.id)">On Rotation</button>
                     <button class="btn btn-sm btn-outline-secondary" @click="goOffRotation(shift.id, 2, 'off')">Off Rotation</button>

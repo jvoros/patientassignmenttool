@@ -12,20 +12,20 @@
         
     </div>
 
-    <main class="container-fluid">
+    <main class="container-fluid mb-5">
         <% if (user.role=='admin') { %>
-            <div class="row p-3 pb-4 m-3 rounded bg-light">
+            <div class="row p-3 pb-4 m-3 mb-5 rounded bg-light">
                 <%- include('partials/assign_bar') %>
             </div>
         <% } %>
-        <div class="row p-3 gx-5">
+        <div class="row p-3">
             <!-- LEFT COLUMN -->
-            <section class="col-3">
+            <section class="col">
                 <%- include('partials/timeline') %>
             </section>
             
             <!-- MIDDLE COLUMN -->
-            <section class="col-5">
+            <section class="col">
                 <%- include('partials/on_rotation') %>
                 <% if (user.role == 'admin') { %> 
                     <%- include('partials/on_rotation_admin') %>
@@ -34,7 +34,7 @@
             </section>
 
             <!-- RIGHT COLUMN  -->
-            <section class="col-4">
+            <section class="col">
                 <%- include('partials/ft_rotation') %>
                 <div class="mt-5"></div>
                 <div class="d-none d-sm-block">

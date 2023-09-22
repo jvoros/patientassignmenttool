@@ -92,19 +92,17 @@ export default class {
   // ASSIGNING PATIENTS
   async masterAssign(type, room, shift_id) {
     if (type == "fasttrack") return this.increment(shift_id, "fasttrack", room);
-    if (type == "ambo") return this.assignPatient("Amb " + room);
-    return this.assignPatient(room);
+    if (type == "ambo") return this.assignPatient("amb", room);
+    return this.assignPatient("patient", room);
   }
 
-  async assignPatient(initials = "Anon") {
+  async assignPatient(type = "patient", initials = "Anon") {
     const shift = this.getPointerShift();
     const isOvernight = shift.shift_details.id === 7;
     const bonus = !isOvernight ? FIRST_TURN_BONUS : FIRST_TURN_BONUS - 1;
     const isTurn = shift.patient >= bonus;
-
-    await this.increment(shift.id, "patient", initials, isTurn);
+    await this.increment(shift.id, type, initials, isTurn);
     if (isTurn) this.movePointer("up");
-
     return;
   }
 
@@ -240,9 +238,13 @@ export default class {
     return;
   }
 
+  getDbType(type) {
+    return type == "amb" ? "patient" : type;
+  }
+
   async increment(shift_id, type, initials = "Anon", isTurn = false) {
     const shift = this.getShiftById(shift_id);
-    await db.incrementCount(shift, type, isTurn);
+    await db.incrementCount(shift, this.getDbType(type), isTurn);
     this.newAction(type, shift_id, "picked up by", initials, isTurn, isTurn);
     await this.refreshShifts();
     return;
@@ -250,7 +252,7 @@ export default class {
 
   async decrement(shift_id, type, turn = false) {
     const shift = this.getShiftById(shift_id);
-    await db.decrementCount(shift, type, turn);
+    await db.decrementCount(shift, this.getDbType(type), turn);
     await this.refreshShifts();
     return;
   }

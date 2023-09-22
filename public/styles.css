@@ -49,3 +49,22 @@
 .assign-ft {
   color: var(--bs-success);
 }
+
+.timeline li {
+  background-color: var(--bs-tertiary-bg);
+}
+
+.timeline li:nth-child(1) {
+  background-color: white;
+  font-size: 1.4em;
+}
+
+.timeline li:nth-child(2) {
+  background-color: var(--bs-light-bg-subtle);
+  font-size: 1.3em;
+}
+
+.timeline li:nth-child(3) {
+  background-color: var(--bs-light);
+  font-size: 1.2em;
+}
