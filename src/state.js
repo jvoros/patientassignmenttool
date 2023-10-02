@@ -39,7 +39,7 @@ export default class {
   ) {
     const time = new Date();
     const newAction = {
-      action: act,
+      action: act, // patient, ambo, fasttrack, skip, back
       shift_id: shift_id,
       doctor:
         shift_id == 0
