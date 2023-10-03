@@ -13,6 +13,11 @@ function responder(res) {
 
 // api endpoints
 
+api.get("/state", async (req, res) => {
+  await state.initialize();
+  res.json({ state });
+});
+
 api.post("/", async (req, res) => {
   await state.initialize();
   responder(res);
