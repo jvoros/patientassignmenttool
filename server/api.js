@@ -31,6 +31,8 @@ api.get('/board', (req, res) => {
 
 api.get('/backintime', (req, res) => {
   board = history.revert();
+  board.addShiftToRotation("Main", {last: "Black", first: "Kelly"}, {start: "08:00", end: "18:00", name: "8 am", bonus: 2})
+
   res.json({ board });
 })
 

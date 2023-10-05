@@ -1,4 +1,3 @@
-import Patient from "./patient.js";
 import Shift from "./shift.js";
 import Rotation from "./rotation.js";
 import Timeline from "./timeline.js";
@@ -54,13 +53,14 @@ class Board {
   }
 
   // PATIENT HANDLERS
+  fastTrackIsOpen() {
+    return this.rotations['Fast Track'].shifts.length > 0;
+  }
+
   assignPatient(type, room) {
     // uses patient type to select appropriate rotation
-    if (type == 'Fast Track' && this.rotations['Fast Track'].shifts.length > 0) {
-      this.rotations['Fast Track'].assignPatient(type, room);
-      return;
-    }
-    this.rotations['Main'].assignPatient(type, room);
+    const rotationName = type == 'Fast Track' && this.fastTrackIsOpen() ? 'Fast Track' : 'Main';
+    this.rotations[rotationName].assignPatient(type, room);
     return;
   }
 
