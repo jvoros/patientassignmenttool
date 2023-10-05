@@ -23,17 +23,17 @@ describe("Shift Class Tests", () => {
     expect(s.patients[0].type).to.equal("walk");
   });
 
-  it("should be in_bonus until bonus reached", () => {
+  it("should be bonus_complete false until bonus reached", () => {
     // already one patient added from prior test
     // this is patient 2
     s.addPatient({ type: "walk"});
-    expect(s.in_bonus).to.equal(true); 
+    expect(s.bonus_complete).to.equal(false); 
     // patient 3, should be out of bonus
     s.addPatient({ type: "walk"});
-    expect(s.in_bonus).to.equal(false);
+    expect(s.bonus_complete).to.equal(true);
     // patient 4, should stay out of bonus
     s.addPatient({ type: "walk"});
-    expect(s.in_bonus).to.equal(false);
+    expect(s.bonus_complete).to.equal(true);
   });
 
   it("should count patient types", () => {

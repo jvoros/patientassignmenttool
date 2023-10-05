@@ -1,12 +1,9 @@
 import { randomUUID } from 'crypto'
+import { shortTimestamp } from './helpers.js';
 
 class Patient {
   constructor(type, room) {
-    const timestamp = new Date();
-    this.time = timestamp.toLocaleString("en-US", {
-      timeZone: "America/Denver",
-      timeStyle: "short",
-    })                            // string
+    this.time = shortTimestamp()  // string
     this.id = randomUUID();       // string UUID
     this.type = type;             // string
     this.room = room;             // string

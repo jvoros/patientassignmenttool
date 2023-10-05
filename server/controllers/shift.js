@@ -19,21 +19,21 @@ class Shift {
       total: this.patients.length
     }
     const types = new Set(this.patients.map(x => x.type));
-    types.forEach((t) => {
-      counts[t] = this.patients.filter((p) => p.type == t).length;
+    types.forEach((type) => {
+      counts[type] = this.patients.filter((p) => p.type == type).length;
     });
     return counts;
   }
 
-  get in_bonus() {
-    if (this.counts.total <= this.bonus) return true;
-    return false;
+  get bonus_complete() {
+    if (this.counts.total <= this.bonus) return false;
+    return true;
   }
 
   addPatient(patient) {
     this.patients.splice(0, 0, patient);
     this.counts = this.updateCounts();
-    return this;
+    return this
   }
 
 }

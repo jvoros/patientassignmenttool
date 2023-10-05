@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto'
+import Patient from './patient.js'
 
 class Rotation {
   
@@ -47,18 +48,19 @@ class Rotation {
     return this.shifts.splice(index, 1)[0];
   }
 
-  // redo with modulo?
   moveShift(index, offset) {
-    if (offset === 0) {
-      // No change needed if offset is 0
-      return this;
-    }
-  
+    if (offset === 0) return this;
     const newIndex = (index + offset + this.shifts.length) % this.shifts.length;
     const movedShift = this.shifts.splice(index, 1)[0];
     this.shifts.splice(newIndex, 0, movedShift);
-  
     return this;
+  }
+
+  // PATIENTS
+  assignPatient(type, room) {
+    const p = new Patient(type, room);
+    const updatedShift = this.next.addPatient(p);
+    if (updatedShift.bonus_complete) this.movePointer(1);
   }
 
 }
