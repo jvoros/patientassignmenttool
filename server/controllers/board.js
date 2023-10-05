@@ -53,5 +53,16 @@ class Board {
     this.rotations[to].addShift(shift);
   }
 
+  // PATIENT HANDLERS
+  assignPatient(type, room) {
+    // uses patient type to select appropriate rotation
+    if (type == 'Fast Track' && this.rotations['Fast Track'].shifts.length > 0) {
+      this.rotations['Fast Track'].assignPatient(type, room);
+      return;
+    }
+    this.rotations['Main'].assignPatient(type, room);
+    return;
+  }
+
 }
 export default Board;

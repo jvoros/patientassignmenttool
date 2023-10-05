@@ -2,6 +2,7 @@ import { describe, it } from "mocha";
 import { expect } from "chai";
 
 import Rotation from '../server/controllers/rotation.js'
+import Shift from '../server/controllers/shift.js'
 
 describe("Rotation Class Tests", () => {
   const r = new Rotation('test rotation');
@@ -124,7 +125,22 @@ describe("Rotation Class Tests", () => {
   });
 
   describe("# patient assignment methods", () => {
-    it("should assign patients to next shift");
-    it("should advance pointer after first turn changes");
+    const r3 = new Rotation('test rotation 3', true);
+    const s = new Shift({last: "Voros", first: "Jeremy"},{start: "06:00", end: "15:00", name: "6 am", bonus: 2});
+    r3.addShift(s);
+    const s2 = new Shift({last: "Rogers", first: "Legrand"},{start: "08:00", end: "15:00", name: "8 am", bonus: 2});
+    r3.addShift(s2);
+
+    it("should assign patients to next shift", () => {
+      r3.assignPatient('ambo', 20);
+      expect(r3.shifts[0].counts.total).to.equal(1)
+    });
+
+    it("should advance pointer after first turn changes", () => {
+      r3.assignPatient('walk-in', 19);
+      r3.assignPatient('walk-in', 4);
+      expect(r3.pointer).to.equal(1);
+
+    });
   })
 });

@@ -59,6 +59,7 @@ class Rotation {
     const p = new Patient(type, room);
     const updatedShift = this.next.addPatient(p);
     if (updatedShift.bonus_complete) this.movePointer(1);
+    return p;
   }
 
 }

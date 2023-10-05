@@ -21,14 +21,29 @@ describe("Board Class Tests", () => {
   });
 
   describe("# rotation methods", () => {
-    it("should add shifts");
+    it("should add shifts", () => {
+      board.addShiftToRotation("Main", {last: "Voros", first: "Jeremy"}, {start: "06:00", end: "15:00", name: "6 am", bonus: 2})
+      expect(board.rotations['Main'].shifts[0].doctor.last).to.equal("Voros");
+    });
 
     it("should move shifts between rotations", () => {
       board.rotations['Main'].addShift({shift: 'test'});
       board.moveShiftBetweenRotations(0, "Main", "Off");
-      expect(board.rotations['Main'].shifts.length).to.equal(0);
+      expect(board.rotations['Main'].shifts.length).to.equal(1);
       expect(board.rotations['Off'].shifts.length).to.equal(1);
     });
+
+    it("should assign patients to main, fasttrack, or fasttrack to main if no fasttrack shift", () => {
+      board.assignPatient('Fast Track', 20);
+      expect(board.rotations['Main'].shifts[0].counts['Fast Track']).to.equal(1);
+      
+      board.assignPatient('Walk-In', 4);
+      expect(board.rotations['Main'].shifts[0].counts["Walk-In"]).to.equal(1);
+
+      board.addShiftToRotation("Fast Track", {last: "Kasavana", first: "Brian"}, {start: "06:00", end: "15:00", name: "6 am", bonus: 2})
+      board.assignPatient('Fast Track', 21);
+      expect(board.rotations['Fast Track'].shifts[0].counts['Fast Track']).to.equal(1);
+    })
   });
 
   describe("# timeline methods", () => {
