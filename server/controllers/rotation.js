@@ -1,6 +1,9 @@
+import { randomUUID } from 'crypto'
+
 class Rotation {
   
   constructor(name, use_pointer = false) {
+    this.id = randomUUID();         // string
     this.name = name;               // string
     this.use_pointer = use_pointer; // bool
     this.pointer = 0;               // int
@@ -14,15 +17,13 @@ class Rotation {
   }
 
   setPointer(index) {
-    this.pointer = index;
+    if (index < 0 || index > this.shifts.length-1) return;
+    this.pointer = index; 
   }
 
-  advancePointer() {
-    this.pointer = this.pointer + 1;
-  }
-
-  reversePointer() {
-    this.pointer = this.pointer - 1;
+  movePointer(x) {
+    if (this.shifts.length == 0) return; 
+    this.pointer = (this.pointer + x + this.shifts.length) % this.shifts.length;
   }
 
   // SHIFTS
@@ -46,18 +47,17 @@ class Rotation {
     return this.shifts.splice(index, 1)[0];
   }
 
-  moveShift(index, dir) {
-    const movedShift = this.shifts.splice(index, 1)[0]; // decreases shifts.length by 1
-    let newIndex;
-    if (dir == "up") {
-      // if first element, moving up, move to end, otherwise decrease index
-      newIndex = index == 0 ? this.shifts.length : index - 1;
-    } else {
-      // if last element, moving down, move to start, otherwise increase index 
-      // first splice decreased shifts.length by one, don't need to adjust with -1
-      newIndex = index == this.shifts.length ? 0 : index + 1
+  // redo with modulo?
+  moveShift(index, offset) {
+    if (offset === 0) {
+      // No change needed if offset is 0
+      return this;
     }
+  
+    const newIndex = (index + offset + this.shifts.length) % this.shifts.length;
+    const movedShift = this.shifts.splice(index, 1)[0];
     this.shifts.splice(newIndex, 0, movedShift);
+  
     return this;
   }
 

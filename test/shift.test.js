@@ -2,12 +2,12 @@ import { describe, it } from "mocha";
 import { expect } from "chai";
 
 import Shift from '../server/controllers/shift.js';
-import Patient from '../server/controllers/patient.js';
 
 describe("Shift Class Tests", () => {
   const s = new Shift({ first: "Jeremy", last: "Voros"}, { start: "06:00", end: "15:00", name: "6am Shift", bonus: 2 });
 
   it("should construct correctly", () => {
+    expect(s.id).to.exist;
     expect(s.doctor.first).to.equal("Jeremy");
     expect(s.doctor.last).to.equal("Voros");
     expect(s.start).to.equal("06:00");
@@ -37,22 +37,14 @@ describe("Shift Class Tests", () => {
   });
 
   it("should count patient types", () => {
-    s.patients = [
-      { type: "walk" },
-      { type: "walk" },
-      { type: "walk" },
-      { type: "ambo" },
-      { type: "ambo" },
-      { type: "walk" },
-      { type: "fasttrack" },
-      { type: "fasttrack" },
-      { type: "walk" },
-      { type: "walk" },
-      { type: "zebra" }
-    ].map(x => new Patient(x.type, "Triage A"));
+    s.addPatient({ type: "ambo"});
+    s.addPatient({ type: "ambo"});
+    s.addPatient({ type: "fasttrack"});
+    s.addPatient({ type: "fasttrack"});
+    s.addPatient({ type: "zebra"});
     expect(s.counts).to.deep.equal({
-      total: 11,
-      walk: 6,
+      total: 9,
+      walk: 4,
       ambo: 2,
       fasttrack: 2,
       zebra: 1

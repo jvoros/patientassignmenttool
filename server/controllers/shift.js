@@ -1,16 +1,20 @@
+import { randomUUID } from 'crypto'
+
 class Shift {
 
   constructor(doctor, options) {
     // options config object { name, end, start, bonus }
+    this.id = randomUUID();         // string
     this.doctor = doctor;           // doctor object
     this.start = options.start;     // string, hour
     this.end = options.end;         // string, hour
     this.name = options.name;       // string
     this.bonus = options.bonus;     // numb
     this.patients = [];             // array of patient objects
+    this.counts = {};
   }
 
-  get counts() {
+  updateCounts() {
     const counts = {
       total: this.patients.length
     }
@@ -28,6 +32,7 @@ class Shift {
 
   addPatient(patient) {
     this.patients.splice(0, 0, patient);
+    this.counts = this.updateCounts();
     return this;
   }
 

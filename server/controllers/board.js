@@ -5,7 +5,11 @@ import Timeline from "./timeline.js";
 
 class Board {
   constructor() {
-    this.rotations = [];  // array of rotation objects
+    this.rotations = [
+      new Rotation('On', true),
+      new Rotation('Fast Track'),
+      new Rotation('Off')
+    ]; 
     this.timeline = new Timeline();
   }
 

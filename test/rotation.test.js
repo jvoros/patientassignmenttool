@@ -5,66 +5,64 @@ import Rotation from '../server/controllers/rotation.js'
 
 describe("Rotation Class Tests", () => {
   const r = new Rotation('test rotation');
+  [1, 2, 3].forEach((x) => r.addShift({ shift: x}));
   const r2 = new Rotation('test rotation 2', true);
+  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].forEach((x) => r2.addShift({ shift: x}));
   
   describe("# constructor()", () => {
     it("should be created with default properties", () => {
-      const shape = {
-        name: 'test rotation',
-        use_pointer: false,
-        pointer: 0,
-        shifts: []
-      };
-      expect(r).to.deep.equal(shape);
+      expect(r.name).to.equal('test rotation');
+      expect(r.use_pointer).to.equal(false);
+      expect(r.pointer).to.equal(0);
+      expect(r.shifts).to.exist;
+      expect(r.id).to.exist;
     });
 
     it("should be created with use_pointer true if flagged", () => {
-      const shape2 = {
-        name: 'test rotation 2',
-        use_pointer: true,
-        pointer: 0,
-        shifts: []
-      };
-      expect(r2).to.deep.equal(shape2);
+      expect(r2.use_pointer).to.equal(true);
     });
   });
 
   describe("# pointer methods", () => {
-    it("should advancePointer", () => {
-      r2.advancePointer();
+    it("should loop pointer forward and backward", () => {
+      r2.movePointer(1);
       expect(r2.pointer).to.equal(1);
-    });
-
-    it("shoulder reversePointer", () => {
-      r2.reversePointer();
+      r2.movePointer(-1);
+      expect(r2.pointer).to.equal(0);
+      r2.movePointer(-1);
+      expect(r2.pointer).to.equal(r2.shifts.length-1);
+      r2.movePointer(1);
       expect(r2.pointer).to.equal(0);
     });
 
     it("should getPointer 0 if pointer false", () => {
-      r.advancePointer();
+      r.movePointer(1);
       expect(r.getPointer()).to.equal(0);
     });
 
     it("should getPointer if pointer true", () => {
-      r2.advancePointer();
+      r2.movePointer(1);
       expect(r2.getPointer()).to.equal(1);
     });
 
-    it("should set pointer", () => {
-      r.setPointer(12);
-      expect(r.pointer).to.equal(12)
+    it("should set pointer within bounds of shift length", () => {
+      r2.setPointer(9);
+      expect(r2.pointer).to.equal(9);
+      r2.setPointer(-1);
+      expect(r2.pointer).to.equal(9);
+      r2.setPointer(10);
+      expect(r2.pointer).to.equal(9);
     })
   });
 
   describe("# shift methods", () => {
     it("should add shifts", () => {
       r2.pointer = 0;
-      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].forEach((x) => r2.addShift({ shift: x}));
       expect(r2.shifts.length).to.equal(10);
     });
 
     it("should add shifts at pointer", () => {
-      r2.advancePointer();
+      r2.movePointer(1);
       r2.addShift({ shift: 11 });
       expect(r2.shifts[1].shift).to.equal(11)
     })
@@ -99,24 +97,24 @@ describe("Rotation Class Tests", () => {
     it("should move shift up in rotation", () => {
       r2.shifts = [];
       [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].forEach((x) => r2.addShift({ shift: x}));
-      r2.moveShift(1, "up");
+      r2.moveShift(1, -1);
       expect(r2.shifts[0].shift).to.equal(9)
     })
 
     it("should move shift to end if first shift moved up", () => {
-      r2.moveShift(0, "up");
+      r2.moveShift(0, -1);
       expect(r2.shifts[r2.shifts.length - 1].shift).to.equal(9);
     })
 
     it("should move shift down in rotation", () => {
       r2.shifts = [];
       [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].forEach((x) => r2.addShift({ shift: x}));
-      r2.moveShift(1, "down");
+      r2.moveShift(1, 1);
       expect(r2.shifts[2].shift).to.equal(9)
     })
 
     it("should move shift to start if last shift moved down", () => {
-      r2.moveShift(r2.shifts.length - 1, "down");
+      r2.moveShift(r2.shifts.length - 1, 1);
       expect(r2.shifts[0].shift).to.equal(1)
     })
 
@@ -126,7 +124,7 @@ describe("Rotation Class Tests", () => {
     })
   });
 
-  describe("# patient assignement methods", () => {
+  describe("# patient assignment methods", () => {
     it("should assign patients to next shift");
     it("should advance pointer after first turn changes");
   })
