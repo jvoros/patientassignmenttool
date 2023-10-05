@@ -1,38 +1,31 @@
-class Shift {
-
-  constructor(doctor, options) {
-    // options config object { name, end, start, bonus }
-    this.doctor = doctor;           // doctor object
-    this.start = options.start;     // string, hour
-    this.end = options.end;         // string, hour
-    this.name = options.name;       // string
-    this.bonus = options.bonus;     // numb
-    this.patients = [];             // array of patient objects
-    this.counts = {};
+function make(doctor, options) {
+  return {
+    doctor,
+    start: options.start,
+    end: options.end,
+    name: options.name,
+    bonus: options.bonus,
+    bonus_complete: false,
+    patients: [],
+    counts: {}
   }
-
-  updateCounts() {
-    const counts = {
-      total: this.patients.length
-    }
-    const types = new Set(this.patients.map(x => x.type));
-    types.forEach((type) => {
-      counts[type] = this.patients.filter((p) => p.type == type).length;
-    });
-    return counts;
-  }
-
-  get bonus_complete() {
-    if (this.counts.total <= this.bonus) return false;
-    return true;
-  }
-
-  addPatient(patient) {
-    this.patients.splice(0, 0, patient);
-    this.counts = this.updateCounts();
-    return this
-  }
-
 }
 
-export default Shift;
+function updateCounts(shift) {
+  const counts = {}
+  counts.total = shift.patients.length;
+  const types = new Set(shift.patients.map(p => p.type));
+  types.forEach((type) => {
+    counts[type] = shift.patients.filter((p) => p.type == type).length;
+  });
+  shift.counts = counts;
+  return shift;
+}
+
+function addPatient(shift, patient) {
+  shift.patients.unshift(patient);
+  shift.bonus_complete = (shift.counts.total >= shift.bonus);
+  return updateCounts(shift);
+}
+
+export default { make, addPatient }
