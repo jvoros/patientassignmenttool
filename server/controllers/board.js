@@ -3,6 +3,14 @@ import Shift from "./shift.js";
 import Rotation from "./rotation.js";
 import Timeline from "./timeline.js";
 
+/**************************
+ * 
+ * Board Class
+ * This serves as state for the whole site.
+ * This will be sent with every request for the frontend to display
+ * 
+ ***************************/
+
 class Board {
   constructor(rotations = []) {
     this.rotations = {}; 

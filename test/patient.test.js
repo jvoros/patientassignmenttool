@@ -9,7 +9,6 @@ describe("Patient Class Tests", () => {
   it("should construct correctly", () => {
     expect(p.type).to.equal("walk-in");
     expect(p.room).to.equal("Triage A");
-    expect(p.id).to.exist;
     expect(p.time.length).to.be.greaterThan(6);
   });
 

@@ -1,10 +1,7 @@
-import { randomUUID } from 'crypto'
-
 class Shift {
 
   constructor(doctor, options) {
     // options config object { name, end, start, bonus }
-    this.id = randomUUID();         // string
     this.doctor = doctor;           // doctor object
     this.start = options.start;     // string, hour
     this.end = options.end;         // string, hour

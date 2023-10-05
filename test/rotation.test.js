@@ -15,7 +15,6 @@ describe("Rotation Class Tests", () => {
       expect(r.use_pointer).to.equal(false);
       expect(r.pointer).to.equal(0);
       expect(r.shifts).to.exist;
-      expect(r.id).to.exist;
     });
 
     it("should be created with use_pointer true if flagged", () => {

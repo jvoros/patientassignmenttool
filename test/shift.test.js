@@ -7,7 +7,6 @@ describe("Shift Class Tests", () => {
   const s = new Shift({ first: "Jeremy", last: "Voros"}, { start: "06:00", end: "15:00", name: "6am Shift", bonus: 2 });
 
   it("should construct correctly", () => {
-    expect(s.id).to.exist;
     expect(s.doctor.first).to.equal("Jeremy");
     expect(s.doctor.last).to.equal("Voros");
     expect(s.start).to.equal("06:00");

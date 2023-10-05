@@ -4,6 +4,9 @@ import Board from "./controllers/board.js"
 import BoardHistory from "./controllers/boardhistory.js"
 
 const api = express.Router();
+
+// Board serves as state for the whole application
+// Site actions will update board and WebSocket will transmit the new board
 let board = new Board();
 const history = new BoardHistory();
 

@@ -1,10 +1,8 @@
-import { randomUUID } from 'crypto'
 import Patient from './patient.js'
 
 class Rotation {
   
   constructor(name, use_pointer = false) {
-    this.id = randomUUID();         // string
     this.name = name;               // string
     this.use_pointer = use_pointer; // bool
     this.pointer = 0;               // int
