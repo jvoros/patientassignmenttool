@@ -12,20 +12,20 @@ function make(doctor, options) {
 }
 
 function updateCounts(shift) {
-  const counts = {}
-  counts.total = shift.patients.length;
-  const types = new Set(shift.patients.map(p => p.type));
-  types.forEach((type) => {
-    counts[type] = shift.patients.filter((p) => p.type == type).length;
-  });
-  shift.counts = counts;
-  return shift;
+  const counts = shift.patients.reduce((result, patient) => {
+    result.total++;
+    result[patient.type] = (result[patient.type] || 0) + 1;
+    return result;
+  }, { total: 0 });
+  return {...shift, counts};
 }
 
 function addPatient(shift, patient) {
-  shift.patients.unshift(patient);
-  shift.bonus_complete = (shift.counts.total >= shift.bonus);
-  return updateCounts(shift);
+  return updateCounts({
+    ...shift,
+    patients: [patient, ...shift.patients],
+    bonus_complete: (shift.counts.total >= shift.bonus)
+  });
 }
 
 export default { make, addPatient }

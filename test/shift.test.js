@@ -40,11 +40,13 @@ describe("Shift Class Tests", () => {
   });
 
   it("should count patient types", () => {
-    s = shift.addPatient(s, { type: "ambo"});
-    s = shift.addPatient(s, { type: "ambo"});
-    s = shift.addPatient(s, { type: "fasttrack"});
-    s = shift.addPatient(s, { type: "fasttrack"});
-    s = shift.addPatient(s, { type: "zebra"});
+    [
+      { type: "ambo"},
+      { type: "ambo"},
+      { type: "fasttrack"},
+      { type: "fasttrack"},
+      { type: "zebra"}
+  ].forEach((p) => s = shift.addPatient(s, p))
     expect(s.counts).to.deep.equal({
       total: 9,
       walk: 4,
