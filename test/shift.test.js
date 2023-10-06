@@ -13,7 +13,6 @@ describe("Shift Class Tests", () => {
       end: '15:00',
       name: '6am Shift',
       bonus: 2,
-      bonus_complete: false,
       patients: [],
       counts: {}
     }
@@ -26,19 +25,6 @@ describe("Shift Class Tests", () => {
     expect(s.patients[0].type).to.equal("walk");
   });
 
-  it("should be bonus_complete false until bonus reached", () => {
-    // already one patient added from prior test
-    // this is patient 2
-    s = shift.addPatient(s, { type: "walk"});
-    expect(s.bonus_complete).to.equal(false); 
-    // patient 3, should be out of bonus
-    s = shift.addPatient(s, { type: "walk"});
-    expect(s.bonus_complete).to.equal(true);
-    // patient 4, should stay out of bonus
-    s = shift.addPatient(s, { type: "walk"});
-    expect(s.bonus_complete).to.equal(true);
-  });
-
   it("should count patient types", () => {
     [
       { type: "ambo"},
@@ -48,14 +34,12 @@ describe("Shift Class Tests", () => {
       { type: "zebra"}
   ].forEach((p) => s = shift.addPatient(s, p))
     expect(s.counts).to.deep.equal({
-      total: 9,
-      walk: 4,
+      total: 6,
+      walk: 1,
       ambo: 2,
       fasttrack: 2,
       zebra: 1
     });
   })
-
-  
 
 });

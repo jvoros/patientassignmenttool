@@ -5,7 +5,6 @@ function make(doctor, options) {
     end: options.end,
     name: options.name,
     bonus: options.bonus,
-    bonus_complete: false,
     patients: [],
     counts: {}
   }
@@ -17,6 +16,7 @@ function updateCounts(shift) {
     result[patient.type] = (result[patient.type] || 0) + 1;
     return result;
   }, { total: 0 });
+  
   return {...shift, counts};
 }
 
@@ -24,7 +24,6 @@ function addPatient(shift, patient) {
   return updateCounts({
     ...shift,
     patients: [patient, ...shift.patients],
-    bonus_complete: (shift.counts.total >= shift.bonus)
   });
 }
 

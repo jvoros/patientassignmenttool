@@ -30,7 +30,7 @@ describe("Rotation Class Tests", () => {
       expect(r2.pointer).to.equal(0);
     });
     it("should loop pointer forward and backward if shifts present", () => {
-      r2.shifts = [1,2,3];
+      r2.shifts = [1,2,3]; // can't move pointer unless shifts
       r2 = rotation.movePointer(r2, 1);
       expect(r2.pointer).to.equal(1);
       r2 = rotation.movePointer(r2, -1);
@@ -42,6 +42,7 @@ describe("Rotation Class Tests", () => {
     });
 
     it("should getPointer 0 if pointer false", () => {
+      r.shifts = [1,2,3]; 
       r = rotation.movePointer(r, 1);
       expect(r.pointer).to.equal(0);
     });
@@ -127,13 +128,16 @@ describe("Rotation Class Tests", () => {
     let r = rotation.make('test rotation 3', true);
     r = rotation.addShift(r, shift.make({last: "Voros", first: "Jeremy"},{start: "06:00", end: "15:00", name: "6 am", bonus: 2}));
     r = rotation.addShift(r, shift.make({last: "Rogers", first: "Legrand"},{start: "08:00", end: "15:00", name: "8 am", bonus: 2}))
+    
     it("should assign patients to next shift", () => {
       r = rotation.assignPatient(r, 'ambo', 20);
       expect(r.shifts[0].counts.total).to.equal(1);
     });
 
-    it("should advance pointer after first turn changes", () => {
+    it("should only advance pointer after bonus met", () => {
+      expect(r.pointer).to.equal(0);
       r = rotation.assignPatient(r, 'walk-in', 19);
+      expect(r.pointer).to.equal(0);
       r = rotation.assignPatient(r, 'walk-in', 20);
       expect(r.pointer).to.equal(1);
     });
