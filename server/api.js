@@ -18,7 +18,6 @@ main = board.moveShiftFromRotationToRotation(main, 0, "Main", "Off")
 hx = history.save(hx, main);
 main = board.addShiftToBoard(main, "Main", {last: "Carmack", first: "Brian"}, {start: "08:00", end: "18:00", name: "8 am", bonus: 2})
 
-
 // HELPERS
 function getPath(p) {
   return new URL(p, import.meta.url).pathname;
