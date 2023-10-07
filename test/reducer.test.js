@@ -20,7 +20,7 @@ const c = {
 describe("Reducer Tests", () => {
   const store = createStore();
   
-  describe("Add & Move Shifts", () => {
+  describe("# Add & Move Shifts", () => {
     
     it("should add shifts to main, ft, off rotations", () => {
       store.dispatch(actions.addShift(c.doctors[0], c.shifts[0]))
@@ -40,7 +40,7 @@ describe("Reducer Tests", () => {
     });
   });
 
-  describe("Patient Assignments", () => {
+  describe("# Patient Assignments", () => {
 
     it("should assign walk-in and ambo patients to main rotation", () => {
       store.dispatch(actions.newPatient('walk-in', 'Rm 20'));
@@ -62,8 +62,18 @@ describe("Reducer Tests", () => {
     })
   });
 
-  describe("Rotation Behaviors", () => {
-    it("should move rotation pointer")
+  describe("# Rotation Behaviors", () => {
+    it("should move rotation pointer when shifts presents", () => {
+      store.dispatch(actions.addShift(c.doctors[1], c.shifts[1], 'main'))
+      store.dispatch(actions.addShift(c.doctors[2], c.shifts[2], 'main'))
+      store.dispatch(actions.movePointer('main', 1));
+      expect(store.getState().rotations.main.pointer).to.equal(1);
+    })
+
+    it("should move shifts within rotation", () => {
+      store.dispatch(actions.moveShift('main', 1, -1));
+      expect(store.getState().rotations.main.shifts[0].doctor.last).to.equal('Blake');
+    });
   });
 
   describe("Timeline Functionality", () => {

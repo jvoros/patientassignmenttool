@@ -22,10 +22,14 @@ const actions = {
 
   moveShiftFromTo: (index, from_rotation_name, to_rotation_name) => {
     return({
-      type: 'rotation/move-shift',
+      type: 'rotation/move-shift-between',
       payload: { index, from: from_rotation_name, to: to_rotation_name }
     })
   },
+
+  movePointer: (rotation_name, offset) => ({ type: 'rotation/move-pointer', payload: { rotation_name, offset }}),
+
+  moveShift: (rotation_name, index, offset) => ({ type: 'rotation/move-shift', payload: {rotation_name, index, offset }}),
   
   // TIMELINE
   addEvent: (text) => ({ type: 'timeline/add-event', payload: text })

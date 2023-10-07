@@ -3,7 +3,7 @@ import { expect } from "chai";
 
 import patient from '../server/controllers/patient.js'
 
-describe("Patient Class Tests", () => {
+describe("Patient Object Tests", () => {
   it("should construct correctly", () => {
     const p = patient.make("walk-in", "Triage A");
     expect(p.type).to.equal("walk-in");

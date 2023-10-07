@@ -25,10 +25,21 @@ const reducer = produce((draft, action) => {
         draft.rotations[action.payload.rotation_name].addShift(new_shift);
         return
 
-      case "rotation/move-shift":
+      case "rotation/move-shift-between":
         const { index, from, to } = action.payload;
         const moved_shift = draft.rotations[from].removeShift(index);
         draft.rotations[to].addShift(moved_shift)
+        return
+
+      case "rotation/move-pointer":
+        const { rotation_name, offset } = action.payload;
+        draft.rotations[rotation_name].movePointer(offset);
+        return
+
+      case "rotation/move-shift":
+        const shift_index = action.payload.index;
+        const shift_offset = action.payload.offset;
+        draft.rotations[action.payload.rotation_name].moveShift(shift_index, shift_offset);
         return
 
 
