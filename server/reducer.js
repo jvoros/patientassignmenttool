@@ -21,19 +21,16 @@ const reducer = produce((draft, action) => {
         return
       
       case "rotation/add-shift":
-        const rotation = action.payload.rotation_name;
-        const pointer = draft.rotations[action.payload.rotation_name].pointer;
         const new_shift = shift.make(...action.payload.args);
-        draft.rotations[rotation].shifts.splice(pointer, 0, new_shift);
+        draft.rotations[action.payload.rotation_name].addShift(new_shift);
         return
 
       case "rotation/move-shift":
-        const moved_shift = draft.rotations[action.payload.from].shifts.splice(action.payload.index, 1)[0];
-        const to_pointer = draft.rotations[action.payload.to].pointer;
-        draft.rotations[action.payload.to].shifts.splice(to_pointer, 0, moved_shift);
+        const { index, from, to } = action.payload;
+        const moved_shift = draft.rotations[from].removeShift(index);
+        draft.rotations[to].addShift(moved_shift)
         return
 
-      
 
       case "renameUser":
           // OK: we modify the current state

@@ -18,9 +18,10 @@ const c = {
 }
 
 describe("Reducer Tests", () => {
+  const store = createStore();
   
-  describe("Board Functionality", () => {
-    const store = createStore();
+  describe("Add & Move Shifts", () => {
+    
     it("should add shifts to main, ft, off rotations", () => {
       store.dispatch(actions.addShift(c.doctors[0], c.shifts[0]))
       expect(store.getState().rotations.main.shifts.length).to.equal(1)
@@ -37,6 +38,9 @@ describe("Reducer Tests", () => {
       expect(store.getState().rotations.off.shifts.length).to.equal(2);
       expect(store.getState().rotations.ft.shifts.length).to.equal(0);
     });
+  });
+
+  describe("Patient Assignments", () => {
 
     it("should assign walk-in and ambo patients to main rotation", () => {
       store.dispatch(actions.newPatient('walk-in', 'Rm 20'));
@@ -54,16 +58,13 @@ describe("Reducer Tests", () => {
     it("should assign ft patients to fasttrack if ft shift", () => {
       store.dispatch(actions.moveShiftFromTo(0, 'off', 'ft'));
       store.dispatch(actions.newPatient('ft', 'Rm TrB'));
-      
       expect(store.getState().rotations.ft.shifts[0].patients[0].room).to.equal('Rm TrB');
     })
   });
 
-  describe("Shift Functionality", () => {
-    it("should initialize correctly")
-    it("should add patients")
-    it("should tally patient types")
-  })
+  describe("Rotation Behaviors", () => {
+    it("should move rotation pointer")
+  });
 
   describe("Timeline Functionality", () => {
     it("should record patient assignments"),

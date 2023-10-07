@@ -3,7 +3,7 @@ import { expect } from "chai";
 
 import shift from '../server/controllers/shift.js';
 
-describe("Shift Class Tests", () => {
+describe("Shift Object Tests", () => {
   let s = shift.make({ first: "Jeremy", last: "Voros"}, { start: "06:00", end: "15:00", name: "6am Shift", bonus: 2 })
   
   it("should construct correctly", () => {
