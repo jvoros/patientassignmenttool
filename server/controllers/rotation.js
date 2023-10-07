@@ -10,7 +10,16 @@ function make(name, use_pointer = false) {
     name: name,
     use_pointer: use_pointer,
     pointer: 0,
-    shifts: []
+    shifts: [],
+    movePointer(offset) {
+      if (this.shifts.length == 0 || this.use_pointer == false) return;
+      this.pointer = (this.pointer + offset + this.shifts.length) % this.shifts.length;
+    },
+    nextShift() { return this.shifts[this.pointer] },
+    addPatient(pt) {
+      const updatedShift = this.nextShift().addPatient(pt);
+      if (updatedShift.counts.total > updatedShift.bonus) this.movePointer(1);
+    }
   }
 }
 
@@ -32,9 +41,9 @@ function movePointer(r, offset) {
 }
 
 function addShift(r, shift) {
-  const new_r = {...r};
-  new_r.shifts.splice(r.pointer, 0, shift);
-  return new_r;
+  // const new_r = {...r};
+  // new_r.shifts.splice(r.pointer, 0, shift);
+  // return new_r;
 }
 
 function removeShift(r, index) {

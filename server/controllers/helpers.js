@@ -3,5 +3,5 @@ export function shortTimestamp() {
   return timestamp.toLocaleString("en-US", {
     timeZone: "America/Denver",
     timeStyle: "short",
-  })                            // string
+  })
 }

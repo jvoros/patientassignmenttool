@@ -7,20 +7,13 @@ describe("Shift Class Tests", () => {
   let s = shift.make({ first: "Jeremy", last: "Voros"}, { start: "06:00", end: "15:00", name: "6am Shift", bonus: 2 })
   
   it("should construct correctly", () => {
-    const x = {
-      doctor: { last: 'Voros', first: 'Jeremy'},
-      start: '06:00',
-      end: '15:00',
-      name: '6am Shift',
-      bonus: 2,
-      patients: [],
-      counts: {}
-    }
-    expect(s).to.deep.equal(x);
+    const x = ['doctor', 'start', 'end', 'name', 'bonus', 'patients', 'counts','addPatient', 'updateCounts'];
+    expect(Object.keys(s)).to.deep.equal(x);
   });
 
   it("should add patients", () => {
-    s = shift.addPatient(s, { type: "walk"});
+
+    s = s.addPatient({ type: "walk"});
     expect(s.patients.length).to.equal(1);
     expect(s.patients[0].type).to.equal("walk");
   });
@@ -32,7 +25,7 @@ describe("Shift Class Tests", () => {
       { type: "fasttrack"},
       { type: "fasttrack"},
       { type: "zebra"}
-  ].forEach((p) => s = shift.addPatient(s, p))
+  ].forEach((p) => s = s.addPatient(p))
     expect(s.counts).to.deep.equal({
       total: 6,
       walk: 1,
