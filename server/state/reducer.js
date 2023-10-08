@@ -1,7 +1,7 @@
 import { produce } from "immer"
-import shift from "./controllers/shift.js"
-import patient from "./controllers/patient.js"
-import event from "./controllers/event.js"
+import shift from "../controllers/shift.js"
+import patient from "../controllers/patient.js"
+import event from "../controllers/event.js"
 
 // timeline limiter
 function addEvent(timeline, event) {

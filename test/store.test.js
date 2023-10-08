@@ -1,7 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 
-import createStore from '../server/store.js'
+import createStore from '../server/state/store.js'
 
 describe("Store Tests", () => {
   const store = createStore();

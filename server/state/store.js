@@ -1,4 +1,4 @@
-import rotation from "./controllers/rotation.js"
+import rotation from "../controllers/rotation.js"
 import r from "./reducer.js"
 
 const initial_state = {

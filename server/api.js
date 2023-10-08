@@ -3,8 +3,8 @@ import { enableMapSet } from "immer"
 
 import board from "./controllers/board.js"
 import history from "./controllers/history.js"
-import createStore from "./store.js"
-import actions from "./actions.js"
+import createStore from "./state/store.js"
+import actions from "./state/actions.js"
 
 const api = express.Router();
 enableMapSet();

@@ -1,8 +1,8 @@
 import { describe, it } from "mocha"
 import { expect } from "chai"
 
-import actions from "../server/actions.js"
-import createStore from "../server/store.js"
+import actions from "../server/state/actions.js"
+import createStore from "../server/state/store.js"
 
 const c = {
   doctors: [
