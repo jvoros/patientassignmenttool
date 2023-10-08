@@ -37,7 +37,7 @@ const actions = {
   moveShift: (rotation_name, index, offset) => ({ type: 'rotation/move-shift', payload: {rotation_name, index, offset }}),
   
   // TIMELINE
-  addEvent: (text) => ({ type: 'timeline/add-event', payload: text })
+  // undo
 }
 
 export default actions

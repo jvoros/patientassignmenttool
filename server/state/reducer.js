@@ -19,17 +19,11 @@ const reducer = produce((draft, action) => {
         // ft pts to ft rotation, all others to main
         const rot = action.payload.type === 'ft' ? 'ft' : 'main';
         const pt = patient.make(action.payload.type, action.payload.room);
-
-        let d;
-        if (draft.rotations[rot].shifts.length > 0) { 
-          d = draft.rotations[rot].addPatient(pt);
-        } else {
-          d = draft.rotations.main.addPatient(pt);
-        }
-
+        const d = draft.rotations[rot].shifts.length > 0 ? 
+          draft.rotations[rot].addPatient(pt) : 
+          draft.rotations.main.addPatient(pt)
         const new_patient_event = event.make(action.payload.type, rot, d, 'Room '+action.payload.room);
         draft.timeline = addEvent(draft.timeline, new_patient_event)
-
         return
       
       case "rotation/add-shift":
@@ -55,37 +49,8 @@ const reducer = produce((draft, action) => {
         const shift_offset = action.payload.offset;
         draft.rotations[action.payload.rotation_name].moveShift(shift_index, shift_offset);
         return
-
-
-      case "renameUser":
-          // OK: we modify the current state
-          draft.users[action.payload.id].name = action.payload.name
-          return draft // same as just 'return'
-      case "loadUsers":
-          // OK: we return an entirely new state
-          return action.payload
-      case "adduser-1":
-          // NOT OK: This doesn't do change the draft nor return a new state!
-          // It doesn't modify the draft (it just redeclares it)
-          // In fact, this just doesn't do anything at all
-          draft = {users: [...draft.users, action.payload]}
-          return
-      case "adduser-2":
-          // NOT OK: modifying draft *and* returning a new state
-          draft.userCount += 1
-          return {users: [...draft.users, action.payload]}
-      case "adduser-3":
-          // OK: returning a new state. But, unnecessary complex and expensive
-          return {
-              userCount: draft.userCount + 1,
-              users: [...draft.users, action.payload]
-          }
-      case "adduser-4":
-          // OK: the immer way
-          draft.userCount += 1
-          draft.users.push(action.payload)
-          return
   }
+
 });
 
 export default reducer;
