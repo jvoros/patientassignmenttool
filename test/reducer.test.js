@@ -44,6 +44,7 @@ describe("Reducer Tests", () => {
 
     it("should assign walk-in and ambo patients to main rotation", () => {
       store.dispatch(actions.newPatient('walk-in', 'Rm 20'));
+      console.log(store.getState().timeline)
       expect(store.getState().rotations.main.shifts[0].patients[0].room).to.equal('Rm 20');
 
       store.dispatch(actions.newPatient('ambo', 'Rm 30'));
@@ -77,8 +78,16 @@ describe("Reducer Tests", () => {
   });
 
   describe("Timeline Functionality", () => {
-    it("should record patient assignments"),
-    it("should record shift joining rotation"),
+    const time = createStore()
+    it("should record shift joining rotation", () => {
+      time.dispatch(actions.addShift(c.doctors[0], c.shifts[0]))
+      expect(time.getState().timeline[0].action).to.equal('join');
+    }),
+    it("should record patient assignments", () => {
+      time.dispatch(actions.newPatient('walk-in', '19'))
+      expect(time.getState().timeline[0].action).to.equal('walk-in');
+      expect(time.getState().timeline.length).to.equal(2)
+    }),
     it("should record shift movement between boards"),
     it("should record pointer movement within main rotation"),
     it("should undo last event")

@@ -6,11 +6,16 @@
  * 
  * Instead it happens once in reducer. Build the function
  * calls here. Nice and clean.
+ * 
+ * Also isolates all functions that change state so if
+ * only interaction is through the store, all changes
+ * being done in stateful way
+ * 
  */
 
 const actions = {
   // PATIENT
-  newPatient: (type, room) => ({ type: 'board/new-patient', payload: [type, room]}),
+  newPatient: (type, room) => ({ type: 'board/new-patient', payload: {type, room }}),
 
   // ROTATION
   addShift: (doctor = {}, shift_details = {}, rotation_name ='main') => { 

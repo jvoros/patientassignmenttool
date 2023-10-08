@@ -141,9 +141,10 @@ describe("Rotation Object Tests", () => {
     m.addShift(shift.make({last: "Voros", first: "Jeremy"},{start: "06:00", end: "15:00", name: "6 am", bonus: 2}));
     m.addShift(shift.make({last: "Rogers", first: "Legrand"},{start: "08:00", end: "15:00", name: "8 am", bonus: 2}))
     
-    it("should assign patients to next shift", () => {
-      m.addPatient('ambo', 20);
+    it("should assign patients to next shift then return doctor", () => {
+      const doctor = m.addPatient('ambo', 20);
       expect(m.shifts[0].counts.total).to.equal(1);
+      expect(doctor.last).to.equal('Rogers');
     });
 
     it("should only advance pointer after bonus met", () => {

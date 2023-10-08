@@ -16,6 +16,7 @@ function make(name, use_pointer = false) {
     addPatient(pt) {
       const updatedShift = this.nextShift().addPatient(pt);
       if (updatedShift.counts.total > updatedShift.bonus) this.movePointer(1);
+      return updatedShift.doctor;
     },
 
     nextShift() { return this.shifts[this.pointer] },

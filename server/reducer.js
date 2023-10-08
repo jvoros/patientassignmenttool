@@ -1,28 +1,42 @@
 import { produce } from "immer"
 import shift from "./controllers/shift.js"
 import patient from "./controllers/patient.js"
+import event from "./controllers/event.js"
+
+// timeline limiter
+function addEvent(timeline, event) {
+  const TIMELINE_LIMIT =  50;
+  return [
+    event,
+    ...timeline.slice(0, TIMELINE_LIMIT)
+  ]
+}
 
 const reducer = produce((draft, action) => {
   switch (action.type) {
-      case "timeline/add-event":
-        draft.timeline.push(action.payload);
-        return
 
       case "board/new-patient":
         // ft pts to ft rotation, all others to main
-        const rot = action.payload[0] === 'ft' ? 'ft' : 'main';
-        const pt = patient.make(...action.payload);
+        const rot = action.payload.type === 'ft' ? 'ft' : 'main';
+        const pt = patient.make(action.payload.type, action.payload.room);
 
+        let d;
         if (draft.rotations[rot].shifts.length > 0) { 
-          draft.rotations[rot].addPatient(pt);
+          d = draft.rotations[rot].addPatient(pt);
         } else {
-          draft.rotations.main.addPatient(pt);
+          d = draft.rotations.main.addPatient(pt);
         }
+
+        const new_patient_event = event.make(action.payload.type, rot, d, 'Room '+action.payload.room);
+        draft.timeline = addEvent(draft.timeline, new_patient_event)
+
         return
       
       case "rotation/add-shift":
         const new_shift = shift.make(...action.payload.args);
         draft.rotations[action.payload.rotation_name].addShift(new_shift);
+        const add_shift_event = event.make('join', action.payload.rotation_name, new_shift.doctor, 'Joined')
+        draft.timeline = addEvent(draft.timeline, add_shift_event);
         return
 
       case "rotation/move-shift-between":
