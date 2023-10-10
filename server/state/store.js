@@ -16,10 +16,15 @@ const initial_state = {
   timeline: [],
 }
 
+// basically a class with all private attributes
+// only some exposed functions
+// eliminates 'this'
+
 function createStore(reducer = r, initialState = initial_state) {
 
   let state = initialState;
   let undoes = [];
+  // add subscribers so state changes can be broadcast?
 
   function getState() {
     return state;
@@ -34,11 +39,11 @@ function createStore(reducer = r, initialState = initial_state) {
     undoes = [inversePatches, ...undoes.slice(0, PATCH_LIMIT)]
   }
 
-  function revert() {
+  function getUndo() {
     return undoes.shift();
   }
 
-  return { getState, dispatch, revert };
+  return { getState, dispatch, getUndo };
 }
 
 export default createStore;

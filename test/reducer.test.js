@@ -108,7 +108,7 @@ describe("Reducer Tests", () => {
       time.dispatch(actions.moveShift('main', 0, 1))
       // console.log(JSON.stringify(time.getState(),null, 2))
       expect(time.getState().rotations.main.shifts[0].doctor.last).to.equal('Blake');
-      time.dispatch(actions.undo(time.revert()));
+      time.dispatch(actions.undo(time.getUndo()));
       expect(time.getState().rotations.main.shifts[0].doctor.last).to.equal('Voros');
     })
   });

@@ -11,23 +11,37 @@ const actions = {
     return({
       type: 'board/move-shift-between',
       payload: { index, from: from_rotation_name, to: to_rotation_name }
-    })
+    });
   },
 
-  undo: (undo) => ({ type: 'board/undo', payload: undo }),
+  undo: (undo_patch) => {
+    return ({ 
+      type: 'board/undo', 
+      payload: undo_patch 
+    });
+  },
 
   // ROTATION
   addShift: (doctor = {}, shift_details = {}, rotation_name ='main') => { 
     return ({
       type: 'rotation/add-shift', 
       payload: { rotation_name, args: [doctor, shift_details]}
-    })
+    });
   },
 
-  movePointer: (rotation_name, offset) => ({ type: 'rotation/move-pointer', payload: { rotation_name, offset }}),
+  movePointer: (rotation_name, offset) => {
+    return ({ 
+      type: 'rotation/move-pointer', 
+      payload: { rotation_name, offset }
+    });
+  },
 
-  moveShift: (rotation_name, index, offset) => ({ type: 'rotation/move-shift', payload: {rotation_name, index, offset }})
-
+  moveShift: (rotation_name, index, offset) => {
+    return ({ 
+      type: 'rotation/move-shift', 
+      payload: {rotation_name, index, offset }
+    });
+  }
 }
 
 export default actions
