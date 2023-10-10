@@ -25,12 +25,15 @@ describe("Rotation Object Tests", () => {
       expect(main.pointer).to.equal(0);
     });
 
-    it("should loop pointer forward and backward if shifts present", () => {
+    it("should loop pointer forward and backward if shifts present, and return skip or reverse events", () => {
+      let e;
       main.shifts = [1,2,3]; // can't move pointer unless shifts
-      main.movePointer(1);
+      e = main.movePointer(1);
       expect(main.pointer).to.equal(1);
-      main.movePointer(-1);
+      expect(e.action).to.equal('skip');
+      e = main.movePointer(-1);
       expect(main.pointer).to.equal(0);
+      expect(e.action).to.equal('reverse');
       main.movePointer(-1);
       expect(main.pointer).to.equal(main.shifts.length-1);
       main.movePointer(1);
@@ -60,7 +63,7 @@ describe("Rotation Object Tests", () => {
     })
   
     it("should remove shifts by index", () => {
-      const removed_shift = main.removeShift(1);
+      const removed_shift = main.removeShift(1).removed_shift;
       expect(removed_shift).to.deep.equal({name: 'test 3'});
     });
   
@@ -90,47 +93,56 @@ describe("Rotation Object Tests", () => {
   
     it("should reset pointer to 0 if index == pointer and index is last shift", () => {
       main.shifts = [];
-      main.addShift({name: 'test 1'});
-      main.addShift({name: 'test 2'});
-      main.addShift({name: 'test 3'});
+      const shifts = [
+        {name: 'test 1', doctor: { first: 'Jeremy', last: 'Voros'}},
+        {name: 'test 2', doctor: { first: 'Kelly', last: 'Blake'}},
+        {name: 'test 3', doctor: { first: 'Brian', last: 'Kasavana'}},
+      ].forEach(s => { main.addShift(s)});
       main.movePointer(2)
-      main.removeShift(2);
       main.removeShift(2);
       expect(main.pointer).to.equal(0);
     });
   
     it("should move shift up in rotation", () => {
       main.shifts = [];
-      main.addShift({name: 'test 1'});
-      main.addShift({name: 'test 2'});
-      main.addShift({name: 'test 3'});
+      const shifts = [
+        {name: 'test 1', doctor: { first: 'Jeremy', last: 'Voros'}},
+        {name: 'test 2', doctor: { first: 'Kelly', last: 'Blake'}},
+        {name: 'test 3', doctor: { first: 'Brian', last: 'Kasavana'}},
+      ].forEach(s => { main.addShift(s)});
       main.moveShift(1, -1)
       expect(main.shifts[0].name).to.equal('test 2')
     })
   
     it("should move shift to end if first shift moved up", () => {
       main.shifts = [];
-      main.addShift({name: 'test 1'});
-      main.addShift({name: 'test 2'});
-      main.addShift({name: 'test 3'});
+      const shifts = [
+        {name: 'test 1', doctor: { first: 'Jeremy', last: 'Voros'}},
+        {name: 'test 2', doctor: { first: 'Kelly', last: 'Blake'}},
+        {name: 'test 3', doctor: { first: 'Brian', last: 'Kasavana'}},
+      ].forEach(s => { main.addShift(s)});
       main.moveShift(0, -1)
       expect(main.shifts[main.shifts.length - 1].name).to.equal('test 3');
     });
   
     it("should move shift down in rotation", () => {
       main.shifts = [];
-      main.addShift({name: 'test 1'});
-      main.addShift({name: 'test 2'});
-      main.addShift({name: 'test 3'});
+      const shifts = [
+        {name: 'test 1', doctor: { first: 'Jeremy', last: 'Voros'}},
+        {name: 'test 2', doctor: { first: 'Kelly', last: 'Blake'}},
+        {name: 'test 3', doctor: { first: 'Brian', last: 'Kasavana'}},
+      ].forEach(s => { main.addShift(s)});
       main.moveShift(0, 1)
       expect(main.shifts[1].name).to.equal('test 3')
     });
   
     it("should move shift to start if last shift moved down", () => {
       main.shifts = [];
-      main.addShift({name: 'test 1'});
-      main.addShift({name: 'test 2'});
-      main.addShift({name: 'test 3'});
+      const shifts = [
+        {name: 'test 1', doctor: { first: 'Jeremy', last: 'Voros'}},
+        {name: 'test 2', doctor: { first: 'Kelly', last: 'Blake'}},
+        {name: 'test 3', doctor: { first: 'Brian', last: 'Kasavana'}},
+      ].forEach(s => { main.addShift(s)});
       main.moveShift(2, 1)
       expect(main.shifts[0].name).to.equal('test 1')
     })
@@ -141,10 +153,10 @@ describe("Rotation Object Tests", () => {
     m.addShift(shift.make({last: "Voros", first: "Jeremy"},{start: "06:00", end: "15:00", name: "6 am", bonus: 2}));
     m.addShift(shift.make({last: "Rogers", first: "Legrand"},{start: "08:00", end: "15:00", name: "8 am", bonus: 2}))
     
-    it("should assign patients to next shift then return doctor", () => {
-      const doctor = m.addPatient('ambo', 20);
+    it("should assign patients to next shift then return event", () => {
+      const event = m.addPatient('ambo', 20);
       expect(m.shifts[0].counts.total).to.equal(1);
-      expect(doctor.last).to.equal('Rogers');
+      expect(event.doctor.last).to.equal('Rogers');
     });
 
     it("should only advance pointer after bonus met", () => {

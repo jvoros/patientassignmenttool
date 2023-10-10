@@ -15,7 +15,12 @@
 
 const actions = {
   // PATIENT
-  newPatient: (type, room) => ({ type: 'board/new-patient', payload: {type, room }}),
+  newPatient: (type, room) => {
+    return ({ 
+      type: 'board/new-patient', 
+      payload: {type, room }
+    })
+  },
 
   // ROTATION
   addShift: (doctor = {}, shift_details = {}, rotation_name ='main') => { 

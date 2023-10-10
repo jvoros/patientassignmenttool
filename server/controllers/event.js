@@ -20,6 +20,8 @@ import { shortTimestamp } from "./helpers.js";
  *  - room #
  *  - msg
  * 
+ * Almost all events relate to a rotation. Rotation returns events after each action
+ * 
  */
 
 function make(action, rotation, doctor, msg = '') {

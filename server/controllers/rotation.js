@@ -1,5 +1,5 @@
-import shift from './shift.js'
-import patient from './patient.js'
+// each method that effects board returns event for that method
+import event from './event.js'
 
 function make(name, use_pointer = false) {
   return {
@@ -7,22 +7,28 @@ function make(name, use_pointer = false) {
     use_pointer: use_pointer,
     pointer: 0,
     shifts: [],
-
+    
     movePointer(offset) {
+      if (offset === 0) return;
       if (this.shifts.length == 0 || this.use_pointer == false) return;
+      const action = offset < 0 ? 'reverse': 'skip';
+      const action_shift = this.shifts[this.pointer]; // identify action shift before moving pointer
       this.pointer = (this.pointer + offset + this.shifts.length) % this.shifts.length;
+      return event.make(action, this.name, action_shift.doctor, action);
     },
 
     addPatient(pt) {
       const updatedShift = this.nextShift().addPatient(pt);
       if (updatedShift.counts.total > updatedShift.bonus) this.movePointer(1);
-      return updatedShift.doctor;
+      const new_patient_event = event.make(pt.type, this.name, updatedShift.doctor, 'Room '+pt.room);
+      return new_patient_event;
     },
 
     nextShift() { return this.shifts[this.pointer] },
 
     addShift(shift) {
       this.shifts.splice(this.pointer, 0, shift)
+      return event.make('join', this.name, shift.doctor, 'Joined '+this.name)
     }, 
 
     removeShift(index) {
@@ -30,19 +36,24 @@ function make(name, use_pointer = false) {
       // if index < pointer, minus pointer
       // if index == pointer and index not last, no change to pointer
       // if index == pointer and index is last, pointer to 0
-      const new_pointer = 
-        index < this.pointer ? this.pointer-1 :
-        index == this.pointer && index == this.shifts.length-1 ? 0 :
-        this.pointer;
+      if (index < this.pointer) this.pointer = this.pointer-1;
+      if (index === this.pointer && index === this.shifts.length-1) this.pointer = 0;
       
-      this.pointer = new_pointer;
-      return this.shifts.splice(index, 1)[0]; // splice will modify shifts array in place
+      // splice will modify shifts array in place
+      const removed_shift = this.shifts.splice(index, 1)[0];
+      
+      return { 
+        removed_shift: removed_shift,  
+        removed_event: event.make('leave', this.name, removed_shift.doctor, 'Left '+this.name)
+      }
     },
 
     moveShift(index, offset) {
       const newIndex = (index + offset + this.shifts.length) % this.shifts.length;
       const movedShift = this.shifts.splice(index, 1)[0]; 
-      this.shifts.splice(newIndex, 0, movedShift); 
+      const doctor_string = movedShift.doctor.first + ' ' + movedShift.doctor.last;
+      this.shifts.splice(newIndex, 0, movedShift);
+      return event.make('move', this.name, movedShift.doctor, 'Moved '+doctor_string)
     }
   }
 }

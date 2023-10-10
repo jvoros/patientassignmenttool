@@ -19,38 +19,44 @@ const reducer = produce((draft, action) => {
         // ft pts to ft rotation, all others to main
         const rot = action.payload.type === 'ft' ? 'ft' : 'main';
         const pt = patient.make(action.payload.type, action.payload.room);
-        const d = draft.rotations[rot].shifts.length > 0 ? 
+        const add_patient_event = draft.rotations[rot].shifts.length > 0 ? 
           draft.rotations[rot].addPatient(pt) : 
-          draft.rotations.main.addPatient(pt)
-        const new_patient_event = event.make(action.payload.type, rot, d, 'Room '+action.payload.room);
-        draft.timeline = addEvent(draft.timeline, new_patient_event)
+          draft.rotations.main.addPatient(pt);
+        draft.timeline = addEvent(draft.timeline, add_patient_event)
         return
       
       case "rotation/add-shift":
         const new_shift = shift.make(...action.payload.args);
-        draft.rotations[action.payload.rotation_name].addShift(new_shift);
-        const add_shift_event = event.make('join', action.payload.rotation_name, new_shift.doctor, 'Joined')
+        const add_shift_event = draft.rotations[action.payload.rotation_name].addShift(new_shift);
         draft.timeline = addEvent(draft.timeline, add_shift_event);
         return
 
       case "rotation/move-shift-between":
         const { index, from, to } = action.payload;
-        const moved_shift = draft.rotations[from].removeShift(index);
-        draft.rotations[to].addShift(moved_shift)
-        return
-
-      case "rotation/move-pointer":
-        const { rotation_name, offset } = action.payload;
-        draft.rotations[rotation_name].movePointer(offset);
+        const { removed_shift, removed_event } = draft.rotations[from].removeShift(index);
+        const move_to_event = draft.rotations[to].addShift(removed_shift)
+        draft.timeline = addEvent(
+          draft.timeline, 
+          event.make('move', 
+            move_to_event.rotation, 
+            move_to_event.doctor, 
+            'Left '+ removed_event.rotation+' and joined '+ move_to_event.rotation
+            ));
         return
 
       case "rotation/move-shift":
         const shift_index = action.payload.index;
         const shift_offset = action.payload.offset;
-        draft.rotations[action.payload.rotation_name].moveShift(shift_index, shift_offset);
+        const move_shift_event = draft.rotations[action.payload.rotation_name].moveShift(shift_index, shift_offset);
+        draft.timeline = addEvent(draft.timeline, move_shift_event);
+        return
+        
+      case "rotation/move-pointer":
+        const { rotation_name, offset } = action.payload;
+        const move_pointer_event = draft.rotations[rotation_name].movePointer(offset);
+        draft.timeline = addEvent(draft.timeline, move_pointer_event);
         return
   }
-
 });
 
 export default reducer;
