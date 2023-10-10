@@ -42,7 +42,7 @@ const actions = {
   moveShift: (rotation_name, index, offset) => ({ type: 'rotation/move-shift', payload: {rotation_name, index, offset }}),
   
   // TIMELINE
-  // undo
+  undo: () => ({ type: 'board/undo' })
 }
 
 export default actions

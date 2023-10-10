@@ -101,7 +101,15 @@ describe("Reducer Tests", () => {
       time.dispatch(actions.moveShift('main', 0, 1));
       expect(time.getState().timeline.length).to.equal(7);
     })
-    it("should undo last event")
+    it("should undo last event", ()=> {
+      //console.log(time.getState().rotations.main.shifts[0].doctor)
+      
+      expect(time.getState().rotations.main.shifts[0].doctor.last).to.equal('Voros');
+      time.dispatch(actions.moveShift('main', 0, 1))
+      // console.log(JSON.stringify(time.getState(),null, 2))
+      expect(time.getState().rotations.main.shifts[0].doctor.last).to.equal('Blake');
+      time.dispatch(actions.undo());
+      expect(time.getState().rotations.main.shifts[0].doctor.last).to.equal('Voros');
+    })
   });
-
 });
