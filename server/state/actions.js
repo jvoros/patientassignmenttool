@@ -14,7 +14,7 @@ const actions = {
     })
   },
 
-  undo: () => ({ type: 'board/undo' }),
+  undo: (undo) => ({ type: 'board/undo', payload: undo }),
 
   // ROTATION
   addShift: (doctor = {}, shift_details = {}, rotation_name ='main') => { 

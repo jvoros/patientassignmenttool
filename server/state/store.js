@@ -2,6 +2,9 @@ import { enablePatches } from "immer"
 import rotation from "../controllers/rotation.js"
 import r from "./reducer.js"
 
+// https://techinscribed.com/implementing-undo-redo-functionality-in-redux-using-immer/
+// patches belong to the store, not the reducer
+// reducer is just a function that returns state
 enablePatches();
 
 const initial_state = {
@@ -16,33 +19,26 @@ const initial_state = {
 function createStore(reducer = r, initialState = initial_state) {
 
   let state = initialState;
-  
-  // https://techinscribed.com/implementing-undo-redo-functionality-in-redux-using-immer/
-  // patches belong to the store, not the reducer
-  // reducer is just a function that returns state
-  
-  const undoes = {
-    PATCH_LIMIT: 50,
-    patches: [],
-    addUndo(_patches, inversePatches) {
-      this.patches = [inversePatches, ...this.patches.slice(0, this.PATCH_LIMIT)];
-    },
-    getLastUndo() {
-      // shift() will pull off first array of undoPatches
-      // leaving undoes.patches one event shorter
-      return this.patches.shift();
-    }
-  }
+  let undoes = [];
 
   function getState() {
     return state;
   }
 
   function dispatch(action) {
-    state = reducer(state, action, undoes);
+    state = reducer(state, action, addUndo);
   }
 
-  return { getState, dispatch };
+  function addUndo(_patches, inversePatches) {
+    const PATCH_LIMIT = 50;
+    undoes = [inversePatches, ...undoes.slice(0, PATCH_LIMIT)]
+  }
+
+  function revert() {
+    return undoes.shift();
+  }
+
+  return { getState, dispatch, revert };
 }
 
 export default createStore;

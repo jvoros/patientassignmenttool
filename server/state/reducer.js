@@ -9,7 +9,7 @@ function addEvent(timeline, event) {
   return ([event, ...timeline.slice(0, TIMELINE_LIMIT)]);
 }
 
-function reducer(state, action, undoes) {
+function reducer(state, action, addUndo) {
   return produce(state, draft => {
     switch (action.type) {
 
@@ -38,7 +38,7 @@ function reducer(state, action, undoes) {
         return
 
       case 'board/undo':
-        return applyPatches(draft, undoes.getLastUndo());
+        return applyPatches(draft, action.payload);
       
       // ROTATION EVENTS
       case 'rotation/add-shift':
@@ -62,7 +62,7 @@ function reducer(state, action, undoes) {
     }
   }, 
   (patches, inversePatches) => {
-    undoes.addUndo(patches, inversePatches);
+    addUndo(patches, inversePatches);
   });
 };
 
