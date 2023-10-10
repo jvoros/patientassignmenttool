@@ -1,18 +1,3 @@
-/**
- * Using actions that trigger function within reducer
- * is nice because it reduces the boilerplate code you 
- * would have to write for each function, e.g produce(...),
- * repeating action.type and action.payload, over and over.
- * 
- * Instead it happens once in reducer. Build the function
- * calls here. Nice and clean.
- * 
- * Also isolates all functions that change state so if
- * only interaction is through the store, all changes
- * being done in stateful way
- * 
- */
-
 const actions = {
   // PATIENT
   newPatient: (type, room) => {
@@ -22,6 +7,15 @@ const actions = {
     })
   },
 
+  moveShiftFromTo: (index, from_rotation_name, to_rotation_name) => {
+    return({
+      type: 'board/move-shift-between',
+      payload: { index, from: from_rotation_name, to: to_rotation_name }
+    })
+  },
+
+  undo: () => ({ type: 'board/undo' }),
+
   // ROTATION
   addShift: (doctor = {}, shift_details = {}, rotation_name ='main') => { 
     return ({
@@ -30,19 +24,10 @@ const actions = {
     })
   },
 
-  moveShiftFromTo: (index, from_rotation_name, to_rotation_name) => {
-    return({
-      type: 'rotation/move-shift-between',
-      payload: { index, from: from_rotation_name, to: to_rotation_name }
-    })
-  },
-
   movePointer: (rotation_name, offset) => ({ type: 'rotation/move-pointer', payload: { rotation_name, offset }}),
 
-  moveShift: (rotation_name, index, offset) => ({ type: 'rotation/move-shift', payload: {rotation_name, index, offset }}),
-  
-  // TIMELINE
-  undo: () => ({ type: 'board/undo' })
+  moveShift: (rotation_name, index, offset) => ({ type: 'rotation/move-shift', payload: {rotation_name, index, offset }})
+
 }
 
 export default actions

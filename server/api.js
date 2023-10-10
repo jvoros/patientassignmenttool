@@ -1,5 +1,4 @@
 import express from "express"
-import { enableMapSet } from "immer"
 
 import board from "./controllers/board.js"
 import history from "./controllers/history.js"
@@ -7,22 +6,9 @@ import createStore from "./state/store.js"
 import actions from "./state/actions.js"
 
 const api = express.Router();
-enableMapSet();
+
 
 const store = createStore();
-
-// // Board serves as state for the whole application
-// // Site actions will update board and WebSocket will transmit the new board
-// let main = board.make();
-// let hx = [];
-
-// // save snapshot before making change to board, then can always undo
-// hx = history.save(hx, main);
-// main = board.addShiftToBoard(main, "Main", {last: "Voros", first: "Jeremy"}, {start: "06:00", end: "15:00", name: "6 am", bonus: 2} )
-// hx = history.save(hx, main);
-// main = board.moveShiftFromRotationToRotation(main, 0, "Main", "Off")
-// hx = history.save(hx, main);
-// main = board.addShiftToBoard(main, "Main", {last: "Carmack", first: "Brian"}, {start: "08:00", end: "18:00", name: "8 am", bonus: 2})
 
 // HELPERS
 function getPath(p) {
