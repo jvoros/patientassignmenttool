@@ -8,7 +8,7 @@
     "test": "npx mocha",
     "dev:server": "nodemon server/index.js",
     "build:client": "vite build client",
-    "dev:client": "vite client"
+    "dev:client": "vite client --debug"
   },
   "author": "",
   "license": "ISC",

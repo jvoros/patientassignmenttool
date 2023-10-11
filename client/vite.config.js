@@ -12,5 +12,11 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
-  }
+  },
+    // https://stackoverflow.com/questions/64677212/how-to-configure-proxy-in-vite
+    server: { 
+      proxy: {
+        "/login": "http://localhost:4000"
+      },
+    }
 })

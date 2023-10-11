@@ -1,29 +1,11 @@
-import './assets/main.css'
-// Vue
+// import './assets/main.css'
+import './assets/pico.css'
+
 import { createApp } from "vue"
-import { createRouter, createWebHashHistory } from "vue-router";
-// // Templates
+import router from "./router.js"
+
 import App from './App.vue'
-import Login from "./views/Login.vue"
-import Welcome from "./views/Welcome.vue"
-
-const routes = [
-  {
-    path: "/welcome",
-    name: "Welcome",
-    component: Welcome,
-  },
-  {
-    path: "/login",
-    name: "Login",
-    component: Login,
-  },
-];
-
-const router = createRouter({
-  history: createWebHashHistory(),
-  routes,
-});
 
 const app = createApp(App);
+app.use(router);
 app.mount('#app');
