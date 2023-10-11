@@ -1,13 +1,9 @@
 import express from "express"
 
-import board from "./controllers/board.js"
-import history from "./controllers/history.js"
 import createStore from "./state/store.js"
 import actions from "./state/actions.js"
 
 const api = express.Router();
-
-
 const store = createStore();
 
 // HELPERS
@@ -17,7 +13,7 @@ function getPath(p) {
 
 // JSON
 api.get('/board', (req, res) => {
-  store.dispatch(actions.addEvent('testing action maker'))
+  store.dispatch(actions.addShift({last: "Blake", first: "Kelly"}, {start: "08:00", end: "18:00", name: "8 am", bonus: 2}, 'main'))
   res.json(store.getState());
 });
 

@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "test": "npx mocha",
-    "dev": "nodemon server/index.js"
+    "dev:server": "nodemon server/index.js",
+    "build:client": "vite build client",
+    "dev:client": "vite client"
   },
   "author": "",
   "license": "ISC",
@@ -18,8 +20,10 @@
     "passport-local": "^1.0.0"
   },
   "devDependencies": {
+    "@vitejs/plugin-vue": "^4.4.0",
     "chai": "^4.3.10",
     "mocha": "^10.2.0",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "vite": "^4.4.11"
   }
 }
