@@ -1,18 +1,22 @@
+import * as dotenv from "dotenv";
+dotenv.config();
 import express from "express"
+import cors from "cors";
+
 import api from "./api.js";
 
-const server = express();
-server.set("view engine", "ejs");
+const app = express();
+app.set("view engine", "ejs");
 
-server.use(express.json());
+app.use(express.json());
 
-server.get("/", (req, res) => {
+app.get("/", (req, res) => {
   res.json({ message: 'Hello World!' });
 });
 
-server.use("/api", api);
+app.use("/api", api);
 
 const port = process.env.PORT || 4000;
-server.listen(port, () => {
+app.listen(port, () => {
   console.log(`listening on ${port}`);
 });
