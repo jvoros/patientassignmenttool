@@ -1,3 +1,5 @@
+/* LIGHT THEME */
+
 [data-theme=light],
 :root:not([data-theme=dark]) {
   --pico-background-color: #fff;
@@ -85,24 +87,33 @@
     font-weight: 400;
   }
 
-  :is([role=alert]).info {
+  .info {
     --pico-color: var(--pico-color-azure-500);
     --pico-background-color: var(--pico-color-azure-50);
   }
   
-  :is([role=alert]).success {
+  .success {
     --pico-color: var(--pico-color-green-700);
     --pico-background-color: var(--pico-color-green-50);
   }
 
-  :is([role=alert]).warn {
+ .warn {
     --pico-color: var(--pico-color-yellow-600);
     --pico-background-color: var(--pico-color-yellow-50);
   }
 
-  :is([role=alert]).error {
+  .error {
     --pico-color: var(--pico-color-red-600);
     --pico-background-color: var(--pico-color-orange-200);
+  }
+
+  /* BUTTON MODS */
+  :is(button, [type=submit], [type=button], [role=button]).small {
+    font-size: calc(var(--pico-font-size)*.7);
+  }
+  :is(button, [type=submit], [type=button], [role=button]) > svg {
+    margin: 0 calc(var(--pico-spacing)*.2) calc(var(--pico-spacing)*.2) 0
+
   }
 
   /* REST OF THEME */
