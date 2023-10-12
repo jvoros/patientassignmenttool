@@ -78,28 +78,30 @@
     --pico-background-color: var(--pico-secondary-background);
     color: var(--pico-color);
     background-color: var(--pico-background-color);
-    padding: var(--pico-spacing);
-    margin: var(--pico-spacing);
+    padding: calc(var(--pico-spacing)/2) var(--pico-spacing);
+    margin: var(--pico-spacing) 0;
     border-radius: var(--pico-border-radius);
+    font-size: calc(var(--pico-font-size) * .75);
+    font-weight: 400;
   }
 
   :is([role=alert]).info {
-    --pico-color: var(--pico-color-azure-350);
+    --pico-color: var(--pico-color-azure-500);
     --pico-background-color: var(--pico-color-azure-50);
   }
   
   :is([role=alert]).success {
-    --pico-color: var(--pico-color-green-400);
+    --pico-color: var(--pico-color-green-700);
     --pico-background-color: var(--pico-color-green-50);
   }
 
   :is([role=alert]).warn {
-    --pico-color: var(--pico-color-yellow-400);
+    --pico-color: var(--pico-color-yellow-600);
     --pico-background-color: var(--pico-color-yellow-50);
   }
 
   :is([role=alert]).error {
-    --pico-color: var(--pico-color-red-550);
+    --pico-color: var(--pico-color-red-600);
     --pico-background-color: var(--pico-color-orange-200);
   }
 
