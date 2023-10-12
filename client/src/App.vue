@@ -8,8 +8,8 @@
       <li><strong>Brand</strong></li>
     </ul>
     <ul>
-      <li><a href="#">Link</a></li>
-      <li><a href="#">Link</a></li>
+      <li><router-link to="/">Home</router-link></li>
+      <li><router-link to="/login">Login</router-link></li>
       <li><a href="#" role="button">Button</a></li>
     </ul>
   </nav>

@@ -1,13 +1,14 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 
+import Theme from "./views/Theme.vue"
 import Welcome from "./views/Welcome.vue"
 import Login from "./views/Login.vue"
 
 const routes = [
   {
     path: "/",
-    name: "Welcome",
-    component: Welcome,
+    name: "Theme",
+    component: Theme,
   },
   {
     path: "/login",
