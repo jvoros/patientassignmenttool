@@ -3,6 +3,7 @@ import { ref } from "vue"
 
 import Theme from "./views/Theme.vue"
 import Login from "./views/Login.vue"
+import Welcome from "./views/Welcome.vue"
 
 // holds the user value for the app
 export const user = ref({});
@@ -11,7 +12,7 @@ const routes = [
   {
     path: "/",
     name: "Home",
-    component: Theme,
+    component: Welcome,
   },
   {
     path: "/login",

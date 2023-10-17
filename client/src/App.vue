@@ -20,9 +20,7 @@ function logOut() {
 
 <template>
   <Navbar :role='user.role' @logout='logOut' />
-  <div class="column">User: {{  user  }}</div>
   <main class="columns">
-
     <router-view @logged-in='loggedIn' />
   </main>
 </template>

@@ -18,27 +18,64 @@ app.get("/", (req, res) => {
   res.json({ message: 'Hello World!' });
 });
 
-app.post("/login", (req, res) => {
+const userTable = {
+  'nurse': { pass: '7800', role: "nurse" },
+  'doctor': { pass: 'epgrocks', role: "doctor" },
+};
+
+app.post("/api/login", (req, res) => {
   const { role, password } = req.body;
-  if (role === 'nurse' && password === '7800') {
-    const user = {
-      role: 'nurse'
-    }
+  console.log(userTable[role])
+  if (password === userTable[role].pass) {
+    const user = { role }
     const token = jwt.sign(user, JWT_KEY);
+    
     res.cookie("access_token", token, { 
       httpOnly: true,
+      sameSite: 'Strict',
       maxAge: 1000*60*60*24 // one day
     });
-    res.status(200);
-    res.json({ token, user });
-  } else if (role === 'doctor' && password === 'epgrocks') {
-    res.status(200);
-    res.json({ message: 'Success'});
+
+    res.status(200).json({ token, user });
+  
   } else {
-    res.status(401);
-    res.json({ message: 'Unauthorized'});
+    res.status(401).json({ message: 'Unauthorized'});
   }
 });
+
+app.post('/api/test', (req, res) => {
+  res.json(req.cookies);
+});
+
+// custom authorization middleware
+const authorization = (req, res, next) => {
+  const token = req.cookies.access_token;
+  if (!token) {
+    return res.status(401).json({ message: 'Unauthorized Request' });
+  }
+  try {
+    const data = jwt.verify(token, JWT_KEY);
+    req.role = data.role;
+    return next();
+  } catch {
+    return res.status(401).json({ message: 'Unauthorized Request' });
+  }
+};
+
+const confirmRole = (requiredRole) => (req, res, next) => {
+  if (!req.role || req.role !== requiredRole) {
+    return res.status(401).json({ message: 'Unauthorized Request' });
+  }
+  return next();
+}
+
+app.use(authorization);
+app.use(confirmRole('nurse'));
+
+app.post("/api/testauth", (req, res) => {
+  res.json({  role: req.role });
+});
+
 
 app.use("/api", api);
 
