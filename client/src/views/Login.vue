@@ -1,37 +1,53 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 
-const username = ref('username');
-const password = ref('Pass');
+const emit = defineEmits(['loggedIn']);
+
+const role = ref('');
+const password = ref('');
 const res = ref('')
 
 async function login() {
-  res.value = "Login Fired";
   const response = await fetch('http://localhost:5173/login', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ username: username, password: password })
+    body: JSON.stringify({ role: role.value, password: password.value })
   });
   res.value = await response.json();
+  emit('loggedIn', res.value.user);
+  
 }
 
 </script>
 
 <template>
-  <div>
-    <h1>LOGIN</h1>
-    <h3>{{ res }}</h3>
-    <p><a href="/login">Login</a></p>
-    <form @submit.prevent="login">
-      <input v-model="username" />
-      <br />
-      <br />
-      <input v-model="password" type="password" />
-      <br />
-      <br />
-      <button type="submit">Login</button>
+  <section class="section column is-3 is-offset-4">
+    <p class="box">
+      response: {{ res }}
+    </p>
+    <form @submit.prevent="login" class="notification">
+      <div class="field">
+        <label class="label">Role</label>
+        <div class="control">
+          <div class="select">
+            <select v-model="role">
+              <option value="nurse">Nurse</option>
+              <option value="doctor">Doctor</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Password</label>
+        <div class="control">
+          <input class="input" type="password" v-model="password">
+        </div>
+      </div>
+
+      <button class="button" type="submit">Login</button>
     </form>
-  </div>
+  </section>
 </template>
 
 <style scoped></style>
