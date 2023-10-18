@@ -13,7 +13,7 @@ async function apiCall(url, payload) {
 export const useBoardStore = defineStore('board', {
   state: () => {
     return {
-      user: {},
+      user: { loggedIn: false },
       error: null,
       board: null
     }
@@ -31,14 +31,14 @@ export const useBoardStore = defineStore('board', {
     async login(roleAndPassword) {
       const res = await apiCall('api/login', roleAndPassword);
       if (res.type === 'success') {
-        this.user = res.payload;
+        this.user = { loggedIn: true, ...res.payload };
       } else {
         this.setError(res);
       }
     },
 
     logout() {
-      this.user = {}
+      this.user = { loggedIn: false }
     }
 
   }

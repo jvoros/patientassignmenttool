@@ -30,7 +30,7 @@
           </span>
           <span>Add Doctor</span>
         </button>
-        <button class="button is-danger is-outlined" v-if="store.user.role" @click="logout">
+        <button class="button is-danger is-outlined" v-if="store.user.loggedIn" @click="logout">
           <span>Logout</span>
           <span class="icon">
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
