@@ -24,7 +24,6 @@ function createStore(reducer = r, initialState = initial_state) {
 
   let state = initialState;
   let undoes = [];
-  // add subscribers so state changes can be broadcast?
 
   function getState() {
     return state;

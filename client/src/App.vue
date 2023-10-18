@@ -1,27 +1,38 @@
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { user } from './router.js'
-import Navbar from './components/navbar.vue'
+import Navbar from './components/TheNavbar.vue'
+import ErrorFlash from './components/ErrorFlash.vue'
+import Login from './components/Login.vue'
+import Welcome from './views/Welcome.vue'
 
-const router = useRouter();
+const user = ref({});
+const error = ref();
 
-function loggedIn(newUser) {
-  user.value = newUser;
-  router.push({ name: 'Home' });
+function displayError(err) {
+  error.value = err;
+  setTimeout(() => {
+    error.value = null;
+  }, 5000);
 }
 
-function logOut() {
+function login(newUser) {
+  user.value = newUser;
+}
+
+function logout() {
   user.value = {};
-  router.push({ name: 'Login' });
 }
 
 </script>
 
 <template>
-  <Navbar :role='user.role' @logout='logOut' />
+  <Navbar :role="user.role" @logout='logout' />
+  <Transition>
+    <ErrorFlash v-if='error' :error="error"/>
+  </Transition>
   <main class="columns">
-    <router-view @logged-in='loggedIn' />
+    <Login v-if="!user.role" @login="login" @login-error="displayError" />
+    <Welcome v-if="user.role" />
   </main>
 </template>
 

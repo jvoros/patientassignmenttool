@@ -19,7 +19,7 @@
 </script>
 
 <template>
-  <nav class="navbar has-background-white-ter" role="navigation">
+  <nav class="navbar has-background-white-ter mb-4" role="navigation">
     <div class="navbar-brand">
       <a href="/" class="navbar-item">
         <strong>Patient Assignment Tool</strong>

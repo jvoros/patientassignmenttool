@@ -14,6 +14,15 @@ app.set("view engine", "ejs");
 app.use(express.json());
 app.use(cookieParser());
 
+function message(type, text, payload = '') {
+  return {
+    type,
+    text,
+    payload
+  }
+}
+
+
 app.get("/", (req, res) => {
   res.json({ message: 'Hello World!' });
 });
@@ -36,10 +45,10 @@ app.post("/api/login", (req, res) => {
       maxAge: 1000*60*60*24 // one day
     });
 
-    res.status(200).json({ token, user });
+    res.status(200).json(message('success', 'Logged In', user));
   
   } else {
-    res.status(401).json({ message: 'Unauthorized'});
+    res.status(401).json(message('unauthorized', 'Incorrect password'));
   }
 });
 
@@ -47,7 +56,7 @@ app.post('/api/test', (req, res) => {
   res.json(req.cookies);
 });
 
-// custom authorization middleware
+// custom authorization middlewares
 const authorization = (req, res, next) => {
   const token = req.cookies.access_token;
   if (!token) {
@@ -62,20 +71,12 @@ const authorization = (req, res, next) => {
   }
 };
 
-const confirmRole = (requiredRole) => (req, res, next) => {
-  if (!req.role || req.role !== requiredRole) {
-    return res.status(401).json({ message: 'Unauthorized Request' });
-  }
-  return next();
-}
-
+// api routes, protected by middleware
 app.use(authorization);
-app.use(confirmRole('nurse'));
 
 app.post("/api/testauth", (req, res) => {
   res.json({  role: req.role });
 });
-
 
 app.use("/api", api);
 

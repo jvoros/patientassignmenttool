@@ -1,30 +1,26 @@
 <script setup>
 import { ref } from 'vue'
+import { apiCall } from '../helpers.js'
 
-const emit = defineEmits(['loggedIn']);
+const emit = defineEmits(['login', 'loginError']);
 
 const role = ref('');
 const password = ref('');
-const res = ref('')
 
 async function login() {
-  const response = await fetch('http://localhost:5173/api/login', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ role: role.value, password: password.value })
-  });
-  res.value = await response.json();
-  emit('loggedIn', res.value.user);
-  
+  const res = await apiCall('api/login', {role: role.value, password: password.value });
+  if (res.type === 'success') {
+    emit('login', res.payload)
+  } else {
+    console.log(res);
+    emit('loginError', res)
+  }
 }
 
 </script>
 
 <template>
   <section class="section column is-3 is-offset-4">
-    <p class="box">
-      response: {{ res }}
-    </p>
     <form @submit.prevent="login" class="notification">
       <div class="field">
         <label class="label">Role</label>
@@ -49,5 +45,3 @@ async function login() {
     </form>
   </section>
 </template>
-
-<style scoped></style>

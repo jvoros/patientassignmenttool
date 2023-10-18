@@ -4,8 +4,8 @@ import { ref } from 'vue'
 const res = ref();
 
 async function testPost() {
-  const response = await fetch('http://localhost:5173/api/testauth', {
-    method: 'POST',
+  const response = await fetch('http://localhost:5173/api/board', {
+    method: 'GET',
     headers: {'Content-Type': 'application/json'},
   });
   res.value = await response.json();
