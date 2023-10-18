@@ -1,20 +1,13 @@
 <script setup>
 import { ref } from 'vue'
-import { apiCall } from '../helpers.js'
+import { useBoardStore } from '../stores/board'
 
-const emit = defineEmits(['login', 'loginError']);
-
+const store = useBoardStore();
 const role = ref('');
 const password = ref('');
 
-async function login() {
-  const res = await apiCall('api/login', {role: role.value, password: password.value });
-  if (res.type === 'success') {
-    emit('login', res.payload)
-  } else {
-    console.log(res);
-    emit('loginError', res)
-  }
+function login() {
+  store.login({ role: role.value, password: password.value });
 }
 
 </script>

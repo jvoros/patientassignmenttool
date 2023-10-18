@@ -21,7 +21,8 @@
     "immer": "^10.0.3",
     "jsonwebtoken": "^9.0.2",
     "passport": "^0.6.0",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "pinia": "^2.1.7"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.4.0",
@@ -29,5 +30,8 @@
     "mocha": "^10.2.0",
     "nodemon": "^3.0.1",
     "vite": "^4.4.11"
+  },
+  "overrides": {
+    "vue": "3"
   }
 }

@@ -1,11 +1,8 @@
 <script setup>
   import { ref } from 'vue'
+  import { useBoardStore } from '../stores/board';
 
-  defineProps({
-    role: String
-  });
-
-  const emit = defineEmits(['logout']);
+  const store = useBoardStore();
 
   const addDoctorModal = ref(false);
 
@@ -14,7 +11,7 @@
   }
 
   function logout() {
-    emit('logout');
+    store.logout();
   }
 </script>
 
@@ -27,13 +24,13 @@
     </div>
     <div class="navbar-end">
       <div class="navbar-item buttons">
-        <button class="button" v-if="role==='nurse'" @click="toggleAddDoctorModal">
+        <button class="button" v-if="store.user.role === 'nurse'" @click="toggleAddDoctorModal">
           <span class="icon">
             <i class="fa-solid fa-user-doctor"></i>
           </span>
           <span>Add Doctor</span>
         </button>
-        <button class="button is-danger is-outlined" v-if="role" @click="logout">
+        <button class="button is-danger is-outlined" v-if="store.user.role" @click="logout">
           <span>Logout</span>
           <span class="icon">
             <i class="fa-solid fa-arrow-right-from-bracket"></i>

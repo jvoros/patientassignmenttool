@@ -1,38 +1,23 @@
 <script setup>
 import { ref } from 'vue'
+import { useBoardStore } from './stores/board.js'
 import Navbar from './components/TheNavbar.vue'
 import ErrorFlash from './components/ErrorFlash.vue'
 import Login from './components/Login.vue'
 import Welcome from './views/Welcome.vue'
 
-const user = ref({});
-const error = ref();
-
-function displayError(err) {
-  error.value = err;
-  setTimeout(() => {
-    error.value = null;
-  }, 5000);
-}
-
-function login(newUser) {
-  user.value = newUser;
-}
-
-function logout() {
-  user.value = {};
-}
+const store = useBoardStore();
 
 </script>
 
 <template>
-  <Navbar :role="user.role" @logout='logout' />
+  <Navbar />
   <Transition>
-    <ErrorFlash v-if='error' :error="error"/>
+    <ErrorFlash v-if='store.error' :error="store.error"/>
   </Transition>
   <main class="columns">
-    <Login v-if="!user.role" @login="login" @login-error="displayError" />
-    <Welcome v-if="user.role" />
+    <Login v-if="!store.user.role" />
+    <Welcome v-if="store.user.role" />
   </main>
 </template>
 
