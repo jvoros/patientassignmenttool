@@ -14,16 +14,31 @@ app.set("view engine", "ejs");
 app.use(express.json());
 app.use(cookieParser());
 
-function message(type, text, payload = '') {
+// response helper
+function message(status, text, payload = '') {
   return {
-    type,
+    status,
     text,
     payload
   }
 }
 
+// custom authorization middlewares
+const authorization = (req, res, next) => {
+  const token = req.cookies.access_token;
+  if (!token) {
+    return res.status(401).json(message('error', 'Unauthorized Request'));
+  }
+  try {
+    const data = jwt.verify(token, JWT_KEY);
+    req.user= data;
+    return next();
+  } catch {
+    return res.status(401).json(message('error', 'Unauthorized Request'));
+  }
+};
 
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
   res.json({ message: 'Hello World!' });
 });
 
@@ -34,7 +49,6 @@ const userTable = {
 
 app.post("/api/login", (req, res) => {
   const { role, password } = req.body;
-  console.log(userTable[role])
   if (password === userTable[role].pass) {
     const user = { role }
     const token = jwt.sign(user, JWT_KEY);
@@ -52,24 +66,18 @@ app.post("/api/login", (req, res) => {
   }
 });
 
-app.post('/api/test', (req, res) => {
-  res.json(req.cookies);
+app.post('/api/checklogin', authorization, (req, res) => {
+  if (req.user) {
+    res.status(200).json(message('success', 'Already logged in', req.user));
+  } else {
+    res.status(200).json(message('success', 'Not logged in yet'));
+  }
 });
 
-// custom authorization middlewares
-const authorization = (req, res, next) => {
-  const token = req.cookies.access_token;
-  if (!token) {
-    return res.status(401).json({ message: 'Unauthorized Request' });
-  }
-  try {
-    const data = jwt.verify(token, JWT_KEY);
-    req.role = data.role;
-    return next();
-  } catch {
-    return res.status(401).json({ message: 'Unauthorized Request' });
-  }
-};
+app.post('/api/logout', (_req, res) => {
+  res.clearCookie('access_token');
+  res.status(200).json(message('success', 'Logged Out'));
+});
 
 // api routes, protected by middleware
 app.use(authorization);

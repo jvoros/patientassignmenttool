@@ -96,6 +96,7 @@ describe("Reducer Tests", () => {
       time.dispatch(actions.addShift(c.doctors[1], c.shifts[1], 'main'));
       time.dispatch(actions.movePointer('main', 1))
       expect(time.getState().timeline.length).to.equal(6);
+      
     }),
     it("should record shift movements within rotation", () => {
       time.dispatch(actions.moveShift('main', 0, 1));

@@ -1,21 +1,21 @@
 <script setup>
 import { ref } from 'vue'
+import { useBoardStore } from '../stores/board.js';
 
 const res = ref();
+const store = useBoardStore();
 
-async function testPost() {
-  const response = await fetch('http://localhost:5173/api/board', {
-    method: 'GET',
-    headers: {'Content-Type': 'application/json'},
-  });
-  res.value = await response.json();
+async function checkLogin() {
+  res.value = await store.checkLoginStatus();
 }
+
+
 </script>
 
 <template>
   <div class="column block">
     <h1>Welcome</h1>
-    <button class="button is-primary" @click.prevent='testPost'>Test Route</button>
+    <button class="button is-primary" @click.prevent='checkLogin'>Test Route</button>
     <p>{{  res  }}</p>
   </div>
 </template>
