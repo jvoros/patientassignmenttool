@@ -7,7 +7,7 @@ import cookieParser from 'cookie-parser'
 
 import api from "./api.js";
 
-const JWT_KEY = 'dN0qDHOE6yat54Y505f4TYaprM9qEa2t';
+const JWT_KEY = process.env.JWT_KEY;
 
 const app = express();
 app.set("view engine", "ejs");
@@ -43,8 +43,8 @@ app.get("/", (_req, res) => {
 });
 
 const userTable = {
-  'nurse': { pass: '7800', role: "nurse" },
-  'doctor': { pass: 'epgrocks', role: "doctor" },
+  'nurse': { pass: process.env.NURSE_PASSWORD, role: "nurse" },
+  'doctor': { pass: process.env.DOC_PASSWORD, role: "doctor" },
 };
 
 app.post("/api/login", (req, res) => {
@@ -66,11 +66,16 @@ app.post("/api/login", (req, res) => {
   }
 });
 
-app.post('/api/checklogin', authorization, (req, res) => {
-  if (req.user) {
-    res.status(200).json(message('success', 'Already logged in', req.user));
-  } else {
-    res.status(200).json(message('success', 'Not logged in yet'));
+app.post('/api/checklogin', (req, res) => {
+  const token = req.cookies.access_token;
+  if (!token) {
+    return res.status(200).json(message('success', 'Not logged in yet.'));
+  }
+  try {
+    const user = jwt.verify(token, JWT_KEY);
+    return res.status(200).json(message('success', 'Already logged in', user));
+  } catch {
+    return res.status(200).json(message('success', 'Invalid token'));
   }
 });
 
