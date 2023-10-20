@@ -1,0 +1,76 @@
+@import url('marx.css');
+@import url('pico.color.css');
+
+:root {
+  --theme-secondary: var(--pico-color-grey-100);
+  --theme-secondary-contrast: var(--pico-color-grey-700);
+  --theme-secondary-mute: var(--pico-color-grey-200);
+
+  --theme-danger: var(--pico-color-red-500);
+  --theme-danger-contrast: white;
+  --theme-danger-mute: var(--pico-color-red-600);
+  --theme-danger-light: var(--pico-color-red-100);
+}
+
+.tile {
+  border-radius: var(--br);
+  margin: var(--md-pad);
+  padding: var(--lg-pad);
+}
+
+.tile.secondary {
+  background-color: var(--theme-secondary);
+  color: var(--theme-secondary-contrast);
+}
+
+.tile.danger {
+  background-color: var(--theme-danger-light);
+  color: var(--theme-danger-mute);
+}
+
+button {
+  cursor: pointer;
+}
+
+button > i:last-child {
+  padding-left: var(--sm-pad);
+}
+
+button > i:first-child {
+  padding-right: var(--sm-pad);
+}
+
+button.outline {
+  background-color: transparent;
+  color: var(--primary);
+  border: 1px solid;
+}
+
+button.outline:hover {
+  color: var(--primary-600);
+}
+
+button.small {
+  padding: var(--xs-pad) var(--md-pad);
+  font-size: var(--font-size-sm);
+}
+
+button.secondary {
+  --primary: var(--theme-secondary);
+  --primary-600: var(--theme-secondary-mute);
+  --white: var(--theme-secondary-contrast);
+}
+
+button.danger {
+  --primary: var(--theme-danger);
+  --primary-600: var(--theme-danger-mute);
+}
+
+input, select {
+  margin-bottom: var(--md-pad);
+}
+
+label {
+  font-weight: bold;
+}
+

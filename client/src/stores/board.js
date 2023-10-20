@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 
-
-async function apiCall(url, payload) {
+export async function apiCall(url, payload) {
   const response = await fetch(url, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},

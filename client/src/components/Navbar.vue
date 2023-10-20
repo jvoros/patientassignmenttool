@@ -1,6 +1,7 @@
 <script setup>
   import { ref } from 'vue'
   import { useBoardStore } from '../stores/board';
+  import AddDoctor from './AddDoctor.vue'
 
   const store = useBoardStore();
 
@@ -16,58 +17,52 @@
 </script>
 
 <template>
-  <nav class="navbar has-background-white-ter mb-4" role="navigation">
-    <div class="navbar-brand">
-      <a href="/" class="navbar-item">
-        <strong>Patient Assignment Tool</strong>
-    </a>
-    </div>
-    <div class="navbar-end">
-      <div class="navbar-item buttons">
-        <button class="button" v-if="store.user.role === 'nurse'" @click="toggleAddDoctorModal">
-          <span class="icon">
+  <nav role="navigation">
+    <ul class="nav-start">
+      <li><h3 class="brand">Patient Assignment Tool</h3></li>
+      <li><a>Home</a></li>
+    </ul>
+    <ul class="nav-end">
+      <li>
+        <button class="small secondary" v-if="store.user.role === 'nurse'" @click="toggleAddDoctorModal">
             <i class="fa-solid fa-user-doctor"></i>
-          </span>
-          <span>Add Doctor</span>
+            <span>Add Doctor</span>
         </button>
-        <button class="button is-danger is-outlined" v-if="store.user.loggedIn" @click="logout">
+      </li>
+      <li>
+        <button class="small outline danger" v-if="store.user.loggedIn" @click="logout">
           <span>Logout</span>
-          <span class="icon">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i>
-          </span>
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
         </button>
-      </div>
-    </div>
+      </li>
+    </ul>
+
   </nav>
-  <dialog :open="addDoctorModal">
-    <article>
-      <header>
-        <Link to="#" aria-label="Close" class="close" @click="toggleAddDoctorModal"/>
-        <p>
-          <strong>Add Doctor to Rotation</strong>
-        </p>
-      </header>
-      <p>
-        We're excited to have you join us for our
-        upcoming event. Please arrive at the museum 
-        on time to check in and get started.
-      </p>
-      <ul>
-        <li>Date: Saturday, April 15</li>
-        <li>Time: 10:00am - 12:00pm</li>
-      </ul>
-    </article>
-  </dialog>
+  <AddDoctor @close-modal="toggleAddDoctorModal" v-if="addDoctorModal" />
 </template>
 
 <style scoped>
+* {
+  margin: 0;
+}
   nav {
-    margin-left: calc(var(--spacing)*-1);
-    margin-right: calc(var(--spacing)*-1);
-    padding: 0 var(--spacing);
+    margin-bottom: var(--xl-pad);
+    display: flex;
+    flex-direction: row;
+    background-color: var(--pico-color-grey-50);
+  }
+
+  ul {
+    padding: var(--md-pad);
   }
 
   li {
-    margin-right: var(--pico-spacing)
+    display: inline-block;
+    margin-right: var(--md-pad)
   }
+  
+  ul.nav-start {
+    flex-grow: 1;
+  }
+
 </style>

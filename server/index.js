@@ -58,7 +58,6 @@ app.post("/api/login", (req, res) => {
       sameSite: 'Strict',
       maxAge: 1000*60*60*24 // one day
     });
-
     res.status(200).json(message('success', 'Logged In', user));
   
   } else {
@@ -86,10 +85,6 @@ app.post('/api/logout', (_req, res) => {
 
 // api routes, protected by middleware
 app.use(authorization);
-
-app.post("/api/testauth", (req, res) => {
-  res.json({  role: req.role });
-});
 
 app.use("/api", api);
 

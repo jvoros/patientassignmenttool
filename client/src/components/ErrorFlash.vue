@@ -5,7 +5,7 @@
 </script>
 
 <template>
-  <div class="notification is-danger is-light">{{ error }}</div>
+  <div class="tile danger">{{ error.text }}</div>
 </template>
 
 <style scoped>

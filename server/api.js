@@ -14,7 +14,7 @@ function getPath(p) {
 // MIDDLEWARE
 // if 'nurse' then admin actions at bottom
 const confirmRole = (requiredRole) => (req, res, next) => {
-  if (!req.role || req.role !== requiredRole) {
+  if (!req.user.role || req.user.role !== requiredRole) {
     return res.status(401).json({ message: 'Unauthorized Request' });
   }
   return next();
@@ -26,7 +26,8 @@ api.get('/board', (req, res) => {
   res.json(store.getState());
 });
 
-api.get('/doctors', async (req, res) => {
+api.get('/doctors', confirmRole('nurse'), async (req, res) => {
+  console.log('geting doctors')
   res.sendFile(getPath('./json/doctors.json'));
 });
 

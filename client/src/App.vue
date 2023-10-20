@@ -5,6 +5,7 @@ import Navbar from './components/Navbar.vue'
 import ErrorFlash from './components/ErrorFlash.vue'
 import Login from './components/Login.vue'
 import Welcome from './views/Welcome.vue'
+import Theme from './views/Theme.vue'
 
 const store = useBoardStore();
 
@@ -19,10 +20,8 @@ onBeforeMount(() => {
   <Transition>
     <ErrorFlash v-if='store.error' :error="store.error"/>
   </Transition>
-  <main class="columns">
-    <Login v-if="!store.user.loggedIn" />
-    <Welcome v-if="store.user.loggedIn" />
-  </main>
+  <Login v-if="!store.user.loggedIn" />
+  <Theme v-if="store.user.loggedIn" />
 </template>
 
 

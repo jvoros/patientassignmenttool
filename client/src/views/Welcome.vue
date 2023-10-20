@@ -5,17 +5,17 @@ import { useBoardStore } from '../stores/board.js';
 const res = ref();
 const store = useBoardStore();
 
-async function checkLogin() {
-  res.value = await store.checkLoginStatus();
+async function test() {
+  const response = await fetch('api/doctors');
+  res.value = await response.json();
 }
-
 
 </script>
 
 <template>
   <div class="column block">
     <h1>Welcome</h1>
-    <button class="button is-primary" @click.prevent='checkLogin'>Test Route</button>
+    <button class="button is-primary" @click.prevent='test'>Test Route</button>
     <p>{{  res  }}</p>
   </div>
 </template>

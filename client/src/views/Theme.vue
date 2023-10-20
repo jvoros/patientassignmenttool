@@ -1,38 +1,47 @@
 <template>
-  
-  <h1>Themes</h1>
-  <h3>Base</h3>
-  <p>This is Pico default light them with added secondary, error buttons and alerts.</p>
-  <hr>
-  <h4>Buttons</h4>
-  <div class="grid">
-    <button>Primary</button>
-    <button disabled>Primary</button>
-    <button class="outline">Primary</button>
-    <button class="outline" disabled>Primary</button>
-  </div>
-  <br>
-  <div class="grid">
-    <button class="secondary">Secondary</button>
-    <button class="secondary" disabled>Secondary</button>
-    <button class="secondary outline">Secondary</button>
-    <button class="secondary outline" disabled>Secondary</button>
-  </div>
-  <br>
-  <div class="grid">
-    <button class="contrast">Contrast</button>
-    <button class="contrast" disabled>Contrast</button>
-    <button class="contrast outline">Contrast</button>
-    <button class="contrast outline" disabled>Contrast</button>
-  </div>
-  <br>
-  <div class="grid">
-    <button class="error">error</button>
-    <button class="error" disabled>error</button>
-    <button class="error outline">error</button>
-    <button class="error outline" disabled>error</button>
-  </div>
-  <br>
+  <main>
+    <h1>Themes</h1>
+    <h3>Base</h3>
+    <p>This is Pico default light them with added secondary, error buttons and alerts.</p>
+    <hr>
+    <h4>Buttons</h4>
+    <div class="grid">
+      <button>Primary</button>
+      <button disabled>Primary</button>
+      <button class="outline">Primary</button>
+      <button class="outline" disabled>Primary</button>
+    </div>
+    <br>
+    <div class="grid">
+      <button class="secondary">Secondary</button>
+      <button class="secondary" disabled>Secondary</button>
+      <button class="secondary outline">Secondary</button>
+      <button class="secondary outline" disabled>Secondary</button>
+    </div>
+    <br>
+    <div class="grid">
+      <button class="danger">Danger</button>
+      <button class="danger" disabled>Danger</button>
+      <button class="danger outline">Danger</button>
+      <button class="danger outline" disabled>Danger</button>
+    </div>
+    <br>
+    <h3>Form</h3>
+    <form @submit.prevent="" class="notification">
+      <label>Role</label>
+      <select>
+        <option value="nurse">Nurse</option>
+        <option value="doctor">Doctor</option>
+      </select>
+      <label>Password</label>
+      <input class="input" type="password">
+      <button class="button" type="submit">Login</button>
+    </form>
+    <br>
+    <h3>Tiles</h3>
+    <div class="tile">Used to set off content on the page, <strong>.tile</strong></div>
+    <div class="tile secondary">This uses <strong>.tile .secondary</strong></div>
+    <div class="tile danger">This uses <strong>.tile .danger</strong></div>
   <h3>Alerts</h3>
   <div role="alert">This is an alert.</div>
   <div role="alert" class="info">
@@ -44,6 +53,12 @@
   <br>
   <h3>Tooltip</h3>
   <p>Tooltip on a <a href="#" data-tooltip="Tooltip">link</a></p>
-
+</main>
 
 </template>
+
+<style scoped>
+button {
+  margin-right: var(--md-pad);
+}
+</style>
