@@ -1,6 +1,23 @@
+<script setup>
+import Message from '../components/Message.vue'
+</script>
 <template>
   <main>
     <h1>Themes</h1>
+    <h3>Messages</h3>
+    <Message :sticky="false">
+      Base message, <code>sticky = true</code>
+    </Message>
+    <Message severity="info">
+      Info message
+    </Message>
+    <Message severity="warn">
+      Warn message
+    </Message>
+    <Message severity="error">
+      Error message
+    </Message>
+    
     <h3>Base</h3>
     <p>This is Pico default light them with added secondary, error buttons and alerts.</p>
     <hr>
@@ -40,8 +57,18 @@
     <br>
     <h3>Tiles</h3>
     <div class="tile">Used to set off content on the page, <strong>.tile</strong></div>
-    <div class="tile secondary">This uses <strong>.tile .secondary</strong></div>
-    <div class="tile danger">This uses <strong>.tile .danger</strong></div>
+    <div class="tile tile-secondary">This uses <strong>.tile .tile-secondary</strong></div>
+    <div class="tile tile-danger">This uses <strong>.tile .tile-danger</strong></div>
+    <br>
+    <div class="tile">
+      <div class="tile-header">This is a header <strong>.tile-header</strong></div>
+      <div>Here is the rest of the tile.</div>
+    </div>
+
+    <div class="tile tile-secondary">
+      <div class="tile-header">This is a header <strong>.tile-header</strong></div>
+      <div>Here is the rest of the tile.</div>
+    </div>
   <h3>Alerts</h3>
   <div role="alert">This is an alert.</div>
   <div role="alert" class="info">

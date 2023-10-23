@@ -26,12 +26,11 @@ api.get('/board', (req, res) => {
   res.json(store.getState());
 });
 
-api.get('/doctors', confirmRole('nurse'), async (req, res) => {
-  console.log('geting doctors')
+api.post('/doctors', async (req, res) => {
   res.sendFile(getPath('./json/doctors.json'));
 });
 
-api.get('/shift_details', async (req, res) => {
+api.post('/shifts', async (req, res) => {
   res.sendFile(getPath('./json/shift_details.json'));
 });
 

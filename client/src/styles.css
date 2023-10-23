@@ -1,0 +1,105 @@
+@import url('./assets/reset.css');
+/* @import url('chota.css');
+@import url('pico.color.css'); */
+
+
+
+:root {
+  --font-family: 'Open Sans';
+  --bg-color: #ffffff;
+  --bg-secondary-color: #f3f3f6;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+  --color-black: #111111;
+  --color-near-black: #333333;
+  --color-near-white:  #f9fafb;
+  --color-light-gray: #f3f4f6;
+  --color-moon-gray: #CCCCCC;
+
+  --f-headline: 6rem;
+  --f-subheadline: 5rem;
+  --f1: 3rem;
+  --f2: 2.25rem;
+  --f3: 1.5rem;
+  --f4: 1.25rem;
+  --f5: 1rem;
+  --f6: 0.875rem;
+
+  /* Theme Colors */
+  --theme-text: var(--color-black);
+  --theme-text-contrast: white;
+  --theme-primary: #0074D9;
+  --theme-secondary: var(--color-near-white);
+  --theme-secondary-dark: var(--color-moon-gray);
+  --theme-contrast: var(--color-black);
+  --theme-contrast-hover: var(--color-near-black);
+  --color-error: #E7040F;
+  --color-error-light: #FFDFDF;
+  --color-error-dark: var(--pico-color-red-800);
+  --color-success: #28bd14;
+  --space: 1rem;
+  --space-sm: 0.5rem;
+  --space-md: 2rem;
+  --space-lg: 4rem;
+  --border-radius: 0.5rem;
+  --border-radius-sm: 0.25rem;
+}
+
+button i:first-child {
+  margin-right: var(--space-sm);
+}
+
+button i:last-child {
+  margin-left: var(--space-sm);
+}
+
+button {
+  cursor: pointer;
+  padding: var(--space-sm) var(--space);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--theme-secondary-dark);
+  background-color: white;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  /* filter: brightness(.9);
+  transition: filter 0.2s ease; */
+  background-color: var(--theme-secondary);
+  transition: background-color 0.2s ease;
+}
+
+button.contrast {
+  font-weight: 300;
+  background-color: var(--theme-contrast);
+  color: var(--theme-text-contrast);
+  border-color: var(--theme-contrast);
+}
+
+button.contrast:hover {
+  background-color: var(--theme-contrast-hover);
+}
+
+button.block {
+  display: block;
+  width: 100%;
+}
+
+.error {
+  padding: var(--space-sm) var(--space);
+  border: 1px solid var(--color-error);
+  background-color: var(--color-error-light);
+  color: var(--color-error);
+  border-radius: var(--border-radius-sm);
+}
+
+label {
+  font-weight: 500;
+}
+
+input, select {
+  padding: var(--space-sm) var(--space);
+  border: 1px solid var(--theme-secondary-dark);
+  border-radius: var(--border-radius-sm);
+}

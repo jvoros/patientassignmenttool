@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-export async function apiCall(url, payload) {
+async function apiCall(url, payload) {
   const response = await fetch(url, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -13,12 +13,21 @@ export const useBoardStore = defineStore('board', {
   state: () => {
     return {
       user: { loggedIn: false }, //default state
-      error: null,
+      error: { text: 'Test Error'},
+      loginError: '', //{ text: 'loginError' },
       board: boardDummy
     }
   },
   
   actions: {
+    async apiCall(url, payload) {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      });
+      return await response.json();
+    },
 
     setError(err) {
       this.error = err;
@@ -28,11 +37,12 @@ export const useBoardStore = defineStore('board', {
     },
 
     async login(roleAndPassword) {
+      this.loginError = null;
       const res = await apiCall('api/login', roleAndPassword);
       if (res.status === 'success') {
         this.user = { loggedIn: true, ...res.payload };
       } else {
-        this.setError(res);
+        this.loginError = res;
       }
     },
 
@@ -53,7 +63,18 @@ export const useBoardStore = defineStore('board', {
       if (res.status === 'error') {
         this.setError(res);
       }
+    },
+
+    async getDoctors() {
+      const res = await apiCall('api/doctors');
+      if (res) return res.doctors;
+    },
+
+    async getShifts() {
+      const res = await apiCall('api/shifts');
+      if (res) return res.shift_details;
     }
+
   }
 });
 
