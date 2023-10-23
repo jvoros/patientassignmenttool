@@ -25,18 +25,24 @@
 
 <template>
   <Message @close="close">
-    <form>
-      <h3>Add Doctor:</h3>
-      <select v-model="doctor">
-        <option value="default" disabled>Select Doctor</option>
-        <option v-for="doctor in doctors" :value="doctor">{{ doctor.last }}, {{ doctor.first }}</option>
-      </select>
-      <select v-model="shift">
-        <option value="default" disabled>Select Shift</option>
-        <option v-for="shift in shifts" :value="shift">{{ shift.name }}</option>
-      </select>
-      <button class="contrast">Add</button>
-    </form> 
+    <section>
+      <form>
+        <h3>Add Doctor:</h3>
+        <select v-model="doctor">
+          <option value="default" disabled>Select Doctor</option>
+          <option v-for="doctor in doctors" :value="doctor">{{ doctor.last }}, {{ doctor.first }}</option>
+        </select>
+        <select v-model="shift">
+          <option value="default" disabled>Select Shift</option>
+          <option v-for="shift in shifts" :value="shift">{{ shift.name }}</option>
+        </select>
+        <button class="contrast">Add</button><br>
+      </form>
+      <div class="add-doctor-warning">
+        <div v-if="shift.id === 1" class="warn">Adding a doctor to the 6 am shift will reset the board.</div>
+      </div>
+    </section>
+    
   </Message>
 </template>
 <style scoped>
@@ -49,5 +55,10 @@ form {
   align-items: center;
   justify-content: center;
   gap: var(--space);
+}
+
+.add-doctor-warning {
+  width: 450px;
+  margin: var(--space) auto;
 }
 </style>

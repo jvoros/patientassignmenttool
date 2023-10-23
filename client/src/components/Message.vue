@@ -57,7 +57,7 @@
 <style scoped>
   section {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     background-color: var(--color-near-white);
     color: var(--theme-text);
