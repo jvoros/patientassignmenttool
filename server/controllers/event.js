@@ -3,18 +3,26 @@ import { shortTimestamp } from "./helpers.js";
 /**************
  * 
  * Types of Events
- * - patient arrival: rotation, type, room, doctor
+ * All Event relate to a doctor, this is use of timeline to see what
+ * is happening with the doctors
+ * 
+ * - patient assigned: rotation, type, room, doctor
  *  - walk-in: rotation, room, doctor
  *  - ambo: rotation, room, doctor
  *  - fast track: rotation, room, doctor
- * - join rotation: rotation, doctor
+ * - joined rotation: rotation, doctor
  * - leave rotation: rotation, doctor
  * - move pointer: rotation, direction (skip, if forward, back to, if back), doctor
- * - move doctor: rotation, doctor
+ * - moved doctor: rotation, doctor
  * 
  * all events have:
  *  - time
- *  - type, rotation, doctor
+ *  - action: assign patient, join rotation, switch rotation, change order, skip, go back, 
+ *  - rotation
+ *  - doctor
+ *  - room?
+ *  - patient type?
+ *  - msg
  * 
  * some events have:
  *  - room #
@@ -24,13 +32,15 @@ import { shortTimestamp } from "./helpers.js";
  * 
  */
 
-function make(action, rotation, doctor, msg = '') {
+function make(action, rotation, doctor, { message = '', room = '', pt_type = '' }) {
   return {
     time: shortTimestamp(),
-    action: action,
-    rotation: rotation,
-    doctor: doctor,
-    message: msg
+    action,
+    rotation,
+    doctor,
+    message,
+    room,
+    pt_type
   }
 }
 

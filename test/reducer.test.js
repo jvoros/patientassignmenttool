@@ -24,7 +24,8 @@ describe("Reducer Tests", () => {
     
     it("should add shifts to main, ft, off rotations", () => {
       store.dispatch(actions.addShift(c.doctors[0], c.shifts[0]))
-      expect(store.getState().rotations.main.shifts.length).to.equal(1)
+      expect(store.getState().rotations.main.shifts.length).to.equal(1);
+      
 
       store.dispatch(actions.addShift(c.doctors[1], c.shifts[1], 'ft'))
       expect(store.getState().rotations.ft.shifts.length).to.equal(1)

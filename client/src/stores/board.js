@@ -13,6 +13,8 @@ export const useBoardStore = defineStore('board', {
   state: () => {
     return {
       user: { loggedIn: false }, //default state
+      doctors: {},
+      shift_details: {},
       error: { text: 'Test Error'},
       loginError: '', //{ text: 'loginError' },
       board: boardDummy
@@ -67,12 +69,17 @@ export const useBoardStore = defineStore('board', {
 
     async getDoctors() {
       const res = await apiCall('api/doctors');
-      if (res) return res.doctors;
+      if (res) this.doctors = res.doctors;
     },
 
     async getShifts() {
       const res = await apiCall('api/shifts');
-      if (res) return res.shift_details;
+      if (res) this.shift_details = res.shift_details;
+    },
+
+    getDoctorsAndShifts() {
+      this.getDoctors();
+      this.getShifts();
     }
 
   }
@@ -183,6 +190,36 @@ const boardDummy = {
         "first": "Jeremy"
       },
       "message": "Room 19"
+    },
+    {
+      "time": "3:46 PM",
+      "action": "ft",
+      "rotation": "main",
+      "doctor": {
+        "last": "Blake",
+        "first": "Kelly"
+      },
+      "message": "Room 17"
+    },
+    {
+      "time": "3:46 PM",
+      "action": "ambo",
+      "rotation": "main",
+      "doctor": {
+        "last": "Voros",
+        "first": "Jeremy"
+      },
+      "message": "Room 30"
+    },
+    {
+      "time": "3:46 PM",
+      "action": "ft",
+      "rotation": "main",
+      "doctor": {
+        "last": "Carmack",
+        "first": "Brian"
+      },
+      "message": "TR A"
     },
     {
       "time": "3:46 PM",

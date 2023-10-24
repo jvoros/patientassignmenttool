@@ -13,14 +13,19 @@ function make(name, use_pointer = false) {
       if (this.shifts.length == 0 || this.use_pointer == false) return;
       const action = offset < 0 ? 'reverse': 'skip';
       const action_shift = this.shifts[this.pointer]; // identify action shift before moving pointer
+      const verb = action === 'skip' ? 'Skipped' : 'Go Back to';
+      const message = verb + ' ' + action_shift.doctor.first + ' ' +action_shift.doctor.last;
       this.pointer = (this.pointer + offset + this.shifts.length) % this.shifts.length;
-      return event.make(action, this.name, action_shift.doctor, action);
+      return event.make(action, this.name, action_shift.doctor, { message });
     },
 
     addPatient(pt) {
       const updatedShift = this.nextShift().addPatient(pt);
       if (updatedShift.counts.total > updatedShift.bonus) this.movePointer(1);
-      const new_patient_event = event.make(pt.type, this.name, updatedShift.doctor, 'Room '+pt.room);
+      const new_patient_event = event.make(pt.type, 
+          this.name,
+          updatedShift.doctor, 
+          { room: pt.room, message: `${updatedShift.doctor.first} ${updatedShift.doctor.last} assigned ${pt.room}` });
       return new_patient_event;
     },
 
@@ -28,7 +33,7 @@ function make(name, use_pointer = false) {
 
     addShift(shift) {
       this.shifts.splice(this.pointer, 0, shift)
-      return event.make('join', this.name, shift.doctor, 'Joined '+this.name)
+      return event.make('join', this.name, shift.doctor, { message: `${shift.doctor.first} ${shift.doctor.last} joined ${this.name}` });
     }, 
 
     removeShift(index) {
@@ -44,7 +49,10 @@ function make(name, use_pointer = false) {
       
       return { 
         removed_shift: removed_shift,  
-        removed_event: event.make('leave', this.name, removed_shift.doctor, 'Left '+this.name)
+        removed_event: event.make('leave', 
+          this.name, 
+          removed_shift.doctor, 
+          { message: `${removed_shift.doctor.first} ${removed_shift.doctor.last} left ${this.name}` })
       }
     },
 
@@ -53,7 +61,7 @@ function make(name, use_pointer = false) {
       const movedShift = this.shifts.splice(index, 1)[0]; 
       const doctor_string = movedShift.doctor.first + ' ' + movedShift.doctor.last;
       this.shifts.splice(newIndex, 0, movedShift);
-      return event.make('move', this.name, movedShift.doctor, 'Moved '+doctor_string)
+      return event.make('move', this.name, movedShift.doctor, { message: `Moved ${movedShift.doctor.first} ${movedShift.doctor.last}` })
     }
   }
 }

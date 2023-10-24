@@ -33,7 +33,7 @@ function reducer(state, action, addUndo) {
           event.make('move', 
             move_to_event.rotation, 
             move_to_event.doctor, 
-            'Left '+ removed_event.rotation+' and joined '+ move_to_event.rotation
+            { message: `${move_to_event.doctor.first} ${move_to_event.doctor.last} moved to ${move_to_event.rotation}` }
             ));
         return
 

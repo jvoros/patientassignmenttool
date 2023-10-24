@@ -4,6 +4,19 @@ import { expect } from "chai";
 import rotation from '../server/controllers/rotation.js'
 import shift from '../server/controllers/shift.js'
 
+const c = {
+  doctors: [
+    {last: 'Voros', first: 'Jeremy'},
+    {last: "Blake", first: "Kelly"},
+    {last: "Kasavana", first: "Brian"}
+  ],
+  shifts: [
+    {start: "06:00", end: "15:00", name: "6 am", bonus: 2},
+    {start: "08:00", end: "17:00", name: "8 am", bonus: 2},
+    {start: "10:00", end: "20:00", name: "10 am", bonus: 2}
+  ]
+}
+
 describe("Rotation Object Tests", () => {
   let main = rotation.make('main', true);
   let ft = rotation.make('ft');
@@ -27,7 +40,11 @@ describe("Rotation Object Tests", () => {
 
     it("should loop pointer forward and backward if shifts present, and return skip or reverse events", () => {
       let e;
-      main.shifts = [1,2,3]; // can't move pointer unless shifts
+      main.shifts = [
+        { name: 1, doctor: { first: 'Jeremy', last: 'Voros'}},
+        { name: 2, doctor: { first: 'Jeremy', last: 'Voros'}},
+        { name: 3, doctor: { first: 'Jeremy', last: 'Voros'}}
+      ]; // can't move pointer unless shifts
       e = main.movePointer(1);
       expect(main.pointer).to.equal(1);
       expect(e.action).to.equal('skip');
@@ -51,27 +68,27 @@ describe("Rotation Object Tests", () => {
      
     it("should add shifts", () => {
       main.shifts = [];
-      main.addShift({name: 'test'});
+      main.addShift({name: 'test', doctor: { first: 'Jeremy', last: 'Voros'}});
       expect(main.shifts.length).to.equal(1);
     });
   
     it("should add shifts at pointer", () => {
-      main.addShift({name: 'test 2'});
+      main.addShift({name: 'test 2', doctor: { first: 'Jeremy', last: 'Voros'}});
       main.movePointer(1)
-      main.addShift({ name: 'test 3' });
+      main.addShift({ name: 'test 3', doctor: { first: 'Jeremy', last: 'Voros'} });
       expect(main.shifts[1].name).to.equal('test 3')
     })
   
     it("should remove shifts by index", () => {
       const removed_shift = main.removeShift(1).removed_shift;
-      expect(removed_shift).to.deep.equal({name: 'test 3'});
+      expect(removed_shift.name).to.equal('test 3');
     });
   
     it("should not change pointer if removed shift index > pointer", () => {
       main.shifts = [];
-      main.addShift({name: 'test 1'});
-      main.addShift({name: 'test 2'});
-      main.addShift({name: 'test 3'});
+      main.addShift({name: 'test 1', doctor: { first: 'Jeremy', last: 'Voros'}});
+      main.addShift({name: 'test 2', doctor: { first: 'Jeremy', last: 'Voros'}});
+      main.addShift({name: 'test 3', doctor: { first: 'Jeremy', last: 'Voros'}});
       main.removeShift(2);
       expect(main.pointer).to.equal(1);
     })
@@ -83,9 +100,9 @@ describe("Rotation Object Tests", () => {
   
     it("should not change pointer if index == pointer and not last shift", () => {
       main.shifts = [];
-      main.addShift({name: 'test 1'});
-      main.addShift({name: 'test 2'});
-      main.addShift({name: 'test 3'});
+      main.addShift({name: 'test 1', doctor: { first: 'Jeremy', last: 'Voros'}});
+      main.addShift({name: 'test 2', doctor: { first: 'Jeremy', last: 'Voros'}});
+      main.addShift({name: 'test 3', doctor: { first: 'Jeremy', last: 'Voros'}});
       main.movePointer(1)
       main.removeShift(1);
       expect(main.pointer).to.equal(1);

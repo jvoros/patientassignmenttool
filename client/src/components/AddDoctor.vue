@@ -1,6 +1,7 @@
 <script setup>
-  import { ref, onMounted } from 'vue';
+  import { ref } from 'vue';
   import Message from './Message.vue';
+  import Button from './Button.vue';
   import { useBoardStore } from '../stores/board';
 
   const store = useBoardStore();
@@ -9,56 +10,28 @@
 
   const doctor = ref('default');
   const shift = ref('default');
-  const doctors = ref();
-  const shifts = ref();
 
   function close() {
     emit('close');
   }
 
-  onMounted(async () => {
-    doctors.value = await store.getDoctors();
-    shifts.value = await store.getShifts();
-
-  });
 </script>
 
 <template>
   <Message @close="close">
-    <section>
-      <form>
-        <h3>Add Doctor:</h3>
-        <select v-model="doctor">
-          <option value="default" disabled>Select Doctor</option>
-          <option v-for="doctor in doctors" :value="doctor">{{ doctor.last }}, {{ doctor.first }}</option>
-        </select>
-        <select v-model="shift">
-          <option value="default" disabled>Select Shift</option>
-          <option v-for="shift in shifts" :value="shift">{{ shift.name }}</option>
-        </select>
-        <button class="contrast">Add</button><br>
-      </form>
-      <div class="add-doctor-warning">
-        <div v-if="shift.id === 1" class="warn">Adding a doctor to the 6 am shift will reset the board.</div>
-      </div>
-    </section>
-    
+    <form class="flex flex-row items-center gap-x-4 py-2 px-4">
+      <h3 class="font-bold">Add Doctor:</h3>
+      <select class="py-2 px-4 rounded w-100" v-model="doctor">
+        <option value="default" disabled>Select Doctor</option>
+        <option v-for="doctor in store.doctors" :value="doctor">{{ doctor.last }}, {{ doctor.first }}</option>
+      </select>
+      <select class="py-2 px-4 rounded" v-model="shift">
+        <option value="default" disabled>Select Shift</option>
+        <option v-for="shift in store.shift_details" :value="shift">{{ shift.name }}</option>
+      </select>
+      <Button variety="contrast">Add</Button>
+    </form>
+    <Message severity="warn" v-if="shift.id === 1">Adding a doctor to the 6 am shift will reset the board.</Message>
   </Message>
 </template>
-<style scoped>
-h3 {
-  font-weight: 700;
-  font-size: var(--f5);
-}
-form {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space);
-}
 
-.add-doctor-warning {
-  width: 450px;
-  margin: var(--space) auto;
-}
-</style>

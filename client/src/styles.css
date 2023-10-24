@@ -1,9 +1,24 @@
-@import url('./assets/reset.css');
-/* @import url('chota.css');
+/* @import url('./assets/reset.css');
+@import url('chota.css');
 @import url('pico.color.css'); */
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+select:not([size]) {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg aria-hidden='true' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 10 6'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 1 4 4 4-4'/%3E%3C/svg%3E");
+  background-position: right .75rem center;
+  background-repeat: no-repeat;
+  background-size: .75em .75em;
+  padding-right: 2.5rem;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-indent: 1px;
+  text-overflow: '';
+}
 
+/* 
 :root {
   --font-family: 'Open Sans';
   --bg-color: #ffffff;
@@ -26,7 +41,6 @@
   --f5: 1rem;
   --f6: 0.875rem;
 
-  /* Theme Colors */
   --theme-text: var(--color-black);
   --theme-text-contrast: white;
   --theme-primary: #0074D9;
@@ -66,8 +80,6 @@ button {
 }
 
 button:hover {
-  /* filter: brightness(.9);
-  transition: filter 0.2s ease; */
   background-color: var(--theme-secondary);
   transition: background-color 0.2s ease;
 }
@@ -113,3 +125,5 @@ input, select {
   border: 1px solid var(--theme-secondary-dark);
   border-radius: var(--border-radius-sm);
 }
+
+*/

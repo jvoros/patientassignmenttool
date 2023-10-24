@@ -9,9 +9,9 @@ enablePatches();
 
 const initial_state = {
   rotations: {
-    main: rotation.make('main', true),
-    ft: rotation.make('ft'),
-    off: rotation.make('off')
+    main: rotation.make('Main', true),
+    ft: rotation.make('FT'),
+    off: rotation.make('Off')
   },
   timeline: [],
 }
