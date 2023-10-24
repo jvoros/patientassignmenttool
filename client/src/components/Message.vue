@@ -13,6 +13,10 @@
     sticky: {
       type: Boolean,
       default: true
+    },
+    icon: {
+      type: Boolean,
+      default: true
     }
   });
 
@@ -20,7 +24,7 @@
 
  function getStyles() {
     const s = {
-      'default': 'bg-gray-50',
+      'default': 'bg-gray-100 border border-gray-200',
       'warn': 'bg-yellow-50 border border-solid border-amber-400 text-amber-600',
       'error': 'bg-red-50 border border-solid border-red-400 text-red-400'
       }
@@ -55,10 +59,10 @@
 
 <template>
   <Transition>
-    <div class="m-4 py-2 px-4 rounded flex flex-row items-start justify-between gap-x-4 shadow-sm" :class="getStyles()">
-      <div class=""><i class="fa-solid" :class="getIcon()"></i></div>
+    <div class="m-4 py-2 px-4 rounded flex flex-row items-start justify-between gap-x-4" :class="getStyles()">
+      <div><i v-if="icon" class="ml-4 fa-solid" :class="getIcon()"></i></div>
       <div><slot /></div>
-      <div><i class="fa-solid fa-xmark" @click="close"></i></div>
+      <div><i v-if="closable" class="fa-solid fa-xmark" @click="close"></i></div>
     </div>
   </Transition>
 </template>

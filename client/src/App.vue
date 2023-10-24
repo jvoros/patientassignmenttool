@@ -6,6 +6,7 @@ import Login from './components/Login.vue'
 import AddDoctor from './components/AddDoctor.vue'
 import Message from './components/Message.vue'
 import Timeline from './components/Timeline.vue'
+import MainRotation from './components/MainRotation.vue'
 
 const store = useBoardStore();
 
@@ -32,24 +33,16 @@ function toggleError() {
 
 <template>
   <Login v-if="!store.user.loggedIn" />
-  <div v-if="store.user.loggedIn">
+  <div v-if="store.user.loggedIn" class="relative">
     <Navbar :role="store.user.role" @add-doctor="toggleAddDoctor" @logout="logout" />
     <AddDoctor v-if="addDoctorModal" @close="toggleAddDoctor"/>
     <Message severity="error" class="w-1/2 mx-auto" v-if='errorModal' @close="toggleError">{{  store.error.text }}</Message>
-    <div class="flex flex-row gap-x-4 px-4">
-      <div class="basis-1/3 bg-gray-50 rounded shadow">
+    <div class="grid grid-cols-7 gap-4 px-4 my-8">
       <Timeline :events="store.board.timeline" />
-      </div>
-      <div class="bg-gray-50 basis-1/3">
-        <div v-for="shift in store.board.rotations.main.shifts">{{ shift.name }}</div>
-      </div>
-      <div class="bg-gray-50 basis-1/3">other rotations</div>
+      <MainRotation :rotation="store.board.rotations.main" />
+      <div class="bg-gray-50 col-span-2">other rotations</div>
     </div>
   </div>
-  
-
-
-
 </template>
 
 

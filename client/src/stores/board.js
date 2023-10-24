@@ -15,7 +15,7 @@ export const useBoardStore = defineStore('board', {
       user: { loggedIn: false }, //default state
       doctors: {},
       shift_details: {},
-      error: { text: 'Test Error'},
+      error: null, //{ text: 'Test Error'},
       loginError: '', //{ text: 'loginError' },
       board: boardDummy
     }
@@ -124,7 +124,40 @@ const boardDummy = {
                       "ambo": 1,
                       "walk-in": 1
                   }
-              }
+              },
+              {
+                "doctor": {
+                    "last": "Blake",
+                    "first": "Kelly"
+                },
+                "start": "06:00",
+                "end": "15:00",
+                "name": "6 am",
+                "bonus": 2,
+                "patients": [
+                    {
+                        "time": "8:42 AM",
+                        "type": "ft",
+                        "room": "Rm TrA"
+                    },
+                    {
+                        "time": "8:42 AM",
+                        "type": "ambo",
+                        "room": "Rm 30"
+                    },
+                    {
+                        "time": "8:42 AM",
+                        "type": "walk-in",
+                        "room": "Rm 20"
+                    }
+                ],
+                "counts": {
+                    "total": 3,
+                    "ft": 1,
+                    "ambo": 1,
+                    "walk-in": 1
+                }
+            }
           ]
       },
       "ft": {

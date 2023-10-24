@@ -1,35 +1,43 @@
 <script setup>
 import TimelineIcon from './TimelineIcon.vue';
+import BoardPanel from './BoardPanel.vue';
 
 const props = defineProps({
   events: Array
 });
+
+function isAssignClasses(event) {
+  if (event.action === 'assign') return 'bg-white rounded border border-gray-200 hover:bg-gray-50';
+  return
+}
 </script>
 
 <template>
-  <h1 class="p-4 mb-4 font-semibold text-2xl bg-stone-800 rounded-t text-gray-100">
-    Timeline
-  </h1>
-  <ol class="p-4">
-    <li v-for="(event, index) in events" class="flex items-center gap-x-6">
-      <TimelineIcon :action="event.pt_type || event.action" />
-      <div class="grow ml-4 pl-6 border-l-2 border-gray-200">
-        <div class="my-2 px-4 py-2 grow flex items-center rounded" 
-          :class="[event.action === 'assign' ? 'bg-white border border-gray-100 hover:bg-gray-50' : '']">
-          <div class="grow">
-            <span class="text-gray-400 text-sm">{{ event.time }}</span>
-            <h4 class="font-semibold text-xl capitalize">
-              {{ event.doctor.first }} {{ event.doctor.last }}
-            </h4>
-            <span v-if="event.action !== 'assign'" class="text-sm text-gray-400">
-              {{ event.message }}
-            </span>
-          </div>
-          <div v-if="event.room" class="whitespace-nowrap px-4 py-2 bg-gray-100 border border-gray-200  rounded-full font-semibold text-sm">
-            {{  event.room }}
-          </div>
+<BoardPanel header="Timeline" class="col-span-2 bg-gray-50 pb-4">
+  <div class="mt-4"></div>
+  <!-- outer box, contains icon and border box that makes timeline -->
+  <div v-for="(event, index) in events" class="flex items-center gap-x-6 px-4">
+    <TimelineIcon :action="event.pt_type || event.action" />
+    <!-- border box -->
+    <div class="grow ml-4 pl-6 border-l-2 border-gray-200">
+      <!-- event box -->
+      <div class="my-2 px-4 py-2 grow flex items-center" :class="isAssignClasses(event)">
+        <!-- time, name, message -->
+        <div class="grow mb-2">
+          <div class="text-gray-400 text-sm">{{ event.time }}</div>
+          <h4 v-if="event.action === 'assign'" class="font-semibold text-lg">
+            {{ event.doctor.first }} {{ event.doctor.last }}
+          </h4>
+          <span v-if="event.action !== 'assign'" class="text-base text-gray-400">
+            {{ event.message }}
+          </span>
+        </div>
+        <!-- room tag -->
+        <div v-if="event.room" class="whitespace-nowrap px-4 py-2 bg-gray-100 border border-gray-200 rounded-full font-semibold text-sm">
+          {{  event.room }}
         </div>
       </div>
-    </li>
-  </ol>
+    </div>
+  </div>
+</BoardPanel>
 </template>

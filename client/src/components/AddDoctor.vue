@@ -21,17 +21,17 @@
   <Message @close="close">
     <form class="flex flex-row items-center gap-x-4 py-2 px-4">
       <h3 class="font-bold">Add Doctor:</h3>
-      <select class="py-2 px-4 rounded w-100" v-model="doctor">
+      <select class="py-2 px-4 rounded border border-gray-200" v-model="doctor">
         <option value="default" disabled>Select Doctor</option>
         <option v-for="doctor in store.doctors" :value="doctor">{{ doctor.last }}, {{ doctor.first }}</option>
       </select>
-      <select class="py-2 px-4 rounded" v-model="shift">
+      <select class="py-2 px-4 rounded border border-gray-200" v-model="shift">
         <option value="default" disabled>Select Shift</option>
         <option v-for="shift in store.shift_details" :value="shift">{{ shift.name }}</option>
       </select>
       <Button variety="contrast">Add</Button>
     </form>
-    <Message severity="warn" v-if="shift.id === 1">Adding a doctor to the 6 am shift will reset the board.</Message>
+    <Message severity="warn" :closable="false" v-if="shift.id === 1">Adding a doctor to the 6 am shift will reset the board.</Message>
   </Message>
 </template>
 

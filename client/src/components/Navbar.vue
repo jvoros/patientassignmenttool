@@ -7,7 +7,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <nav class="flex flex-row justify-between items-center p-4 shadow-sm">
+  <nav class="sticky top-0 z-20 flex flex-row justify-between items-center p-4 shadow bg-white">
     <h1 class="text-xl font-extrabold">Patient Assignment Tool</h1>
     <div class="flex gap-x-4">
       <Button v-if="role === 'nurse'" @click="emit('addDoctor')">
@@ -21,3 +21,8 @@ const props = defineProps({
     </div>
   </nav>
 </template>
+<style scoped>
+nav {
+
+}
+</style>
