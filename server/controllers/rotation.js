@@ -22,10 +22,10 @@ function make(name, use_pointer = false) {
     addPatient(pt) {
       const updatedShift = this.nextShift().addPatient(pt);
       if (updatedShift.counts.total > updatedShift.bonus) this.movePointer(1);
-      const new_patient_event = event.make(pt.type, 
+      const new_patient_event = event.make('assign', 
           this.name,
           updatedShift.doctor, 
-          { room: pt.room, message: `${updatedShift.doctor.first} ${updatedShift.doctor.last} assigned ${pt.room}` });
+          { pt_type: pt.type, room: pt.room, message: `${updatedShift.doctor.first} ${updatedShift.doctor.last} assigned ${pt.room}` });
       return new_patient_event;
     },
 

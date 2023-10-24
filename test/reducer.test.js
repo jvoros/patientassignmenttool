@@ -60,7 +60,9 @@ describe("Reducer Tests", () => {
       store.dispatch(actions.moveShiftFromTo(0, 'off', 'ft'));
       store.dispatch(actions.newPatient('ft', 'Rm TrB'));
       expect(store.getState().rotations.ft.shifts[0].patients[0].room).to.equal('Rm TrB');
+      console.log(JSON.stringify(store.getState()));
     })
+    
   });
 
   describe("# Rotation Behaviors", () => {

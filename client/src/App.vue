@@ -37,7 +37,7 @@ function toggleError() {
     <AddDoctor v-if="addDoctorModal" @close="toggleAddDoctor"/>
     <Message severity="error" class="w-1/2 mx-auto" v-if='errorModal' @close="toggleError">{{  store.error.text }}</Message>
     <div class="flex flex-row gap-x-4 px-4">
-      <div class="basis-1/4 bg-gray-50 rounded shadow">
+      <div class="basis-1/3 bg-gray-50 rounded shadow">
       <Timeline :events="store.board.timeline" />
       </div>
       <div class="bg-gray-50 basis-1/3">

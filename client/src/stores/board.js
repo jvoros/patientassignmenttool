@@ -87,149 +87,202 @@ export const useBoardStore = defineStore('board', {
 
 const boardDummy = {
   "rotations": {
-    "main": {
-      "name": "main",
-      "use_pointer": true,
-      "pointer": 1,
-      "shifts": [
-        {
-          "doctor": {
-            "last": "Blake",
-            "first": "Kelly"
-          },
-          "start": "08:00",
-          "end": "17:00",
-          "name": "8 am",
-          "bonus": 2,
-          "patients": [],
-          "counts": {}
-        },
-        {
-          "doctor": {
-            "last": "Voros",
-            "first": "Jeremy"
-          },
-          "start": "06:00",
-          "end": "15:00",
-          "name": "6 am",
-          "bonus": 2,
-          "patients": [
-            {
-              "time": "3:46 PM",
-              "type": "walk-in",
-              "room": "19"
-            }
-          ],
-          "counts": {
-            "total": 1,
-            "walk-in": 1
-          }
-        }
-      ]
-    },
-    "ft": {
-      "name": "ft",
-      "use_pointer": false,
-      "pointer": 0,
-      "shifts": []
-    },
-    "off": {
-      "name": "off",
-      "use_pointer": false,
-      "pointer": 0,
-      "shifts": []
-    }
+      "main": {
+          "name": "Main",
+          "use_pointer": true,
+          "pointer": 0,
+          "shifts": [
+              {
+                  "doctor": {
+                      "last": "Voros",
+                      "first": "Jeremy"
+                  },
+                  "start": "06:00",
+                  "end": "15:00",
+                  "name": "6 am",
+                  "bonus": 2,
+                  "patients": [
+                      {
+                          "time": "8:42 AM",
+                          "type": "ft",
+                          "room": "Rm TrA"
+                      },
+                      {
+                          "time": "8:42 AM",
+                          "type": "ambo",
+                          "room": "Rm 30"
+                      },
+                      {
+                          "time": "8:42 AM",
+                          "type": "walk-in",
+                          "room": "Rm 20"
+                      }
+                  ],
+                  "counts": {
+                      "total": 3,
+                      "ft": 1,
+                      "ambo": 1,
+                      "walk-in": 1
+                  }
+              }
+          ]
+      },
+      "ft": {
+          "name": "FT",
+          "use_pointer": false,
+          "pointer": 0,
+          "shifts": [
+              {
+                  "doctor": {
+                      "last": "Blake",
+                      "first": "Kelly"
+                  },
+                  "start": "08:00",
+                  "end": "17:00",
+                  "name": "8 am",
+                  "bonus": 2,
+                  "patients": [
+                      {
+                          "time": "8:42 AM",
+                          "type": "ft",
+                          "room": "Rm TrB"
+                      }
+                  ],
+                  "counts": {
+                      "total": 1,
+                      "ft": 1
+                  }
+              }
+          ]
+      },
+      "off": {
+          "name": "Off",
+          "use_pointer": false,
+          "pointer": 0,
+          "shifts": [
+              {
+                  "doctor": {
+                      "last": "Kasavana",
+                      "first": "Brian"
+                  },
+                  "start": "10:00",
+                  "end": "20:00",
+                  "name": "10 am",
+                  "bonus": 2,
+                  "patients": [],
+                  "counts": {}
+              }
+          ]
+      }
   },
   "timeline": [
-    {
-      "time": "3:46 PM",
-      "action": "skip",
-      "rotation": "main",
-      "doctor": {
-        "last": "Blake",
-        "first": "Kelly"
+      {
+          "time": "8:42 AM",
+          "action": "assign",
+          "rotation": "FT",
+          "doctor": {
+              "last": "Blake",
+              "first": "Kelly"
+          },
+          "message": "Kelly Blake assigned Rm TrB",
+          "room": "Rm TrB",
+          "pt_type": "ft"
       },
-      "message": "skip"
-    },
-    {
-      "time": "3:46 PM",
-      "action": "join",
-      "rotation": "main",
-      "doctor": {
-        "last": "Blake",
-        "first": "Kelly"
+      {
+          "time": "8:42 AM",
+          "action": "move",
+          "rotation": "FT",
+          "doctor": {
+              "last": "Blake",
+              "first": "Kelly"
+          },
+          "message": "Kelly Blake moved to FT",
+          "room": "",
+          "pt_type": ""
       },
-      "message": "Joined main"
-    },
-    {
-      "time": "3:46 PM",
-      "action": "move",
-      "rotation": "main",
-      "doctor": {
-        "last": "Voros",
-        "first": "Jeremy"
+      {
+          "time": "8:42 AM",
+          "action": "assign",
+          "rotation": "Main",
+          "doctor": {
+              "last": "Voros",
+              "first": "Jeremy"
+          },
+          "message": "Jeremy Voros assigned Rm TrA",
+          "room": "Rm TrA",
+          "pt_type": "ft"
       },
-      "message": "Left ft and joined main"
-    },
-    {
-      "time": "3:46 PM",
-      "action": "move",
-      "rotation": "ft",
-      "doctor": {
-        "last": "Voros",
-        "first": "Jeremy"
+      {
+          "time": "8:42 AM",
+          "action": "assign",
+          "rotation": "Main",
+          "doctor": {
+              "last": "Voros",
+              "first": "Jeremy"
+          },
+          "message": "Jeremy Voros assigned Rm 30",
+          "room": "Rm 30",
+          "pt_type": "ambo"
       },
-      "message": "Left main and joined ft"
-    },
-    {
-      "time": "3:46 PM",
-      "action": "walk-in",
-      "rotation": "main",
-      "doctor": {
-        "last": "Voros",
-        "first": "Jeremy"
+      {
+          "time": "8:42 AM",
+          "action": "assign",
+          "rotation": "Main",
+          "doctor": {
+              "last": "Voros",
+              "first": "Jeremy"
+          },
+          "message": "Jeremy Voros assigned Rm 20",
+          "room": "Rm 20",
+          "pt_type": "walk-in"
       },
-      "message": "Room 19"
-    },
-    {
-      "time": "3:46 PM",
-      "action": "ft",
-      "rotation": "main",
-      "doctor": {
-        "last": "Blake",
-        "first": "Kelly"
+      {
+          "time": "8:42 AM",
+          "action": "move",
+          "rotation": "Off",
+          "doctor": {
+              "last": "Blake",
+              "first": "Kelly"
+          },
+          "message": "Kelly Blake moved to Off",
+          "room": "",
+          "pt_type": ""
       },
-      "message": "Room 17"
-    },
-    {
-      "time": "3:46 PM",
-      "action": "ambo",
-      "rotation": "main",
-      "doctor": {
-        "last": "Voros",
-        "first": "Jeremy"
+      {
+          "time": "8:42 AM",
+          "action": "join",
+          "rotation": "Off",
+          "doctor": {
+              "last": "Kasavana",
+              "first": "Brian"
+          },
+          "message": "Brian Kasavana joined Off",
+          "room": "",
+          "pt_type": ""
       },
-      "message": "Room 30"
-    },
-    {
-      "time": "3:46 PM",
-      "action": "ft",
-      "rotation": "main",
-      "doctor": {
-        "last": "Carmack",
-        "first": "Brian"
+      {
+          "time": "8:42 AM",
+          "action": "join",
+          "rotation": "FT",
+          "doctor": {
+              "last": "Blake",
+              "first": "Kelly"
+          },
+          "message": "Kelly Blake joined FT",
+          "room": "",
+          "pt_type": ""
       },
-      "message": "TR A"
-    },
-    {
-      "time": "3:46 PM",
-      "action": "join",
-      "rotation": "main",
-      "doctor": {
-        "last": "Voros",
-        "first": "Jeremy"
-      },
-      "message": "Joined main"
-    }
+      {
+          "time": "8:42 AM",
+          "action": "join",
+          "rotation": "Main",
+          "doctor": {
+              "last": "Voros",
+              "first": "Jeremy"
+          },
+          "message": "Jeremy Voros joined Main",
+          "room": "",
+          "pt_type": ""
+      }
   ]
 }
