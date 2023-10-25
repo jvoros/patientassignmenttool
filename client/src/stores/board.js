@@ -90,7 +90,7 @@ const boardDummy = {
       "main": {
           "name": "Main",
           "use_pointer": true,
-          "pointer": 0,
+          "pointer": 1,
           "shifts": [
               {
                   "doctor": {
@@ -161,7 +161,7 @@ const boardDummy = {
           ]
       },
       "ft": {
-          "name": "FT",
+          "name": "Fast Track",
           "use_pointer": false,
           "pointer": 0,
           "shifts": [

@@ -7,13 +7,13 @@ const props = defineProps({
 });
 
 function isAssignClasses(event) {
-  if (event.action === 'assign') return 'bg-white rounded border border-gray-200 hover:bg-gray-50';
+  if (event.action === 'assign') return 'bg-white rounded border border-gray-200';
   return
 }
 </script>
 
 <template>
-<BoardPanel header="Timeline" class="col-span-2 bg-gray-50 pb-4">
+<BoardPanel header="Timeline" class="bg-gray-50 pb-4">
   <div class="mt-4"></div>
   <!-- outer box, contains icon and border box that makes timeline -->
   <div v-for="(event, index) in events" class="flex items-center gap-x-6 px-4">
@@ -25,15 +25,15 @@ function isAssignClasses(event) {
         <!-- time, name, message -->
         <div class="grow mb-2">
           <div class="text-gray-400 text-sm">{{ event.time }}</div>
-          <h4 v-if="event.action === 'assign'" class="font-semibold text-lg">
+          <h4 v-if="event.action === 'assign'" class="font-semibold text-gray-600">
             {{ event.doctor.first }} {{ event.doctor.last }}
           </h4>
-          <span v-if="event.action !== 'assign'" class="text-base text-gray-400">
+          <span v-if="event.action !== 'assign'" class="text-gray-400">
             {{ event.message }}
           </span>
         </div>
         <!-- room tag -->
-        <div v-if="event.room" class="whitespace-nowrap px-4 py-2 bg-gray-100 border border-gray-200 rounded-full font-semibold text-sm">
+        <div v-if="event.room" class="whitespace-nowrap px-4 py-2 bg-gray-100 border border-gray-200 rounded-full font-semibold text-xs">
           {{  event.room }}
         </div>
       </div>

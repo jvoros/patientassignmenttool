@@ -10,7 +10,7 @@ enablePatches();
 const initial_state = {
   rotations: {
     main: rotation.make('Main', true),
-    ft: rotation.make('FT'),
+    ft: rotation.make('Fast Track'),
     off: rotation.make('Off')
   },
   timeline: [],
