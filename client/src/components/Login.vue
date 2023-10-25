@@ -1,6 +1,7 @@
 <script setup>
   import { ref } from 'vue'
   import { useBoardStore } from '../stores/board'
+  import Button from './Button.vue';
 
   const store = useBoardStore();
   const role = ref('nurse');
@@ -13,54 +14,26 @@
 </script>
 
 <template>
-  <section>
-    <h1>Patient Assignment Tool</h1>
+  <section class="w-1/3 border-2 border-gray-200 rounded-lg p-16 mt-20 mx-auto">
+    <h1 class="text-2xl font-bold mb-16 text-center">Patient Assignment Tool</h1>
 
-    <form @submit.prevent="login" class="tile secondary">
+    <form @submit.prevent="login" class="flex flex-col gap-y-6">
 
-      <select v-model="role">
+      <select v-model="role" class="px-4 py-2 text-lg rounded">
         <option value="nurse">Nurse</option>
         <option value="doctor">Doctor</option>
       </select>
 
-      <input class="input" type="password" v-model="password" placeholder="Password">
+      <input class="px-4 py-2 text-lg rounded" type="password" v-model="password" placeholder="Password">
       
-      <div v-if="store.loginError" class="error">
+      <div v-if="store.loginError" class="bg-red-50 border border-red-600 text-red-700 px-4 py-2 rounded">
         {{ store.loginError.text }}
       </div>
 
-      <button class="contrast" type="submit">Login</button>
+      <Button variety="contrast" type="submit" class="text-center">Login</Button>
 
     </form>
     
   </section>
 </template>
 
-<style scoped>
-section {
-  width: 400px;
-  padding: var(--space-md) var(--space-md);
-  margin: var(--space-lg) auto;
-  background-color: var(--color-near-white);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-md);
-}
-
-h1 {
-  font-size: var(--f3);
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: var(--space-md);
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space);
-}
-
-input, select {
-  width: 100%;
-}
-
-</style>

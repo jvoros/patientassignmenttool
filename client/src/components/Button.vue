@@ -16,7 +16,7 @@
   }
 </script>
 <template>
-  <button class="py-2 px-4 gap-x-2 flex items-center transition-colors duration-300 rounded-lg" :class="getStyles()" @click="emit('click')">
+  <button class="py-2 px-4 gap-x-2 flex justify-center items-center transition-colors duration-150 rounded-lg" :class="getStyles()" @click="emit('click')">
     <slot />
   </button>
 </template>
