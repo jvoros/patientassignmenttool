@@ -59,7 +59,7 @@
 
 <template>
   <Transition>
-    <div class="m-4 py-2 px-4 rounded flex flex-row items-start justify-between gap-x-4" :class="getStyles()">
+    <div class="py-2 px-4 rounded flex flex-row items-start justify-between gap-x-4" :class="getStyles()">
       <div><i v-if="icon" class="ml-4 text-amber-300 fa-solid" :class="getIcon()"></i></div>
       <div><slot /></div>
       <div><i v-if="closable" class="fa-solid fa-xmark" @click="close"></i></div>
