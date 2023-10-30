@@ -94,7 +94,7 @@
         </Button>
 
         <Button v-if="variety==='next'" class="w-30" variety="contrast">
-          <Icon icon="walk-in" color="white" /> Assign
+          <span class="mr-2">Assign</span><Icon icon="walk-in" color="white" />
         </Button>
 
 

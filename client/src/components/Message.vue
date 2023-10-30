@@ -31,16 +31,6 @@
     return s[props.severity];
   };
 
-  function getIcon() {
-    const s = {
-      info: 'fa-circle-info',
-      success: 'fa-triangle-exclamation',
-      warn: 'fa-triangle-exclamation',
-      error: 'fa-circle-xmark'
-    }
-    return s[props.severity];
-  };
-
   function close() {
     emit('close');
   };
@@ -59,9 +49,8 @@
 
 <template>
   <Transition>
-    <div class="py-2 px-4 rounded flex flex-row items-start justify-between gap-x-4" :class="getStyles()">
-      <div><i v-if="icon" class="ml-4 text-amber-300 fa-solid" :class="getIcon()"></i></div>
-      <div><slot /></div>
+    <div class="py-2 px-4 rounded flex flex-row gap-x-4" :class="getStyles()">
+      <div class="grow"><slot /></div>
       <div><i v-if="closable" class="fa-solid fa-xmark" @click="close"></i></div>
     </div>
   </Transition>

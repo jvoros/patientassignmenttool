@@ -4,10 +4,8 @@ import { useBoardStore } from '../stores/board.js'
 import BoardPanel from './BoardPanel.vue';
 import RotationPanelControls from './RotationPanelControls.vue'
 import AssignPopover from './AssignPopover.vue'
-import AssignPopoverLarge from './AssignPopoverLarge.vue'
 import Button from './Button.vue'
 import Icon from './Icons.vue'
-
 
 const store = useBoardStore();
 
@@ -36,9 +34,9 @@ function isNext(shift_index) {
 
 function getStyles() {
   const c = {
-    'default': 'bg-white border-gray-200',
-    'ft': 'bg-green-50 border-green-300 text-gray-600 hover:bg-green-50',
-    'off': 'text-gray-500'
+    'default': 'bg-white border-gray-200 hover:bg-gray-50',
+    'ft': 'bg-green-50 border-green-300 text-gray-600 hover:bg-green-100',
+    'off': 'text-gray-500 hover:bg-gray-100'
   }
   return c[props.variation];
 }
@@ -47,23 +45,25 @@ function countColor(count) {
   const c = {
     'total': "bg-gray-200",
     'ft': "bg-green-200",
-    'walk-in': "bg-blue-50",
-    'ambo': "bg-red-50"
+    'walk-in': "bg-blue-100",
+    'ambo': "bg-red-100"
   }
   return c[count];
 }
 
-const assignPopover = ref()
-
 </script>
+
 <template>
   <BoardPanel :header="rotation.name + ' Rotation'">
     <div v-for="shift, index in rotation.shifts" 
       class="my-6 rounded-md border transition-colors duration-150" 
-      :class="[getStyles(), isNext(index) && primaryRotation ? 'shadow-md border-2 !border-amber-300 bg-yellow-50 hover:bg-amber-100' : 'hover:bg-gray-50']"
+      :class="[getStyles(), isNext(index) && primaryRotation ? 'shadow-lg border-2 !border-amber-300 !bg-yellow-50 hover:!bg-amber-100' : '']"
     >
+      <div v-if="isNext(index) && primaryRotation" class="bg-amber-300 text-white px-2 py-1 text-sm text-center">
+        NEXT UP
+      </div>
       <!-- flex: shift controls -->
-      <div v-if="store.user.role === 'nurse'" class="flex py-2 px-4 rounded-t items-center p-1 bg-gray-100" :class="[pointer ? 'justify-between' : 'justify-end']">
+      <div v-if="store.user.role === 'nurse'" class="flex py-2 px-2 rounded-t items-center p-1 bg-gray-100" :class="[pointer ? 'justify-between' : 'justify-end']">
         
         <div v-if="pointer">
           <button class="px-2 py-1 rounded-s bg-gray-100 border border-gray-300">
@@ -82,28 +82,17 @@ const assignPopover = ref()
         </div>
       </div>
 
-      <!-- flex: shift details and next pill -->
+      <!-- flex: shift details and Assign Button -->
       <div class="flex items-center px-6 py-4">
-        
-        <!-- shift details box -->
         <div class="grow flex flex-col">
           <div class="text-gray-400 text-base">{{ shift.name }}</div>
           <h4 class="font-semibold text-2xl">{{ shift.doctor.first }} {{ shift.doctor.last }}</h4>
         </div>
-
-        <!-- next pill box / assign button -->
         <AssignPopover v-if="store.user.role==='nurse'" :variety="isNext(index) && primaryRotation ? 'next' : 'default'" :shift="{rotationName: rotation.name, shiftIndex: index}" />
-        <div v-if="primaryRotation && isNext(index) && store.user.role!=='nurse'" class="flex gap-x-2 items-center bg-amber-300 border border-amber-300 text-white px-4 py-2 rounded-full ">
-          Next
-          <Icon icon="star" color="white"/>
-        </div>
-        <!-- <AssignPopover v-if="isNext(index) && store.user.role=='nurse'" :shift="{rotationName: rotation.name, shiftIndex: index}">
-          <Button variety="contrast">Assign</Button>
-        </AssignPopover> -->
       </div>
 
       <!-- patient counts -->
-      <ul class="pb-6 px-6 flex gap-x-2 text-xs">
+      <ul class="pb-4 px-4 flex gap-x-2 text-xs">
         <li v-for="count, key in shift.counts" class="mt-2 py-1 px-2 rounded-full uppercase text-xs" :class="countColor(key)">
           {{ key }} 
           <span class="inline-flex items-center justify-center w-4 h-4 ml-1 text-xs font-semibold bg-gray-50 rounded-full">
@@ -111,7 +100,6 @@ const assignPopover = ref()
           </span>
         </li>
       </ul>
-
     </div>
     <RotationPanelControls v-if="pointer && store.user.role ==='nurse'" />
   </BoardPanel>

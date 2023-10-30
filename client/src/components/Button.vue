@@ -1,8 +1,18 @@
 <script setup>
+  import Icon from './Icons.vue'
+
   const props = defineProps({
     variety: {
       type: String,
       default: 'base'
+    },
+    leftIcon: {
+      type: String,
+      default: ''
+    },
+    rightIcon: {
+      type: String,
+      default: ''
     }
   })
   const emit = defineEmits(['click']);
@@ -18,6 +28,8 @@
 </script>
 <template>
   <button class="py-2 px-4 gap-x-2 flex justify-center items-center transition-colors duration-150 rounded" :class="getStyles()" @click="emit('click')">
+    <Icon v-if="leftIcon" :icon="leftIcon" />
     <slot />
+    <Icon v-if="rightIcon" :icon="leftIcon" />
   </button>
 </template>
