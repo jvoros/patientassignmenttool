@@ -24,7 +24,7 @@ function isAssignClasses(event) {
   <section v-for="(event, index) in events">
     <!-- outer box, contains icon and border box that makes timeline -->
     <div  class="flex items-center gap-x-6 px-4">
-      <TimelineIcon :action="event.pt_type || event.action" />
+      <TimelineIcon :action="event.pt_type || event.action" class="absolute z-0"/>
       <!-- border box -->
       <div class="grow ml-4 pl-6 border-l-2 border-gray-200">
         <!-- event box -->
@@ -47,13 +47,11 @@ function isAssignClasses(event) {
       </div>
     </div>
     <div v-if="index === 0 && store.user.role === 'nurse'" class="flex justify-end ml-8 pb-4 pr-4 border-l-2 border-gray-200">
-      <button  class="flex items-center justify-center rounded-lg gap-x-2 bg-gray-100 border border-gray-300 px-8 py-2 border cursor-pointer hover:bg-gray-200">
+      <Button>
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z"/></svg>
-        Undo Last Event
-      </button>
+        Undo
+      </Button>
     </div>
-
   </section>
-
 </BoardPanel>
 </template>

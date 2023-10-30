@@ -8,17 +8,18 @@ function getClasses() {
   if(props.action === 'ambo') return 'bg-red-100';
   if(props.action === 'walk-in') return 'bg-blue-100';
   if(props.action === 'ft') return 'bg-green-200';
-  return 'bg-yellow-50';
+  if(props.action === 'bonus') return 'bg-amber-100';
+  return 'bg-gray-200';
 }
 
 function getIcon() {
-  if (['ambo', 'walk-in', 'ft'].includes(props.action)) return props.action;
+  if (['ambo', 'walk-in', 'ft', 'bonus'].includes(props.action)) return props.action;
   return 'bell';
 }
 
 </script>
 <template>
-  <span class="absolute z-0 flex items-center justify-center w-8 h-8 rounded-full" :class="getClasses()">
+  <span class="flex items-center justify-center w-8 h-8 rounded-full" :class="getClasses()">
     <Icon :icon="getIcon()" />
   </span>
 </template>

@@ -14,7 +14,7 @@
   const emit = defineEmits(['assign']);
 
   const pt_type = ref('');
-  const pt_room = ref('default');
+  const pt_room = ref('');
 
   async function addDoctor(close) {
     close();
@@ -80,7 +80,11 @@
 <template>
   <Popover class="relative">
     <PopoverButton class="focus:outline-none">
-      <div class="rounded-lg px-4 py-2 bg-amber-300 text-yellow-50 text-sm">Assign</div>
+      <Button variety="contrast">
+        <Icon icon="walk-in" color="white" />
+        Assign Patient
+        
+      </Button>
     </PopoverButton>
     <transition
       enter-active-class="transition duration-200 ease-out"
@@ -92,14 +96,15 @@
     >
       <PopoverPanel class="absolute w-128 z-10 -left-4 -top-1/2 p-4 text-base bg-gray-100 shadow-xl rounded-md border-2 border-gray-300 flex gap-x-4">
           <ul class="flex flex-col border border-gray-300 divide-y rounded-lg">
-            <li v-for="x in assign_types" class="relative typeButton">
+            <li v-for="x in assign_types" class="relative typeButton first:rounded-lg">
               <input class="absolute invisible" type="radio" name="pt_type" :id="x.value" v-model="pt_type" :value="x.value">
-              <label :for="x.value" class="flex cursor-pointer hover:bg-gray-200 px-4 py-4" :class="[x.value === pt_type ? 'bg-amber-100' : '']">
+              <label :for="x.value" class="flex cursor-pointer  px-4 py-4 rounded-lg" :class="[x.value === pt_type ? 'bg-amber-100 hover:bg-amber-200' : 'hover:bg-gray-200']">
                 <Icon :icon="x.value" />
               </label>
               <span class="absolute z-15 left-14 bottom-2 invisible whitespace-nowrap text-white bg-gray-500 px-2 py-1 rounded text-center">{{ x.display }}</span>
             </li>
           </ul>
+          
           <ul class="grid grid-cols-10 grid-rows-3 auto-rows-fr rounded-lg my-grid">
             <li v-for="room in rooms" class="flex items-stretch border border-gray-300 first:rounded-ss-lg last:rounded-ee-lg" :class="[room === pt_room ? 'bg-amber-100 hover:bg-amber-200' : 'bg-gray-100 hover:bg-gray-200' ]">
               <input class="absolute invisible" type="radio" name="room" :value="room" :id="'room'+room" v-model="pt_room" />

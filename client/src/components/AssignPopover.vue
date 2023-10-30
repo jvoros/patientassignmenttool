@@ -1,6 +1,7 @@
 <script setup>
   import { ref, onUnmounted } from 'vue'
-  import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
+  import { Popover, PopoverButton, PopoverPanel, PopoverOverlay } from '@headlessui/vue'
+  import PopoverTransition from './PopoverTransition.vue'
   import Button from './Button.vue';
   import Icon from './Icons.vue';
   import { useBoardStore } from '../stores/board';
@@ -8,12 +9,20 @@
   const store = useBoardStore();
 
   const props = defineProps({
-    shift: Object
+    variety: {
+      type: String,
+      default: 'default'
+    },
+    shift: Object,
+    type: {
+      type: String,
+      default: ''
+    }
   });
 
   const emit = defineEmits(['assign']);
 
-  const pt_type = ref('');
+  const pt_type = ref(props.type);
   const pt_room = ref('default');
 
   async function addDoctor(close) {
@@ -77,45 +86,52 @@
 </script>
 
 <template>
-  <Popover class="relative">
+  <Popover class="relative" v-slot="{ close }">
     <PopoverButton class="focus:outline-none">
-      <Button class="w-30">
-        <Icon icon="walk-in" />
-     </Button>
+
+        <Button v-if="variety==='default'" class="w-30">
+          <Icon icon="walk-in" />
+        </Button>
+
+        <Button v-if="variety==='next'" class="w-30" variety="contrast">
+          <Icon icon="walk-in" color="white" /> Assign
+        </Button>
+
+
     </PopoverButton>
-    <transition
-      enter-active-class="transition duration-200 ease-out"
-      enter-from-class="translate-y-1 opacity-0"
-      enter-to-class="translate-y-0 opacity-100"
-      leave-active-class="transition duration-150 ease-in"
-      leave-from-class="translate-y-0 opacity-100"
-      leave-to-class="translate-y-1 opacity-0"
-    >
-      <PopoverPanel class="absolute z-10 top-10 right-0 p-4 text-base bg-gray-100 shadow-xl rounded-md border-2 border-gray-300">
-        <div class="overflow-visible flex flex-col gap-y-4">
+
+    <PopoverTransition>
+      <PopoverOverlay class="z-10 fixed inset-0 bg-black/30" />
+    </PopoverTransition>
+    
+    <PopoverTransition>
+      <PopoverPanel class="absolute z-10 top-12 right-0 p-4 text-base bg-gray-100 shadow-xl rounded-md border-2 border-gray-300">
+  
+        <div class="flex flex-col gap-y-4 text-lg">
           <ul class="flex border border-gray-300 divide-x rounded-lg">
             <li v-for="x in assign_types" class="relative grow typeButton">
               <input class="absolute invisible" type="radio" name="pt_type" :id="x.value" v-model="pt_type" :value="x.value">
-              <label :for="x.value" class="cursor-pointer px-4 py-2 flex hover:bg-gray-200" :class="[x.value === pt_type ? 'bg-gray-200' : '']">
+              <label :for="x.value" class="cursor-pointer px-6 py-3 flex hover:bg-gray-200" :class="[x.value === pt_type ? 'bg-gray-200' : '']">
                 <Icon :icon="x.value" />
               </label>
               <span class="absolute mt-2 invisible whitespace-nowrap text-white bg-gray-500 px-2 py-1 rounded text-center">{{ x.display }}</span>
             </li>
           </ul>
-          <div class="flex items-center gap-x-2">
+
+          <div class="flex items-center gap-x-8">
+            <strong>Room:</strong>
             <select class="py-2 px-4 w-full rounded border border-gray-200" v-model="pt_room">
-            <option value="default" disabled><strong>Room:</strong></option>
             <option v-for="room in rooms" :value="room">{{ room }}</option>
           </select>
           </div>
           
           <div class="flex items-center gap-4 self-end">
-            <a href="#" @click="close" class="hover:text-gray-600">Cancel</a>
+            <Button variety="ghost" @click="close" class="hover:text-gray-600">Cancel</Button>
             <Button variety="contrast" @click="addDoctor(close)" :disabled="!pt_type || !pt_room">Assign</Button>
           </div>
         </div>
       </PopoverPanel>
-    </transition>
+    </PopoverTransition>
   </Popover>
 </template>
 <style>

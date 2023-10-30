@@ -1,6 +1,8 @@
 <script setup>
 import Button from './Button.vue'
 import AddDoctorPopover from './AddDoctorPopover.vue';
+import Icon from './Icons.vue';
+
 const props = defineProps({
     role: String
   });
@@ -14,7 +16,7 @@ const props = defineProps({
       <AddDoctorPopover v-if="role === 'nurse'" />
       <Button variety="contrast" @click="emit('logout')">
         Logout
-        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        <Icon icon="logout" color="white" />
       </Button>
     </div>
   </nav>
