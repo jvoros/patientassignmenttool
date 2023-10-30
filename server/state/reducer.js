@@ -24,6 +24,10 @@ function reducer(state, action, addUndo) {
         draft.timeline = addEvent(draft.timeline, add_patient_event);
         return
 
+        case 'board/assign-patient':
+          // use rotation name, shift index, patient room, patient type to assign to any shift
+          return
+
       case 'board/move-shift-between':
         const { index, from, to } = action.payload;
         const { removed_shift, removed_event } = draft.rotations[from].removeShift(index);

@@ -35,7 +35,7 @@
       leave-from-class="translate-y-0 opacity-100"
       leave-to-class="translate-y-1 opacity-0"
     >
-      <PopoverPanel v-slot="{ close }" class="absolute z-10 mt-3 w-80 md:-translate-x-44 p-4 bg-gray-100 shadow-xl rounded-md border-2 border-gray-300">
+      <PopoverPanel v-slot="{ close }" class="absolute z-10 mt-3 w-80 right-0 p-4 bg-gray-100 shadow-xl rounded-md border-2 border-gray-300">
         <div class="overflow-hidden flex flex-col gap-y-4">
           <select class="py-2 px-4 rounded border border-gray-200" v-model="shift">
             <option value="default" disabled>Select Shift</option>
@@ -49,10 +49,8 @@
           <div class="flex items-center gap-4 self-end">
             <a href="#" @click="close" class="hover:text-gray-600">Cancel</a>
             <Button variety="contrast" @click="addDoctor(close)">Add to Rotation</Button>
-
           </div>
-          
-          </div>
+        </div>
       </PopoverPanel>
     </transition>
   </Popover>

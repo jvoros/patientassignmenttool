@@ -62,6 +62,9 @@ describe("Reducer Tests", () => {
       expect(store.getState().rotations.ft.shifts[0].patients[0].room).to.equal('Rm TrB');
       console.log(JSON.stringify(store.getState()));
     })
+
+    it("should assign patients to any shift");
+    // use rotation name, shift index, patient room, patient type
     
   });
 

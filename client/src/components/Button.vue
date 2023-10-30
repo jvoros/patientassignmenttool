@@ -10,7 +10,7 @@
   function getStyles() {
       const styles = {
       'base': "bg-gray-200 border border-gray-300 hover:bg-gray-300 text-neutral-900",
-      'contrast': "bg-gray-900 text-gray-50 hover:bg-gray-700 font-light"
+      'contrast': "bg-gray-900 text-gray-50 hover:bg-gray-700 disabled:bg-gray-700 font-light"
     }
     return styles[props.variety];
   }

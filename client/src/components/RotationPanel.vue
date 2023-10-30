@@ -1,8 +1,13 @@
 <script setup>
+import { reactive } from 'vue';
 import { useBoardStore } from '../stores/board.js'
 import BoardPanel from './BoardPanel.vue';
 import RotationPanelControls from './RotationPanelControls.vue'
+import AssignPopover from './AssignPopover.vue';
+import AssignPopoverLarge from './AssignPopoverLarge.vue';
 import Button from './Button.vue';
+import Icon from './Icons.vue';
+
 
 const store = useBoardStore();
 
@@ -15,11 +20,19 @@ const props = defineProps({
   variation: {
     type: String,
     default: 'default'
+  },
+  primaryRotation: {
+    type: Boolean,
+    default: false
   }
 });
 
+const assignPanel = reactive(false);
+
 function isNext(shift_index) {
+  if (props.rotation.name === 'Off') return false;
   if (props.pointer) return shift_index === props.rotation.pointer;
+  if (shift_index === 0) return true;
   return false;
 }
 
@@ -46,8 +59,8 @@ function countColor(count) {
 <template>
   <BoardPanel :header="rotation.name + ' Rotation'">
     <div v-for="shift, index in rotation.shifts"  
-      class="my-6 rounded-md hover:bg-gray-50 border transition-colors duration-150" 
-      :class="[getStyles(), isNext(index) ? 'shadow-md border-2 !border-amber-200' : '']"
+      class="my-6 rounded-md border transition-colors duration-150" 
+      :class="[getStyles(), isNext(index) && primaryRotation ? 'shadow-md border-2 !border-amber-300 bg-yellow-50 hover:bg-amber-100' : 'hover:bg-gray-50']"
     >
       <!-- flex: shift controls -->
       <div v-if="store.user.role === 'nurse'" class="flex py-2 px-4 rounded-t items-center p-1 bg-gray-100" :class="[pointer ? 'justify-between' : 'justify-end']">
@@ -61,11 +74,12 @@ function countColor(count) {
           </button>
         </div>
 
-        <div class="text-xs">
+        <div class="text-xs flex gap-x-2">
           <select class="py-1 px-2 rounded border border-gray-300 text-sm">
             <option>Move to:</option>
             <option v-for="r in store.board.rotations" :disabled="rotation.name === r.name">{{ r.name }}</option>
           </select>
+          <AssignPopover :shift="{rotationName: rotation.name, shiftIndex: index}" />
         </div>
       </div>
 
@@ -77,9 +91,15 @@ function countColor(count) {
           <div class="text-gray-400 text-base">{{ shift.name }}</div>
           <h4 class="font-semibold text-2xl">{{ shift.doctor.first }} {{ shift.doctor.last }}</h4>
         </div>
+
         
-        <!-- next pill box -->
-        <div v-if="isNext(index)" class="rounded-full px-4 py-2 bg-amber-300 text-yellow-50 text-sm">Next<i class="ml-2 fa-solid fa-star"></i></div>
+        
+        <!-- next pill box / assign button -->
+        <div v-if="primaryRotation && isNext(index) && store.user.role !== 'nurse'" class="flex gap-x-2 items-center bg-amber-300 border border-amber-300 text-white px-4 py-2 rounded-full ">
+          Next
+          <Icon icon="star" color="white"/>
+        </div>
+        <AssignPopoverLarge v-if="primaryRotation && isNext(index) && store.user.role === 'nurse'" />
       </div>
 
       <!-- patient counts -->

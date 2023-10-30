@@ -4,7 +4,11 @@ export default {
     "./client/src/**/*"
   ],
   theme: {
-    extend: {},
+    extend: {
+      width: {
+        '128': '32rem',
+      }
+    },
   },
   plugins: [],
 }
