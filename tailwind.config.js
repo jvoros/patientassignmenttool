@@ -1,3 +1,5 @@
+const defaultTheme = require('tailwindcss/defaultTheme');
+
 export default {
   content: [
     "./client/index.html",
@@ -7,6 +9,11 @@ export default {
     extend: {
       width: {
         '128': '32rem',
+      },
+      fontFamily: {
+        sans: [
+          ...defaultTheme.fontFamily.sans,
+        ]
       }
     },
   },

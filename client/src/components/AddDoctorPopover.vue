@@ -3,7 +3,6 @@
   import { Popover, PopoverButton, PopoverPanel, PopoverOverlay } from '@headlessui/vue'
   import Button from './Button.vue';
   import Message from './Message.vue';
-  import Icon from './Icons.vue';
   import PopoverTransition from './PopoverTransition.vue'
   import { useBoardStore } from '../stores/board';
 
@@ -23,10 +22,7 @@
 <template>
   <Popover class="relative">
     <PopoverButton class="focus:outline-none">
-      <Button class="w-36">
-        <Icon icon="doctor" />
-        Add Doctor
-     </Button>
+      <Button class="w-36" leftIcon="doctor">Add Doctor</Button>
     </PopoverButton>
 
     <PopoverTransition>
@@ -49,6 +45,7 @@
             <Button variety="ghost" @click="close">Cancel</Button>
             <Button variety="contrast" @click="addDoctor(close)">Add to Rotation</Button>
           </div>
+
         </div>
       </PopoverPanel>
     </PopoverTransition>
