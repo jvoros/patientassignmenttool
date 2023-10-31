@@ -111,13 +111,13 @@ function toggleUpdates() {
       <Timeline
         :events="store.board.timeline"
         :role="store.user.role"
-        class="order-4 md:order-1 md:col-span-1 md:row-span-3 xl:col-span-3 xl:row-span-2"
+        class="order-4 md:order-1 md:col-span-1 md:row-span-3 xl:col-span-3 xl:row-span-3"
       />
       <RotationPanel
         pointer
         primaryRotation
         :rotation="store.board.rotations.main"
-        class="md:order-2 md:col-span-1 xl:col-span-4 xl:row-span-2"
+        class="md:order-2 md:col-span-1 xl:col-span-4 xl:row-span-3"
       />
       <div class="md:order-3 md:col-span-1 xl:col-span-3">
         <RotationPanel :rotation="store.board.rotations.ft" variation="ft" />

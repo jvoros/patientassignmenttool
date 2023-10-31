@@ -1,8 +1,8 @@
 <script setup>
-import Button from "./Button.vue";
 import PickupPopover from "./PickupPopover.vue";
 const props = defineProps({
   event: Object,
+  role: String,
 });
 </script>
 
@@ -26,7 +26,10 @@ const props = defineProps({
         <div class="whitespace-nowrap font-semibold text-sm pl-4 pr-4 py-1">
           {{ event.room }}
         </div>
-        <div class="hover:bg-gray-200 py-1 rounded-e-full">
+        <div
+          v-if="role === 'nurse'"
+          class="hover:bg-gray-200 py-1 rounded-e-full"
+        >
           <PickupPopover />
         </div>
       </div>
