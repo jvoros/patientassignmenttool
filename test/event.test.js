@@ -1,11 +1,11 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 
-import makeEvent from "../server/controllers/event.js";
+import event from "../server/controllers/event.js";
 
 describe("Event Object Tests", () => {
   it("should construct correctly", () => {
-    const e = makeEvent(
+    const e = event.make(
       "assign",
       "main_rot",
       { last: "Voros", first: "Jeremy" },

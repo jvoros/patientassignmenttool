@@ -1,28 +1,73 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 
-import {
-  makeRotation,
-  setRotationPointer,
-} from "../server/controllers/rotation.js";
+import rotation from "../server/controllers/rotation.js";
+
+let main = rotation.make("Main", true);
+let ft = rotation.make("Fast Track");
 
 describe("Rotation Functions", () => {
-  let main = makeRotation("Main", true);
-  let ft = makeRotation("Fast Track");
+  it("should be created with default properties", () => {
+    const comp = ["id", "name", "usePointer", "pointer", "shiftCount"];
+    expect(Object.keys(main)).to.deep.equal(comp);
+  });
 
-  describe("# constructor()", () => {
-    it("should be created with default properties", () => {
-      const comp = ["id", "name", "use_pointer", "pointer"];
-      expect(Object.keys(main)).to.deep.equal(comp);
+  it("should be created with use_pointer true if flagged", () => {
+    expect(main.usePointer).to.equal(true);
+  });
+
+  it("should handle pointer", () => {
+    main.shiftCount = 3; // pointer 0, 1, 2 for these shifts
+    main = rotation.movePointer(main, 1); // points at shift 2, index 1
+    main = rotation.movePointer(main, 1); // should point at shift 3, index 2
+    expect(main.pointer).to.equal(2);
+    // wrap back to zero
+    main = rotation.movePointer(main, 1);
+    expect(main.pointer).to.equal(0);
+    // wrap back to end
+    main = rotation.movePointer(main, -1);
+    expect(main.pointer).to.equal(2);
+
+    main.shiftCount = 0;
+
+    // doesn't move if usePointer false
+    ft = rotation.movePointer(ft, 1);
+    expect(ft.pointer).to.equal(0);
+  });
+
+  it("should add shifts", () => {
+    main = rotation.addShift(main);
+    expect(main.shiftCount).to.equal(1);
+  });
+
+  describe("removing shifts", () => {
+    it("should decrease shift and not change pointer if order > pointer", () => {
+      main.pointer = 0;
+      main.shiftCount = 2;
+      main = rotation.removeShift(main, 1);
+      expect(main.pointer).to.equal(0);
+      expect(main.shiftCount).to.equal(1); // also decreases shift count
     });
-
-    it("should be created with use_pointer true if flagged", () => {
-      expect(main.use_pointer).to.equal(true);
+    it("should decrease shift and pointer if order < pointer", () => {
+      main.pointer = 2;
+      main.shiftCount = 4;
+      main = rotation.removeShift(main, 1);
+      expect(main.pointer).to.equal(1);
+      expect(main.shiftCount).to.equal(3);
     });
-
-    it("should set pointer", () => {
-      main = setRotationPointer(main, 2);
+    it("should not change pointer if order == pointer and not last", () => {
+      main.pointer = 2;
+      main.shiftCount = 12;
+      main = rotation.removeShift(main, 2);
       expect(main.pointer).to.equal(2);
+      expect(main.shiftCount).to.equal(11);
+    });
+    it("should set pointer to 0 if order is last", () => {
+      main.pointer = 3;
+      main.shiftCount = 4;
+      main = rotation.removeShift(main, 3);
+      expect(main.pointer).to.equal(0);
+      expect(main.shiftCount).to.equal(3);
     });
   });
 });

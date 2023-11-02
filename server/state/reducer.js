@@ -1,5 +1,5 @@
 import { applyPatches, produce } from "immer";
-import { makeShift } from "../controllers/shift.js";
+import shift from "../controllers/shift.js";
 import makePatient from "../controllers/patient.js";
 import event from "../controllers/event.js";
 

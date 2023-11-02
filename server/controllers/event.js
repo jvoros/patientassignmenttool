@@ -32,7 +32,7 @@ import { shortTimestamp } from "./helpers.js";
  *
  */
 
-function makeEvent(
+function make(
   action,
   rotation,
   doctor,
@@ -49,4 +49,4 @@ function makeEvent(
   };
 }
 
-export default makeEvent;
+export default { make };
