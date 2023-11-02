@@ -1,6 +1,6 @@
-import { enablePatches } from "immer"
-import rotation from "../controllers/rotation.js"
-import r from "./reducer.js"
+import { enablePatches } from "immer";
+import r from "./reducer.js";
+import { makeRotation } from "../controllers/rotation.js";
 
 // https://techinscribed.com/implementing-undo-redo-functionality-in-redux-using-immer/
 // patches belong to the store, not the reducer
@@ -8,20 +8,20 @@ import r from "./reducer.js"
 enablePatches();
 
 const initial_state = {
-  rotations: {
-    main: rotation.make('Main', true),
-    ft: rotation.make('Fast Track'),
-    off: rotation.make('Off')
-  },
+  rotations: [
+    makeRotation("Main", true),
+    makeRotation("Fast Track"),
+    makeRotation("Off"),
+  ],
+  shifts: [],
   timeline: [],
-}
+};
 
 // basically a class with all private attributes
 // only some exposed functions
 // eliminates 'this'
 
 function createStore(reducer = r, initialState = initial_state) {
-
   let state = initialState;
   let undoes = [];
 
@@ -35,7 +35,7 @@ function createStore(reducer = r, initialState = initial_state) {
 
   function addUndo(_patches, inversePatches) {
     const PATCH_LIMIT = 50;
-    undoes = [inversePatches, ...undoes.slice(0, PATCH_LIMIT)]
+    undoes = [inversePatches, ...undoes.slice(0, PATCH_LIMIT)];
   }
 
   function getUndo() {

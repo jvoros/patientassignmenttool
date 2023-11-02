@@ -1,47 +1,49 @@
 const actions = {
-  // PATIENT
-  newPatient: (type, room) => {
-    return ({ 
-      type: 'board/new-patient', 
-      payload: {type, room }
-    })
+  addShift: (doctor = {}, shiftDetails = {}) => {
+    return {
+      type: "add-shift-at-start",
+      payload: { args: [doctor, shiftDetails] },
+    };
   },
 
-  moveShiftFromTo: (index, from_rotation_name, to_rotation_name) => {
-    return({
-      type: 'board/move-shift-between',
-      payload: { index, from: from_rotation_name, to: to_rotation_name }
-    });
-  },
+  // // PATIENT
+  // newPatient: (type, room) => {
+  //   return ({
+  //     type: 'board/new-patient',
+  //     payload: {type, room }
+  //   })
+  // },
+  // moveShiftFromTo: (index, from_rotation_name, to_rotation_name) => {
+  //   return({
+  //     type: 'board/move-shift-between',
+  //     payload: { index, from: from_rotation_name, to: to_rotation_name }
+  //   });
+  // },
+  // undo: (undo_patch) => {
+  //   return ({
+  //     type: 'board/undo',
+  //     payload: undo_patch
+  //   });
+  // },
+  // // ROTATION
+  // addShift: (doctor = {}, shift_details = {}, rotation_name ='main') => {
+  //   return ({
+  //     type: 'rotation/add-shift',
+  //     payload: { rotation_name, args: [doctor, shift_details]}
+  //   });
+  // },
+  // movePointer: (rotation_name, offset) => {
+  //   return ({
+  //     type: 'rotation/move-pointer',
+  //     payload: { rotation_name, offset }
+  //   });
+  // },
+  // moveShift: (rotation_name, index, offset) => {
+  //   return ({
+  //     type: 'rotation/move-shift',
+  //     payload: {rotation_name, index, offset }
+  //   });
+  // }
+};
 
-  undo: (undo_patch) => {
-    return ({ 
-      type: 'board/undo', 
-      payload: undo_patch 
-    });
-  },
-
-  // ROTATION
-  addShift: (doctor = {}, shift_details = {}, rotation_name ='main') => { 
-    return ({
-      type: 'rotation/add-shift', 
-      payload: { rotation_name, args: [doctor, shift_details]}
-    });
-  },
-
-  movePointer: (rotation_name, offset) => {
-    return ({ 
-      type: 'rotation/move-pointer', 
-      payload: { rotation_name, offset }
-    });
-  },
-
-  moveShift: (rotation_name, index, offset) => {
-    return ({ 
-      type: 'rotation/move-shift', 
-      payload: {rotation_name, index, offset }
-    });
-  }
-}
-
-export default actions
+export default actions;

@@ -1,11 +1,13 @@
-import { shortTimestamp } from './helpers.js';
+import { v4 as uuid } from "uuid";
+import { shortTimestamp } from "./helpers.js";
 
-function make(type, room) {
+function makePatient(type, room) {
   return {
+    id: uuid(),
     time: shortTimestamp(),
     type: type,
-    room: room
-  }
+    room: room,
+  };
 }
 
-export default { make };
+export default makePatient;
