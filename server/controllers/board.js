@@ -4,7 +4,8 @@ import Shift from "./shift.js";
 import Event from "./event.js";
 import Patient from "./patient.js";
 
-const EVENT_LIMIT = 25;
+// export for use in history api
+export const EVENT_LIMIT = 25;
 
 const initialState = {
   rotations: [
@@ -131,14 +132,12 @@ function createBoardStore() {
   // PATIENT functions
 
   function assignPatient(shiftId, type, room) {
-    const shift = findShiftById(shiftId);
-    const newTotal = shift.counts.total + 1;
     const newPatient = Patient.make(type, room);
-    // add to shifts
     modifyShiftById(shiftId, Shift.addPatient, newPatient);
 
+    const shift = findShiftById(shiftId);
     // if new total > bonus move pointer without pointer event
-    if (newTotal > shift.bonus)
+    if (shift.counts.total > shift.bonus)
       moveRotationPointer(shift.rotationId, 1, "noEvent");
 
     // make event
