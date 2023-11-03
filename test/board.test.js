@@ -182,7 +182,10 @@ describe("Board Functions", () => {
       expect(board.getState().shifts[0].patients.length).to.equal(0);
       expect(board.getState().shifts[1].patients.length).to.equal(1);
     });
-    it("should add event for changing shift order");
+    it("should add event for changing shift order", () => {
+      board.moveShift(board.getState().shifts[1].id, 1);
+      expect(board.getState().events[0].type).to.equal("order");
+    });
   });
 
   it("", () => {});

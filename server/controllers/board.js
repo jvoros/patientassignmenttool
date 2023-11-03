@@ -44,7 +44,6 @@ function createBoardStore() {
       newShift,
       ...handleRotationOrder(newShift.rotationId, rot.pointer, "add"),
     ];
-
     // event
     // flag to run function without event creation
     if (noEvent) return;
@@ -73,7 +72,6 @@ function createBoardStore() {
     // need shift for event also, let's make its own variable
     moveShift = Shift.setRotation(moveShift, newRotationId);
     addShift(moveShift, "noEvent");
-
     // event
     const message = [
       moveShift.doctor.first,
@@ -102,6 +100,13 @@ function createBoardStore() {
         ? Shift.setOrder(shift, oldOrder)
         : shift
     );
+    //event
+    const message = [
+      shift.doctor.first,
+      shift.doctor.last,
+      "changed position",
+    ].join(" ");
+    addEvent("order", message, shift);
     return;
   }
 
@@ -109,7 +114,6 @@ function createBoardStore() {
 
   function moveRotationPointer(rotationId, offset, noEvent = false) {
     modifyRotationById(rotationId, Rotation.movePointer, offset);
-
     // event
     // flag to fire without event
     if (noEvent) return;
