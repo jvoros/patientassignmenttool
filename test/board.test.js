@@ -116,7 +116,6 @@ describe("Board Functions", () => {
   });
 
   it("should move shifts within rotations", () => {
-    console.log(board.getState());
     // see above shift[1] is in main rotation with 3 other shifts
     const shiftId = board.getState().shifts[1].id;
     board.moveShift(shiftId, 1);
@@ -135,7 +134,56 @@ describe("Board Functions", () => {
     expect(board.getState().shifts[7].order).to.equal(3);
   });
 
-  it("should add patients to rotations");
+  it("should add patients to shifts", () => {
+    board.assignPatient(board.getState().shifts[0].id, "fasttrack", "TrA");
+    expect(board.getState().shifts[0].counts.total).to.equal(1);
+  });
+
+  it("should only move pointer when bonus reached", () => {
+    const startingPointer = board.getState().rotations[0].pointer;
+    board.addNewShift(c.doctors[0], { ...c.shifts[0], rotationId: mainId });
+    board.assignPatient(board.getState().shifts[0].id, "fasttrack", "TrA");
+    expect(board.getState().rotations[0].pointer).to.equal(startingPointer);
+    board.assignPatient(board.getState().shifts[0].id, "fasttrack", "TrA");
+    expect(board.getState().rotations[0].pointer).to.equal(startingPointer);
+    board.assignPatient(board.getState().shifts[0].id, "fasttrack", "TrA");
+    expect(board.getState().rotations[0].pointer).to.equal(startingPointer + 1);
+  });
+
+  describe("Event Functions", () => {
+    it("should add event for joining rotation", () => {
+      board.addNewShift(c.doctors[0], { ...c.shifts[0], rotationId: mainId });
+      expect(board.getState().events[0].type).to.equal("join");
+    });
+    it("should add event for moving pointer", () => {
+      board.addNewShift(c.doctors[1], { ...c.shifts[1], rotationId: mainId });
+      board.moveRotationPointer(mainId, 1);
+      expect(board.getState().events[0].type).to.equal("pointer");
+      expect(board.getState().events[0].shift.doctor.last).to.equal("Blake");
+      board.moveRotationPointer(mainId, 1); //skip Voros
+      board.moveRotationPointer(mainId, -1); // back to Voros
+      expect(board.getState().events[0].shift.doctor.last).to.equal("Voros");
+    });
+    it("should add event for moving rotation", () => {
+      board.moveShiftToRotation(board.getState().shifts[1].id, ftId);
+      expect(board.getState().events[0].type).to.equal("move");
+    });
+    it("should add event for patient assigment", () => {
+      board.assignPatient(board.getState().shifts[0].id, "ambo", "11");
+      expect(board.getState().events[0].type).to.equal("assign");
+      expect(board.getState().events[0].patient).to.exist;
+    });
+    it("should reassign patients", () => {
+      board.reassignPatient(
+        board.getState().events[0].id,
+        board.getState().shifts[1].id
+      );
+      expect(board.getState().events[0].reassign).to.exist;
+      expect(board.getState().shifts[0].patients.length).to.equal(0);
+      expect(board.getState().shifts[1].patients.length).to.equal(1);
+    });
+    it("should add event for changing shift order");
+  });
 
   it("", () => {});
 });

@@ -1,8 +1,9 @@
-import { v4 as uuid } from "uuid";
+import ShortUniqueId from "short-unique-id";
+const uid = new ShortUniqueId();
 
 function make(name, usePointer = false) {
   return {
-    id: uuid(),
+    id: uid.rnd(),
     name,
     usePointer,
     pointer: 0,

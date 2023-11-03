@@ -1,52 +1,37 @@
 import { shortTimestamp } from "./helpers.js";
+import ShortUniqueId from "short-unique-id";
+const uid = new ShortUniqueId();
 
-/**************
- *
+/*
  * Types of Events
- * All Event relate to a doctor, this is use of timeline to see what
- * is happening with the doctors
+ * All events relate to a shift
+ * All events have a message
+ * Some events have a patient
+ *  - Every patient has a type and room number
+ * Some events have a reassign
  *
- * - patient assigned: rotation, type, room, doctor
- *  - walk-in: rotation, room, doctor
- *  - ambo: rotation, room, doctor
- *  - fast track: rotation, room, doctor
- * - joined rotation: rotation, doctor
- * - leave rotation: rotation, doctor
- * - move pointer: rotation, direction (skip, if forward, back to, if back), doctor
- * - moved doctor: rotation, doctor
- *
- * all events have:
- *  - time
- *  - action: assign patient, join rotation, switch rotation, change order, skip, go back,
- *  - rotation
- *  - doctor
- *  - room?
- *  - patient type?
- *  - msg
- *
- * some events have:
- *  - room #
- *  - msg
- *
- * Almost all events relate to a rotation. Rotation returns events after each action
+ * Events types
+ * - "assign" patient assigned
+ * - "join" joined rotation
+ * - "move" move rotation
+ * - "pointer" move pointer
+ * - "order" change shift order
  *
  */
 
-function make(
-  action,
-  rotation,
-  doctor,
-  { message = "", room = "", ptType = "" }
-) {
+function make(type, message, shift, patient = null) {
   return {
+    id: uid.rnd(),
     time: shortTimestamp(),
-    action,
-    rotation,
-    doctor,
+    type,
+    shift,
     message,
-    room,
-    ptType,
+    patient,
   };
 }
 
-export default { make };
+function setReassign(event, newDoctor) {
+  return { ...event, reassign: newDoctor };
+}
+
+export default { make, setReassign };

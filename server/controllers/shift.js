@@ -1,8 +1,9 @@
-import { v4 as uuid } from "uuid";
+import ShortUniqueId from "short-unique-id";
+const uid = new ShortUniqueId();
 
 function make(doctor, options) {
   return {
-    id: uuid(),
+    id: uid.rnd(),
     doctor,
     start: options.start,
     end: options.end,
@@ -26,6 +27,13 @@ function addPatient(shift, pt) {
   return updateCounts({ ...shift, patients: [pt, ...shift.patients] });
 }
 
+function removePatient(shift, ptId) {
+  return updateCounts({
+    ...shift,
+    patients: shift.patients.filter((p) => p.id !== ptId),
+  });
+}
+
 function updateCounts(shift) {
   const counts = shift.patients.reduce(
     (result, pt) => {
@@ -38,4 +46,4 @@ function updateCounts(shift) {
   return { ...shift, counts };
 }
 
-export default { make, addPatient, setOrder, setRotation };
+export default { make, addPatient, removePatient, setOrder, setRotation };

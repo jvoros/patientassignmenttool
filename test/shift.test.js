@@ -1,10 +1,10 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 
-import shift from "../server/controllers/shift.js";
+import Shift from "../server/controllers/shift.js";
 
 describe("Shift Functions", () => {
-  let shift1 = shift.make(
+  let shift1 = Shift.make(
     { first: "Jeremy", last: "Voros" },
     {
       start: "06:00",
@@ -16,7 +16,7 @@ describe("Shift Functions", () => {
     }
   );
 
-  let shift2 = shift.make(
+  let shift2 = Shift.make(
     { first: "David", last: "Crosby" },
     {
       start: "06:00",
@@ -46,20 +46,25 @@ describe("Shift Functions", () => {
   });
 
   it("should add patients", () => {
-    shift1 = shift.addPatient(shift1, { type: "walk" });
-    shift2 = shift.addPatient(shift2, { type: "guitar" });
+    shift1 = Shift.addPatient(shift1, { type: "walk" });
+    shift2 = Shift.addPatient(shift2, { type: "guitar" });
     expect(shift1.patients.length).to.equal(1);
     expect(shift1.patients[0].type).to.equal("walk");
     expect(shift2.patients[0].type).to.equal("guitar");
   });
 
+  it("should remove patients", () => {
+    shift2 = Shift.removePatient(shift2, shift2.patients[0].id);
+    expect(shift2.patients.length).to.equal(0);
+  });
+
   it("should update order", () => {
-    shift1 = shift.setOrder(shift1, 1);
+    shift1 = Shift.setOrder(shift1, 1);
     expect(shift1.order).to.equal(1);
   });
 
   it("should update rotation", () => {
-    shift1 = shift.setRotation(shift1, 2);
+    shift1 = Shift.setRotation(shift1, 2);
     expect(shift1.rotationId).to.equal(2);
   });
 
@@ -71,7 +76,7 @@ describe("Shift Functions", () => {
       { type: "fasttrack" },
       { type: "zebra" },
     ].forEach((p) => {
-      shift1 = shift.addPatient(shift1, p);
+      shift1 = Shift.addPatient(shift1, p);
     });
     expect(shift1.counts).to.deep.equal({
       total: 6,

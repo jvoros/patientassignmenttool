@@ -1,7 +1,10 @@
+// use capitalization for controllers
 import Rotation from "./rotation.js";
 import Shift from "./shift.js";
-import event from "./event.js";
-import patient from "./patient.js";
+import Event from "./event.js";
+import Patient from "./patient.js";
+
+const EVENT_LIMIT = 25;
 
 const initialState = {
   rotations: [
@@ -25,70 +28,70 @@ function createBoardStore() {
     return state;
   }
 
+  // SHIFT Functions
+
   function addNewShift(doctor, options) {
     addShift(Shift.make(doctor, options));
     return;
   }
 
-  function moveRotationPointer(rotationId, offset) {
-    state.rotations = modifyRotationById(
-      rotationId,
-      Rotation.movePointer,
-      offset
-    );
-    return;
-  }
-
-  function addShift(newShift) {
+  function addShift(newShift, noEvent = false) {
     const rot = findRotationById(newShift.rotationId);
     newShift.order = rot.usePointer ? rot.pointer : 0;
+    modifyRotationById(newShift.rotationId, Rotation.addShift);
+    state.shifts = [
+      newShift,
+      ...handleRotationOrder(newShift.rotationId, rot.pointer, "add"),
+    ];
 
-    state.shifts = handleRotationOrder(newShift.rotationId, rot.pointer, "add");
-
-    state.rotations = modifyById(
-      state.rotations,
-      newShift.rotationId,
-      Rotation.addShift
-    );
-
-    state.shifts = [newShift, ...state.shifts];
+    // event
+    // flag to run function without event creation
+    if (noEvent) return;
+    const message = `${newShift.doctor.first} ${newShift.doctor.last} joined ${rot.name}`;
+    addEvent("join", message, newShift);
     return;
   }
 
   function moveShiftToRotation(moveShiftId, newRotationId) {
-    const moveShift = findShiftById(moveShiftId);
+    let moveShift = findShiftById(moveShiftId);
     // filter out the moved shift
     state.shifts = state.shifts.filter((s) => s.id !== moveShiftId);
-    const newShifts = handleRotationOrder(
+    // redo orders
+    state.shifts = handleRotationOrder(
       moveShift.rotationId,
       moveShift.order,
       "remove"
     );
-    state.shifts = newShifts;
-    state.rotations = modifyRotationById(
+    // update rotation
+    modifyRotationById(
       moveShift.rotationId,
       Rotation.removeShift,
       moveShift.order
     );
+    // add shift back in to new rotation
+    // need shift for event also, let's make its own variable
+    moveShift = Shift.setRotation(moveShift, newRotationId);
+    addShift(moveShift, "noEvent");
 
-    addShift(Shift.setRotation(moveShift, newRotationId));
+    // event
+    const message = [
+      moveShift.doctor.first,
+      moveShift.doctor.last,
+      "moved to",
+      findRotationById(newRotationId).name,
+    ].join(" ");
+    addEvent("move", message, moveShift);
     return;
   }
 
   function moveShift(shiftId, offset) {
     const shift = findShiftById(shiftId);
     const rotationId = shift.rotationId;
-    const shiftCount = findRotationById(rotationId).shiftCount;
     const oldOrder = shift.order;
-    const newOrder = (shift.order + offset + shiftCount) % shiftCount;
+    const newOrder = shift.order + offset;
     //early return for moving beyond bounds of rotation
-    if (
-      (oldOrder === 0 && offset === -1) ||
-      (oldOrder === shiftCount - 1 && offset === 1)
-    ) {
+    if (newOrder < 0 || newOrder >= findRotationById(rotationId).shiftCount)
       return;
-    }
-
     state.shifts = state.shifts.map((shift) =>
       shift.id === shiftId
         ? Shift.setOrder(shift, newOrder)
@@ -101,7 +104,72 @@ function createBoardStore() {
     return;
   }
 
+  // POINTER functions
+
+  function moveRotationPointer(rotationId, offset, noEvent = false) {
+    modifyRotationById(rotationId, Rotation.movePointer, offset);
+
+    // event
+    // flag to fire without event
+    if (noEvent) return;
+    // event has different shift based on pointer direction
+    const endingPointer = findRotationById(rotationId).pointer;
+    const startingPointer = endingPointer - offset;
+    const eventShift =
+      offset === 1
+        ? findShiftByOrder(rotationId, startingPointer)
+        : findShiftByOrder(rotationId, endingPointer);
+    const message = [
+      offset === 1 ? "Skipped" : "Back to",
+      eventShift.doctor.first,
+      eventShift.doctor.last,
+    ].join(" ");
+    addEvent("pointer", message, eventShift);
+    return;
+  }
+
+  // PATIENT functions
+
+  function assignPatient(shiftId, type, room) {
+    const shift = findShiftById(shiftId);
+    const newTotal = shift.counts.total + 1;
+    const newPatient = Patient.make(type, room);
+    // add to shifts
+    modifyShiftById(shiftId, Shift.addPatient, newPatient);
+
+    // if new total > bonus move pointer without pointer event
+    if (newTotal > shift.bonus)
+      moveRotationPointer(shift.rotationId, 1, "noEvent");
+
+    // make event
+    const message = [
+      room,
+      "assigned to",
+      shift.doctor.first,
+      shift.doctor.last,
+    ].join(" ");
+    addEvent("assign", message, shift, newPatient);
+    return;
+  }
+
+  function reassignPatient(eventId, newShiftId) {
+    const event = findById(state.events, eventId);
+    modifyShiftById(event.shift.id, Shift.removePatient, event.patient.id);
+    modifyShiftById(newShiftId, Shift.addPatient, event.patient);
+    // modify event
+    state.events = modifyById(
+      state.events,
+      eventId,
+      Event.setReassign,
+      findShiftById(newShiftId).doctor
+    );
+    return;
+  }
+
   // helpers
+  // function to take rotation or shift arrays
+  // and modify just the specified shift, returns the full array
+  // Shift and Rotation functions return a new shift that replaces the old
   function modifyById(arr, itemId, func, ...args) {
     return arr.map((item) => {
       return item.id === itemId ? func(item, ...args) : item;
@@ -109,25 +177,34 @@ function createBoardStore() {
   }
 
   function modifyRotationById(rotationId, func, ...args) {
-    return modifyById(state.rotations, rotationId, func, ...args);
+    state.rotations = modifyById(state.rotations, rotationId, func, ...args);
   }
 
+  function modifyShiftById(shiftId, func, ...args) {
+    state.shifts = modifyById(state.shifts, shiftId, func, ...args);
+  }
+
+  // find shifts or rotations
   function findById(arr, id) {
     return arr.find((r) => r.id === id);
-  }
-
-  function findShiftById(id) {
-    return findById(state.shifts, id);
   }
 
   function findRotationById(id) {
     return findById(state.rotations, id);
   }
 
-  function shiftsForRotation(rotationId) {
-    return state.shifts.filter((shift) => shift.rotationId === rotationId);
+  function findShiftById(id) {
+    return findById(state.shifts, id);
   }
 
+  function findShiftByOrder(rotationId, order) {
+    return state.shifts.find(
+      (s) => s.rotationId === rotationId && s.order === order
+    );
+  }
+
+  // takes all shifts, adjusts order just for shifts in a rotation
+  // cutoff can be pointer, or the order of shift being moved
   function handleRotationOrder(rotationId, cutoff, operation = "add") {
     const offset = operation === "add" ? 1 : -1;
     return state.shifts.map((shift) => {
@@ -137,6 +214,14 @@ function createBoardStore() {
     });
   }
 
+  // limits # of events
+  function addEvent(type, message, shift, patient = null) {
+    state.events = [
+      Event.make(type, message, shift, patient),
+      ...state.events.splice(0, EVENT_LIMIT),
+    ];
+  }
+
   return {
     getState,
     reset,
@@ -144,6 +229,8 @@ function createBoardStore() {
     moveShiftToRotation,
     moveRotationPointer,
     moveShift,
+    assignPatient,
+    reassignPatient,
   };
 }
 

@@ -1,22 +1,35 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
 
-import event from "../server/controllers/event.js";
+import Event from "../server/controllers/event.js";
 
-describe("Event Object Tests", () => {
+const shift = {
+  start: "06:00",
+  end: "15:00",
+  name: "6 am",
+  bonus: 2,
+  doctor: { last: "Voros", first: "Jeremy" },
+};
+
+const pt = {
+  type: "ambo",
+  room: "20",
+};
+
+let e = Event.make("assign", "Assigned to " + shift.doctor.last, shift, pt);
+
+describe("Event Functions", () => {
   it("should construct correctly", () => {
-    const e = event.make(
-      "assign",
-      "main_rot",
-      { last: "Voros", first: "Jeremy" },
-      { message: "assigned", room: "20", ptType: "ambo" }
-    );
-
+    expect(e.id.length).to.equal(6);
     expect(e.time).to.exist;
-    expect(e.rotation).to.equal("main_rot");
-    expect(e.doctor.last).to.equal("Voros");
-    expect(e.message).to.equal("assigned");
-    expect(e.room).to.equal("20");
-    expect(e.ptType).to.equal("ambo");
+    expect(e.type).to.equal("assign");
+    expect(e.shift.doctor.last).to.equal("Voros");
+    expect(e.message).to.exist;
+    expect(e.patient.room).to.equal("20");
+  });
+
+  it("should reassign", () => {
+    e = Event.setReassign(e, "Bugs Bunny");
+    expect(e.reassign).to.equal("Bugs Bunny");
   });
 });
