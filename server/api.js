@@ -1,45 +1,59 @@
-import express from "express"
+import express from "express";
 
-import createStore from "./state/store.js"
-import actions from "./state/actions.js"
+import createBoardStore from "./controllers/board.js";
 
 const api = express.Router();
-const store = createStore();
+
+const board = createBoardStore();
 
 // HELPERS
 function getPath(p) {
   return new URL(p, import.meta.url).pathname;
 }
 
+function responder(res) {
+  // client browser needs a response to know transmission complete
+  res.json({ message: "success" });
+  // state payload sent to client by socket.io
+  res.io.emit("new state", board.getState());
+}
+
 // MIDDLEWARE
 // if 'nurse' then admin actions at bottom
 const confirmRole = (requiredRole) => (req, res, next) => {
   if (!req.user.role || req.user.role !== requiredRole) {
-    return res.status(401).json({ message: 'Unauthorized Request' });
+    return res.status(401).json({ message: "Unauthorized Request" });
   }
   return next();
-}
+};
 
-// JSON
-api.get('/board', (req, res) => {
-  store.dispatch(actions.addShift({last: "Blake", first: "Kelly"}, {start: "08:00", end: "18:00", name: "8 am", bonus: 2}, 'main'))
-  res.json(store.getState());
+// MAIN API
+api.get("/board", (_req, res) => {
+  responder(res);
 });
 
-api.post('/doctors', async (req, res) => {
-  res.sendFile(getPath('./json/doctors.json'));
+api.get("/history", (req, res) => {
+  res.json(history.getState());
 });
 
-api.post('/shifts', async (req, res) => {
-  res.sendFile(getPath('./json/shift_details.json'));
+api.post("/doctors", async (req, res) => {
+  res.sendFile(getPath("./json/doctors.json"));
 });
 
+api.post("/shifts", async (req, res) => {
+  res.sendFile(getPath("./json/shift_details.json"));
+});
+
+api.post("/addShift", (req, res) => {
+  const { doctor, options } = req.body;
+
+  board.addNewShift(doctor, options);
+  res.json(board.getState());
+});
 
 // PROTECTED ADMIN ACTIONS
-api.use(confirmRole('nurse'));
+api.use(confirmRole("nurse"));
 
-api.get('/backintime', (req, res) => {
-
-})
+api.get("/backintime", (req, res) => {});
 
 export default api;

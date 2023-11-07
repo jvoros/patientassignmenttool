@@ -1,6 +1,7 @@
 <script setup>
-import { ref, onBeforeMount } from "vue";
+import { ref, computed, onBeforeMount } from "vue";
 import { useBoardStore } from "./stores/board.js";
+import { socketData } from "./stores/socket.js";
 import Navbar from "./components/Navbar.vue";
 import Login from "./components/Login.vue";
 import Message from "./components/Message.vue";
@@ -10,6 +11,10 @@ import Timeline from "./components/Timeline.vue";
 import RotationPanel from "./components/RotationPanel.vue";
 
 const store = useBoardStore();
+
+const socketConnect = computed(() => {
+  return socketData.connected;
+});
 
 onBeforeMount(() => {
   store.checkLoginStatus();
@@ -48,6 +53,7 @@ function toggleUpdates() {
         {{ store.error.text }}
       </Message>
       <Message v-if="updatesMessage" closable @close="toggleUpdates">
+        <h1>{{ socketConnect }}</h1>
         <h3 class="font-bold">Updates</h3>
         <hr />
         <ul class="m-4 list-disc list-outside flex flex-col gap-y-4">

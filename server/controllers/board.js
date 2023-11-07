@@ -19,10 +19,12 @@ const initialState = {
 
 function createBoardStore() {
   let state = initialState;
+  let history = [];
 
   function reset() {
     state = initialState;
-    return state;
+    history = [];
+    return;
   }
 
   function getState() {
@@ -37,6 +39,7 @@ function createBoardStore() {
   }
 
   function addShift(newShift, noEvent = false) {
+    console.log(newShift);
     const rot = findRotationById(newShift.rotationId);
     newShift.order = rot.usePointer ? rot.pointer : 0;
     modifyRotationById(newShift.rotationId, Rotation.addShift);
@@ -169,6 +172,20 @@ function createBoardStore() {
     return;
   }
 
+  // HISTORY
+  function getHistory() {
+    return history;
+  }
+
+  function save(board) {
+    history = [JSON.stringify(board), ...history.slice(0, EVENT_LIMIT)];
+  }
+
+  function undo() {
+    // shift() removes and returns first array item
+    state = JSON.parse(history.shift());
+  }
+
   // helpers
   // function to take rotation or shift arrays
   // and modify just the specified shift, returns the full array
@@ -221,19 +238,27 @@ function createBoardStore() {
   function addEvent(type, message, shift, patient = null) {
     state.events = [
       Event.make(type, message, shift, patient),
-      ...state.events.splice(0, EVENT_LIMIT),
+      ...state.events.slice(0, EVENT_LIMIT),
     ];
+  }
+
+  // history wrapper
+  function withHistory(func) {
+    return function (...args) {
+      history.save(state);
+      return func(...args);
+    };
   }
 
   return {
     getState,
     reset,
-    addNewShift,
-    moveShiftToRotation,
-    moveRotationPointer,
-    moveShift,
-    assignPatient,
-    reassignPatient,
+    addNewShift: withHistory(addNewShift),
+    moveShiftToRotation: withHistory(moveShiftToRotation),
+    moveRotationPointer: withHistory(moveRotationPointer),
+    moveShift: withHistory(moveShift),
+    assignPatient: withHistory(assignPatient),
+    reassignPatient: withHistory(reassignPatient),
   };
 }
 
