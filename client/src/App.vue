@@ -50,9 +50,7 @@ const rotationOff = store.board.rotations?.off || {};
       @toggleUpdates="toggleUpdates"
     />
 
-    <main
-      class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-10 gap-12 px-4 my-8"
-    >
+    <main class="mainGrid">
       <Timeline
         class="order-4 md:order-1 md:col-span-1 md:row-span-3 xl:col-span-3 xl:row-span-3"
       />
@@ -71,3 +69,8 @@ const rotationOff = store.board.rotations?.off || {};
     </main>
   </div>
 </template>
+<style>
+.mainGrid {
+  @apply grid grid-cols-1 md:grid-cols-2 xl:grid-cols-10 gap-12 px-4 my-8;
+}
+</style>

@@ -21,7 +21,7 @@ const props = defineProps({
   </svg>
 
   <svg
-    v-if="icon === 'ft'"
+    v-if="icon === 'fasttrack'"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 16 16"
     width="16"

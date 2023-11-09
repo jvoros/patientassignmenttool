@@ -30,8 +30,13 @@ const emit = defineEmits(["reassign"]);
 const new_doc = ref("");
 
 function getShifts() {
-  const r = store.board.rotations;
-  return [...r.main.shifts, ...r.ft.shifts, ...r.off.shifts];
+  return [
+    ...store.board.shifts.toSorted((a, b) => {
+      const nameA = a.doctor.last.toUpperCase();
+      const nameB = b.doctor.last.toUpperCase();
+      return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
+    }),
+  ];
 }
 
 async function addDoctor(close) {

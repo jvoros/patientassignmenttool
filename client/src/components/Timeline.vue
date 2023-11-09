@@ -7,24 +7,28 @@ import TimelineEvent from "./TimelineEvent.vue";
 import Blank from "./Blank.vue";
 
 const store = useBoardStore();
-const timeline = store.board.timeline || "";
+const events = store.board.events || "";
+const getEventAction = (event) => {
+  if (event.type !== "assign") return event.type;
+  return event.patient.type;
+};
 </script>
 
 <template>
   <section>
     <BoardHeader>Timeline</BoardHeader>
     <div class="mt-4"></div>
-    <Blank v-if="!timeline" message="No events." />
+    <Blank v-if="!events" message="No events." />
     <!-- outer box, contains border box that makes timeline -->
     <div
       v-else
-      v-for="(event, index) in timeline"
+      v-for="(event, index) in events"
       class="relative flex flex-col pl-4 ml-4 border-l-2 border-gray-200"
     >
       <!-- event box -->
       <div class="flex items-center grow">
         <TimelineIcon
-          :action="event.pt_type || event.action"
+          :action="getEventAction(event)"
           class="absolute z-0 -left-4"
         />
         <TimelineEvent

@@ -17,7 +17,7 @@ export const useBoardStore = defineStore("board", {
       shift_details: {},
       error: null, //{ text: 'Test Error'},
       loginError: "", //{ text: 'loginError' },
-      board: {},
+      board: boardDummy2,
     };
   },
 
