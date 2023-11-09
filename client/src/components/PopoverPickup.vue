@@ -41,7 +41,7 @@ async function addDoctor(close) {
 
 <template>
   <Popover class="relative" v-slot="{ close }">
-    <PopoverButton class="focus:outline-none mb-1 px-2">
+    <PopoverButton class="focus:outline-none b-1 px-2">
       <Icon icon="pickup" color="dimgray" />
     </PopoverButton>
 

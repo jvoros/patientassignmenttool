@@ -1,13 +1,22 @@
 <script setup>
 import { useBoardStore } from "../stores/board.js";
-import BoardPanel from "./BoardPanel.vue";
-import AssignPopover from "./AssignPopover.vue";
+import PopoverAssign from "./PopoverAssign.vue";
 import Button from "./Button.vue";
+import Blank from "./Blank.vue";
+import BoardHeader from "./BoardHeader.vue";
 
 const store = useBoardStore();
 
 const props = defineProps({
-  rotation: Object,
+  header: String,
+  rotation: {
+    type: Object,
+    default: {},
+  },
+  blank: {
+    type: String,
+    default: "No shifts in this rotation.",
+  },
   pointer: {
     type: Boolean,
     default: false,
@@ -58,8 +67,11 @@ function countColor(count) {
 </script>
 
 <template>
-  <BoardPanel :header="rotation.name + ' Rotation'">
+  <section>
+    <BoardHeader>{{ header }}</BoardHeader>
+    <Blank :message="blank" v-if="!rotation.shifts" />
     <div
+      v-else
       v-for="(shift, index) in rotation.shifts"
       class="my-6 rounded-md border transition-colors duration-150 hover:shadow-lg"
       :class="[
@@ -125,7 +137,7 @@ function countColor(count) {
               {{ r.name }}
             </option>
           </select>
-          <AssignPopover
+          <PopoverAssign
             :shift="{ rotationName: rotation.name, shiftIndex: index }"
           />
         </div>
@@ -140,7 +152,7 @@ function countColor(count) {
           </h4>
         </div>
 
-        <AssignPopover
+        <PopoverAssign
           v-if="isNurse() && isNext(index)"
           variety="next"
           :shift="{ rotationName: rotation.name, shiftIndex: index }"
@@ -163,9 +175,12 @@ function countColor(count) {
         </li>
       </ul>
     </div>
-    <div v-if="pointer && isNurse()" class="flex gap-2 text-sm justify-between">
+    <div
+      v-if="pointer && isNurse() && rotation.shifts?.length > 1"
+      class="flex gap-2 text-sm justify-between"
+    >
       <Button leftIcon="left-arrow">Back Doctor</Button>
       <Button rightIcon="right-arrow">Skip Doctor</Button>
     </div>
-  </BoardPanel>
+  </section>
 </template>

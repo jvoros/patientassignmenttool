@@ -1,5 +1,5 @@
 <script setup>
-import PickupPopover from "./PickupPopover.vue";
+import PopoverPickup from "./PopoverPickup.vue";
 const props = defineProps({
   event: Object,
   role: String,
@@ -30,7 +30,7 @@ const props = defineProps({
           v-if="role === 'nurse'"
           class="hover:bg-gray-200 py-1 rounded-e-full"
         >
-          <PickupPopover />
+          <PopoverPickup />
         </div>
       </div>
     </div>

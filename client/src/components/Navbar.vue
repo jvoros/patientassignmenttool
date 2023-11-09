@@ -1,6 +1,6 @@
 <script setup>
 import Button from "./Button.vue";
-import AddDoctorPopover from "./AddDoctorPopover.vue";
+import PopoverAddDoctor from "./PopoverAddDoctor.vue";
 
 const props = defineProps({
   role: String,
@@ -33,7 +33,7 @@ const emit = defineEmits(["logout", "toggleUpdates"]);
 
     <div class="flex gap-x-4">
       <Button variety="ghost" @click="emit('toggleUpdates')">Updates</Button>
-      <AddDoctorPopover v-if="role === 'nurse'" />
+      <PopoverAddDoctor v-if="role === 'nurse'" />
       <Button variety="contrast" rightIcon="logout" @click="emit('logout')"
         >Logout</Button
       >

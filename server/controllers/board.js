@@ -39,7 +39,6 @@ function createBoardStore() {
   }
 
   function addShift(newShift, noEvent = false) {
-    console.log(newShift);
     const rot = findRotationById(newShift.rotationId);
     newShift.order = rot.usePointer ? rot.pointer : 0;
     modifyRotationById(newShift.rotationId, Rotation.addShift);
@@ -242,10 +241,14 @@ function createBoardStore() {
     ];
   }
 
+  function saveHistory() {
+    history = [JSON.stringify(state), ...history.slice(0, EVENT_LIMIT)];
+  }
+
   // history wrapper
   function withHistory(func) {
     return function (...args) {
-      history.save(state);
+      saveHistory();
       return func(...args);
     };
   }

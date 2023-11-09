@@ -1,21 +1,24 @@
 <script setup>
-import BoardPanel from "./BoardPanel.vue";
+import { useBoardStore } from "../stores/board.js";
+import BoardHeader from "./BoardHeader.vue";
 import Button from "./Button.vue";
 import TimelineIcon from "./TimelineIcon.vue";
 import TimelineEvent from "./TimelineEvent.vue";
+import Blank from "./Blank.vue";
 
-const props = defineProps({
-  events: Array,
-  role: String,
-});
+const store = useBoardStore();
+const timeline = store.board.timeline || "";
 </script>
 
 <template>
-  <BoardPanel header="Timeline" class="bg-gray-50 pb-4">
+  <section>
+    <BoardHeader>Timeline</BoardHeader>
     <div class="mt-4"></div>
+    <Blank v-if="!timeline" message="No events." />
     <!-- outer box, contains border box that makes timeline -->
-    <section
-      v-for="(event, index) in events"
+    <div
+      v-else
+      v-for="(event, index) in timeline"
       class="relative flex flex-col pl-4 ml-4 border-l-2 border-gray-200"
     >
       <!-- event box -->
@@ -24,12 +27,16 @@ const props = defineProps({
           :action="event.pt_type || event.action"
           class="absolute z-0 -left-4"
         />
-        <TimelineEvent :event="event" :role="role" class="my-2 ml-4" />
+        <TimelineEvent
+          :event="event"
+          :role="store.user.role"
+          class="my-2 ml-4"
+        />
       </div>
       <!-- undo for last event -->
-      <div v-if="index === 0 && role === 'nurse'">
+      <div v-if="index === 0 && store.user.role === 'nurse'">
         <Button class="ml-auto" leftIcon="undo">Undo</Button>
       </div>
-    </section>
-  </BoardPanel>
+    </div>
+  </section>
 </template>

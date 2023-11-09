@@ -1,3 +1,0 @@
-- Message component
-  - has FA icon
-  - doesn't have icons
