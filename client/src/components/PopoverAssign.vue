@@ -37,7 +37,7 @@ async function addDoctor(close) {
 const assign_types = [
   { value: "walk-in", display: "Walk In", class: "text-blue-600" },
   { value: "ambo", display: "Ambo", class: "text-red-600" },
-  { value: "ft", display: "Fast Track", class: "text-green-600" },
+  { value: "fasttrack", display: "Fast Track", class: "text-green-600" },
   { value: "bonus", display: "Bonus", class: "text-amber-600" },
 ];
 

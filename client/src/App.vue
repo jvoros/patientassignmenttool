@@ -33,9 +33,7 @@ function toggleUpdates() {
   updatesMessage.value = !updatesMessage.value;
 }
 
-const rotationMain = store.board.rotations?.main || {};
-const rotationFt = store.board.rotations?.ft || {};
-const rotationOff = store.board.rotations?.off || {};
+const [main, fasttrack, off] = store.board.rotations;
 </script>
 
 <template>
@@ -58,13 +56,17 @@ const rotationOff = store.board.rotations?.off || {};
       <RotationPanel
         pointer
         primaryRotation
-        :rotation="rotationMain"
+        :rotation="main"
         header="Main Rotation"
         class="md:order-2 md:col-span-1 xl:col-span-4 xl:row-span-3"
       />
       <section class="md:order-3 md:col-span-1 xl:col-span-3">
-        <RotationPanel :rotation="rotationFt" header="Fast Track Rotation" />
-        <RotationPanel :rotation="rotationOff" header="Off Rotation" />
+        <RotationPanel
+          :rotation="fasttrack"
+          variation="fasttrack"
+          header="Fast Track Rotation"
+        />
+        <RotationPanel :rotation="off" variation="off" header="Off Rotation" />
       </section>
     </main>
   </div>

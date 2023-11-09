@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from "vue";
 import { useBoardStore } from "../stores/board.js";
 import PopoverAssign from "./PopoverAssign.vue";
 import Button from "./Button.vue";
@@ -31,6 +32,12 @@ const props = defineProps({
   },
 });
 
+const shifts = computed(() => {
+  return store.board.shifts.filter(
+    (shift) => shift.rotationId === props.rotation.id
+  );
+});
+
 function isNext(shift_index) {
   if (props.rotation.name === "Off") return false;
   if (props.pointer) return shift_index === props.rotation.pointer;
@@ -49,7 +56,7 @@ function isNurse() {
 function getStyles() {
   const c = {
     default: "bg-white border-gray-200",
-    ft: "bg-green-50 border-green-300 text-gray-600",
+    fasttrack: "bg-green-50 border-green-300 text-gray-600",
     off: "text-gray-500",
   };
   return c[props.variation];
@@ -58,7 +65,7 @@ function getStyles() {
 function countColor(count) {
   const c = {
     total: "bg-gray-200",
-    ft: "bg-green-200",
+    fasttrack: "bg-green-200",
     "walk-in": "bg-blue-100",
     ambo: "bg-red-100",
   };
@@ -69,10 +76,10 @@ function countColor(count) {
 <template>
   <section>
     <BoardHeader>{{ header }}</BoardHeader>
-    <Blank :message="blank" v-if="!rotation.shifts" />
+    <Blank :message="blank" v-if="!shifts" />
     <div
       v-else
-      v-for="(shift, index) in rotation.shifts"
+      v-for="(shift, index) in shifts"
       class="my-6 rounded-md border transition-colors duration-150 hover:shadow-lg"
       :class="[
         getStyles(),
