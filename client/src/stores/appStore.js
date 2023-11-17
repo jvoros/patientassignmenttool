@@ -1,35 +1,36 @@
 import { defineStore } from "pinia";
 
-async function apiCall(url, payload) {
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  return await response.json();
-}
+import apiCall from "./apiCall";
 
-export const useBoardStore = defineStore("board", {
+export const useAppStore = defineStore("board", {
   state: () => {
     return {
       user: { loggedIn: false }, //default state
       doctors: {},
       shift_details: {},
-      error: null, //{ text: 'Test Error'},
+      error: "", //{ text: 'Test Error'},
       loginError: "", //{ text: 'loginError' },
-      board: boardDummy2,
     };
   },
 
   actions: {
-    async apiCall(url, payload) {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      return await response.json();
-    },
+    // async apiCall(url, payload) {
+    //   console.log("actions apiCall...");
+    //   try {
+    //     const response = await fetch(url, {
+    //       method: "POST",
+    //       headers: { "Content-Type": "application/json" },
+    //       body: JSON.stringify(payload),
+    //     });
+    //     const res = await response.json();
+    //     console.log(response);
+    //     if (response.status === 200) return res;
+    //     this.error = res.message;
+    //   } catch (err) {
+    //     console.log(err);
+    //     this.error = err;
+    //   }
+    // },
 
     setError(err) {
       this.error = err;
@@ -82,10 +83,20 @@ export const useBoardStore = defineStore("board", {
       this.getShifts();
     },
 
-    async newBoard(board) {
-      //this.state.board = board;
-      console.log(board);
-      this.state.board = "api/board";
+    async getBoard() {
+      apiCall("api/board");
+    },
+
+    async addShift(doctor, shift) {
+      apiCall("api/addShift", { doctor, options: shift });
+    },
+
+    async moveShift(shiftId, offset) {
+      apiCall("api/moveShift", { shiftId, offset });
+    },
+
+    async undo() {
+      apiCall("api/undo");
     },
   },
 });

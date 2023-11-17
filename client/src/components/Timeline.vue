@@ -1,24 +1,35 @@
 <script setup>
-import { useBoardStore } from "../stores/board.js";
 import BoardHeader from "./BoardHeader.vue";
 import Button from "./Button.vue";
 import TimelineIcon from "./TimelineIcon.vue";
 import TimelineEvent from "./TimelineEvent.vue";
 import Blank from "./Blank.vue";
+import { useAppStore } from "../stores/appStore";
 
-const store = useBoardStore();
-const events = store.board.events || "";
+const store = useAppStore();
+
+const props = defineProps({
+  events: {
+    type: Object,
+    default: [],
+  },
+});
+
 const getEventAction = (event) => {
   if (event.type !== "assign") return event.type;
   return event.patient.type;
 };
+
+async function undo() {
+  store.undo();
+}
 </script>
 
 <template>
   <section>
     <BoardHeader>Timeline</BoardHeader>
     <div class="mt-4"></div>
-    <Blank v-if="!events" message="No events." />
+    <Blank v-if="events.length === 0" message="No events." />
     <!-- outer box, contains border box that makes timeline -->
     <div
       v-else
@@ -39,7 +50,7 @@ const getEventAction = (event) => {
       </div>
       <!-- undo for last event -->
       <div v-if="index === 0 && store.user.role === 'nurse'">
-        <Button class="ml-auto" leftIcon="undo">Undo</Button>
+        <Button class="ml-auto" leftIcon="undo" @click="undo">Undo</Button>
       </div>
     </div>
   </section>

@@ -1,12 +1,16 @@
 <script setup>
 import { computed } from "vue";
-import { useBoardStore } from "../stores/board.js";
+import { useAppStore } from "../stores/appStore.js";
+import { socketData } from "../stores/socket";
 import PopoverAssign from "./PopoverAssign.vue";
 import Button from "./Button.vue";
 import Blank from "./Blank.vue";
 import BoardHeader from "./BoardHeader.vue";
 
-const store = useBoardStore();
+const store = useAppStore();
+const board = computed(() => {
+  return socketData.board;
+});
 
 const props = defineProps({
   header: String,
@@ -30,12 +34,6 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-});
-
-const shifts = computed(() => {
-  return store.board.shifts.filter(
-    (shift) => shift.rotationId === props.rotation.id
-  );
 });
 
 function isNext(shift_index) {
@@ -71,15 +69,19 @@ function countColor(count) {
   };
   return c[count];
 }
+
+function moveShift(shiftId, offset) {
+  store.moveShift(shiftId, offset);
+}
 </script>
 
 <template>
   <section>
     <BoardHeader>{{ header }}</BoardHeader>
-    <Blank :message="blank" v-if="!shifts" />
+    <Blank :message="blank" v-if="rotation.shifts?.length === 0" />
     <div
       v-else
-      v-for="(shift, index) in shifts"
+      v-for="(shift, index) in rotation.shifts"
       class="my-6 rounded-md border transition-colors duration-150 hover:shadow-lg"
       :class="[
         getStyles(),
@@ -104,6 +106,7 @@ function countColor(count) {
         <div v-if="pointer">
           <button
             class="px-2 py-1 rounded-s bg-gray-100 border border-gray-300"
+            @click="moveShift(shift.id, -1)"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -118,6 +121,7 @@ function countColor(count) {
           </button>
           <button
             class="px-2 py-1 rounded-e bg-gray-100 border border-gray-300"
+            @click="moveShift(shift.id, 1)"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -138,7 +142,7 @@ function countColor(count) {
           >
             <option>Move to:</option>
             <option
-              v-for="r in store.board.rotations"
+              v-for="r in board.rotations"
               :disabled="rotation.name === r.name"
             >
               {{ r.name }}

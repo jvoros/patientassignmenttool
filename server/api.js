@@ -13,9 +13,9 @@ function getPath(p) {
 
 function responder(res) {
   // client browser needs a response to know transmission complete
-  res.json({ message: "success" });
+  res.status(200).json({ message: "success" });
   // state payload sent to client by socket.io
-  res.io.emit("new state", board.getState());
+  res.io.emit("new state", board.getSortedState());
 }
 
 // MIDDLEWARE
@@ -28,27 +28,41 @@ const confirmRole = (requiredRole) => (req, res, next) => {
 };
 
 // MAIN API
-api.get("/board", (_req, res) => {
+api.post("/board", (_req, res) => {
   responder(res);
 });
 
-api.get("/history", (req, res) => {
+api.post("/history", (req, res) => {
   res.json(history.getState());
 });
 
 api.post("/doctors", async (req, res) => {
-  res.sendFile(getPath("./json/doctors.json"));
+  res.status(200).sendFile(getPath("./json/doctors.json"));
 });
 
 api.post("/shifts", async (req, res) => {
-  res.sendFile(getPath("./json/shift_details.json"));
+  res.status(200).sendFile(getPath("./json/shift_details.json"));
 });
 
 api.post("/addShift", (req, res) => {
   const { doctor, options } = req.body;
-
+  if (options.id === 1) {
+    console.log("Resetting board...");
+    board.reset();
+  }
   board.addNewShift(doctor, options);
-  res.json(board.getState());
+  responder(res);
+});
+
+api.post("/moveShift", (req, res) => {
+  const { shiftId, offset } = req.body;
+  board.moveShift(shiftId, offset);
+  responder(res);
+});
+
+api.post("/undo", (_req, res) => {
+  board.undo();
+  responder(res);
 });
 
 // PROTECTED ADMIN ACTIONS

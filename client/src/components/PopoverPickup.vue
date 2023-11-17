@@ -9,9 +9,9 @@ import {
 import PopoverTransition from "./PopoverTransition.vue";
 import Button from "./Button.vue";
 import Icon from "./Icons.vue";
-import { useBoardStore } from "../stores/board";
+import { useAppStore } from "../stores/appStore";
 
-const store = useBoardStore();
+const store = useAppStore();
 
 const props = defineProps({
   variety: {

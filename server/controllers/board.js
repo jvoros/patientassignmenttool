@@ -22,13 +22,34 @@ function createBoardStore() {
   let history = [];
 
   function reset() {
-    state = initialState;
-    history = [];
+    state.shifts = [];
+    state.events = [];
+    addEvent("reset", "Board reset", null);
     return;
   }
 
   function getState() {
     return state;
+  }
+
+  function getRotationWithShifts(rotation) {
+    return {
+      ...rotation,
+      shifts: state.shifts
+        .filter((shift) => shift.rotationId === rotation.id)
+        .sort((a, b) => a.order - b.order),
+    };
+  }
+
+  function getSortedState() {
+    return {
+      rotations: {
+        main: getRotationWithShifts(state.rotations[0]),
+        fasttrack: getRotationWithShifts(state.rotations[1]),
+        off: getRotationWithShifts(state.rotations[2]),
+      },
+      events: state.events,
+    };
   }
 
   // SHIFT Functions
@@ -255,13 +276,15 @@ function createBoardStore() {
 
   return {
     getState,
-    reset,
+    getSortedState,
+    reset: withHistory(reset),
     addNewShift: withHistory(addNewShift),
     moveShiftToRotation: withHistory(moveShiftToRotation),
     moveRotationPointer: withHistory(moveRotationPointer),
     moveShift: withHistory(moveShift),
     assignPatient: withHistory(assignPatient),
     reassignPatient: withHistory(reassignPatient),
+    undo,
   };
 }
 

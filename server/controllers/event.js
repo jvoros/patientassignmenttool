@@ -16,6 +16,7 @@ const uid = new ShortUniqueId();
  * - "move" move rotation
  * - "pointer" move pointer
  * - "order" change shift order
+ * - "reset"
  *
  */
 

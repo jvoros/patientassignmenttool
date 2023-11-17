@@ -1,16 +1,16 @@
 <script setup>
-import { ref, computed, onBeforeMount } from "vue";
-import { useBoardStore } from "./stores/board.js";
+import { ref, onBeforeMount, computed } from "vue";
+import { useAppStore } from "./stores/appStore.js";
 import { socketData } from "./stores/socket.js";
 import Navbar from "./components/Navbar.vue";
 import Login from "./components/Login.vue";
 import Timeline from "./components/Timeline.vue";
 import RotationPanel from "./components/RotationPanel.vue";
+import Message from "./components/Message.vue";
 
-const store = useBoardStore();
-
-const socketConnect = computed(() => {
-  return socketData.connected;
+const store = useAppStore();
+const board = computed(() => {
+  return socketData.board;
 });
 
 onBeforeMount(() => {
@@ -33,7 +33,25 @@ function toggleUpdates() {
   updatesMessage.value = !updatesMessage.value;
 }
 
-const [main, fasttrack, off] = store.board.rotations;
+function makeRotationWithShifts(board, rotationName) {
+  const details = board.rotations
+    ? board.rotations.filter((r) => r.name === "Main")
+    : {};
+  const shifts = board.shifts
+    ? board.shifts.filter((shift) => shift.rotationId === details.id)
+    : [];
+  return { details, shifts };
+}
+
+// const main = computed(() => {
+//   const details = board.rotations ? board.rotations.filter(r=>r.name === "Main");
+//   const shifts =
+//   return store.board.shifts
+//     ? store.board.shifts.filter(
+//         (shift) => shift.rotationId === props.rotation.id
+//       )
+//     : null;
+// });
 </script>
 
 <template>
@@ -47,26 +65,31 @@ const [main, fasttrack, off] = store.board.rotations;
       @logout="logout"
       @toggleUpdates="toggleUpdates"
     />
-
+    <Message v-if="store.error">{{ error }}</Message>
     <main class="mainGrid">
       <Timeline
+        :events="board.events"
         class="order-4 md:order-1 md:col-span-1 md:row-span-3 xl:col-span-3 xl:row-span-3"
       />
 
       <RotationPanel
         pointer
         primaryRotation
-        :rotation="main"
+        :rotation="board.rotations.main"
         header="Main Rotation"
         class="md:order-2 md:col-span-1 xl:col-span-4 xl:row-span-3"
       />
       <section class="md:order-3 md:col-span-1 xl:col-span-3">
         <RotationPanel
-          :rotation="fasttrack"
+          :rotation="board.rotations.fasttrack"
           variation="fasttrack"
           header="Fast Track Rotation"
         />
-        <RotationPanel :rotation="off" variation="off" header="Off Rotation" />
+        <RotationPanel
+          :rotation="board.rotations.off"
+          variation="off"
+          header="Off Rotation"
+        />
       </section>
     </main>
   </div>
