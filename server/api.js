@@ -72,6 +72,18 @@ api.post("/moveRotationPointer", (req, res) => {
   responder(res);
 });
 
+api.post("/assignPatient", (req, res) => {
+  const { shiftId, type, room } = req.body;
+  board.assignPatient(shiftId, type, room);
+  responder(res);
+});
+
+api.post("/reassign", (req, res) => {
+  const { eventId, shiftId } = req.body;
+  board.reassignPatient(eventId, shiftId);
+  responder(res);
+});
+
 api.post("/undo", (_req, res) => {
   board.undo();
   responder(res);

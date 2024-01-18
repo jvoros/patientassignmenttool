@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onUnmounted } from "vue";
+import { ref } from "vue";
 import {
   Popover,
   PopoverButton,
@@ -9,29 +9,19 @@ import {
 import PopoverTransition from "./PopoverTransition.vue";
 import Button from "./Button.vue";
 import Icon from "./Icons.vue";
-import { useAppStore } from "../stores/appStore";
-
-const store = useAppStore();
 
 const props = defineProps({
-  variety: {
-    type: String,
-    default: "default",
-  },
-  shift: Object,
-  type: {
-    type: String,
-    default: "",
-  },
+  shifts: Object,
+  eventId: String,
 });
 
 const emit = defineEmits(["reassign"]);
 
-const new_doc = ref("");
+const newShiftId = ref("");
 
 function getShifts() {
   return [
-    ...store.board.shifts.toSorted((a, b) => {
+    ...props.shifts.toSorted((a, b) => {
       const nameA = a.doctor.last.toUpperCase();
       const nameB = b.doctor.last.toUpperCase();
       return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
@@ -39,7 +29,9 @@ function getShifts() {
   ];
 }
 
-async function addDoctor(close) {
+async function reassign(close) {
+  emit("reassign", props.eventId, newShiftId.value);
+  newShiftId.value = "";
   close();
 }
 </script>
@@ -62,9 +54,9 @@ async function addDoctor(close) {
           <h3 class="font-bold">Picked up by:</h3>
           <select
             class="py-2 px-4 w-full rounded border border-gray-200"
-            v-model="new_doc"
+            v-model="newShiftId"
           >
-            <option v-for="shift in getShifts()" value="">
+            <option v-for="shift in getShifts()" :value="shift.id">
               {{ shift.doctor.first }} {{ shift.doctor.last }}
             </option>
           </select>
@@ -75,8 +67,8 @@ async function addDoctor(close) {
             >
             <Button
               variety="contrast"
-              @click="addDoctor(close)"
-              :disabled="!new_doc"
+              @click="reassign(close)"
+              :disabled="!newShiftId"
               >Ok</Button
             >
           </div>

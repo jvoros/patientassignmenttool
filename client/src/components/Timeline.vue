@@ -1,12 +1,17 @@
 <script setup>
+import { ref, computed } from "vue";
 import BoardHeader from "./BoardHeader.vue";
 import Button from "./Button.vue";
 import TimelineIcon from "./TimelineIcon.vue";
 import TimelineEvent from "./TimelineEvent.vue";
 import Blank from "./Blank.vue";
 import { useAppStore } from "../stores/appStore";
+import { socketData } from "../stores/socket";
 
 const store = useAppStore();
+const board = computed(() => {
+  return socketData.board;
+});
 
 const props = defineProps({
   events: {
@@ -17,6 +22,7 @@ const props = defineProps({
 
 const getEventAction = (event) => {
   if (event.type !== "assign") return event.type;
+  if (event.reassign) return "reassign";
   return event.patient.type;
 };
 
@@ -42,11 +48,7 @@ async function undo() {
           :action="getEventAction(event)"
           class="absolute z-0 -left-4"
         />
-        <TimelineEvent
-          :event="event"
-          :role="store.user.role"
-          class="my-2 ml-4"
-        />
+        <TimelineEvent :event="event" class="my-2 ml-4" />
       </div>
       <!-- undo for last event -->
       <div v-if="index === 0 && store.user.role === 'nurse'">

@@ -48,6 +48,7 @@ function createBoardStore() {
         fasttrack: getRotationWithShifts(state.rotations[1]),
         off: getRotationWithShifts(state.rotations[2]),
       },
+      shifts: state.shifts,
       events: state.events,
     };
   }
@@ -183,13 +184,22 @@ function createBoardStore() {
     const event = findById(state.events, eventId);
     modifyShiftById(event.shift.id, Shift.removePatient, event.patient.id);
     modifyShiftById(newShiftId, Shift.addPatient, event.patient);
-    // modify event
+    const newShift = findShiftById(newShiftId);
+    // modify original event
     state.events = modifyById(
       state.events,
       eventId,
       Event.setReassign,
-      findShiftById(newShiftId).doctor
+      newShift.doctor
     );
+    // make event
+    const message = [
+      event.patient.room,
+      "reassigned to",
+      newShift.doctor.first,
+      newShift.doctor.last,
+    ].join(" ");
+    addEvent("assign", message, newShift, event.patient);
     return;
   }
 

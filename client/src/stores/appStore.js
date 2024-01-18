@@ -103,6 +103,14 @@ export const useAppStore = defineStore("board", {
       apiCall("api/moveRotationPointer", { rotationId, offset });
     },
 
+    async assignPatient(shiftId, type, room) {
+      apiCall("api/assignPatient", { shiftId, type, room });
+    },
+
+    async reassign(eventId, shiftId) {
+      apiCall("api/reassign", { eventId, shiftId });
+    },
+
     async undo() {
       apiCall("api/undo");
     },

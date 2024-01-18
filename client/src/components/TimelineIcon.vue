@@ -13,7 +13,9 @@ function getClasses() {
 }
 
 function getIcon() {
-  if (["ambo", "walk-in", "fasttrack", "bonus"].includes(props.action))
+  if (
+    ["ambo", "walk-in", "fasttrack", "bonus", "reassign"].includes(props.action)
+  )
     return props.action;
   return "bell";
 }

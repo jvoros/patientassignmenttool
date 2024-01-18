@@ -82,6 +82,10 @@ function onMoveShiftToRotation(rotationId, shiftId) {
 function movePointer(offset) {
   store.moveRotationPointer(props.rotation.id, offset);
 }
+
+function assignPatient(shiftId, type, room) {
+  store.assignPatient(shiftId, type, room);
+}
 </script>
 
 <template>
@@ -163,9 +167,7 @@ function movePointer(offset) {
               {{ r.name }}
             </option>
           </select> -->
-          <PopoverAssign
-            :shift="{ rotationName: rotation.name, shiftIndex: index }"
-          />
+          <PopoverAssign :shiftId="shift.id" @assign="assignPatient" />
         </div>
       </div>
 
@@ -181,7 +183,8 @@ function movePointer(offset) {
         <PopoverAssign
           v-if="isNurse() && isNext(index)"
           variety="next"
-          :shift="{ rotationName: rotation.name, shiftIndex: index }"
+          :shiftId="shift.id"
+          @assign="assignPatient"
         />
       </div>
 

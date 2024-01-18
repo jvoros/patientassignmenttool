@@ -69,6 +69,7 @@ function makeRotationWithShifts(board, rotationName) {
     <main class="mainGrid">
       <Timeline
         :events="board.events"
+        :shifts="board.shifts"
         class="order-4 md:order-1 md:col-span-1 md:row-span-3 xl:col-span-3 xl:row-span-3"
       />
 

@@ -18,7 +18,7 @@ const props = defineProps({
     type: String,
     default: "default",
   },
-  shift: Object,
+  shiftId: String,
   type: {
     type: String,
     default: "",
@@ -30,7 +30,10 @@ const emit = defineEmits(["assign"]);
 const pt_type = ref(props.type);
 const pt_room = ref("default");
 
-async function addDoctor(close) {
+async function assign(close) {
+  emit("assign", props.shiftId, pt_type.value, pt_room.value);
+  pt_type.value = "";
+  pt_room.value = "";
   close();
 }
 
@@ -151,7 +154,7 @@ onUnmounted(() => {
             >
             <Button
               variety="contrast"
-              @click="addDoctor(close)"
+              @click="assign(close)"
               :disabled="!pt_type || !pt_room"
               >Assign</Button
             >

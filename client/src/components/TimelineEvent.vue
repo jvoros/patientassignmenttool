@@ -1,9 +1,21 @@
 <script setup>
+import { computed } from "vue";
 import PopoverPickup from "./PopoverPickup.vue";
+import { useAppStore } from "../stores/appStore";
+import { socketData } from "../stores/socket";
+
+const store = useAppStore();
+const board = computed(() => {
+  return socketData.board;
+});
+
 const props = defineProps({
   event: Object,
-  role: String,
 });
+
+function reassign(eventId, shiftId) {
+  store.reassign(eventId, shiftId);
+}
 </script>
 
 <template>
@@ -18,6 +30,9 @@ const props = defineProps({
         <h4 class="font-semibold text-gray-600">
           {{ event.shift.doctor.first }} {{ event.shift.doctor.last }}
         </h4>
+        <div class="text-gray-400 text-sm" v-if="event.reassign">
+          Reassigned to: <b>{{ event.reassign.last }}</b>
+        </div>
       </div>
 
       <div
@@ -27,14 +42,17 @@ const props = defineProps({
           {{ event.patient.room }}
         </div>
         <div
-          v-if="role === 'nurse'"
+          v-if="store.user.role === 'nurse' && !event.reassign"
           class="hover:bg-gray-200 pt-1 pb-2 rounded-e-full"
         >
-          <PopoverPickup />
+          <PopoverPickup
+            :eventId="event.id"
+            :shifts="board.shifts"
+            @reassign="reassign"
+          />
         </div>
       </div>
     </div>
-
     <div v-else class="px-4">
       <div class="text-gray-400 text-sm">{{ event.time }}</div>
       <div class="text-gray-400">
