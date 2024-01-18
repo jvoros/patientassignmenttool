@@ -3,6 +3,7 @@ import { computed } from "vue";
 import { useAppStore } from "../stores/appStore.js";
 import { socketData } from "../stores/socket";
 import PopoverAssign from "./PopoverAssign.vue";
+import PopoverMove from "./PopoverMove.vue";
 import Button from "./Button.vue";
 import Blank from "./Blank.vue";
 import BoardHeader from "./BoardHeader.vue";
@@ -73,6 +74,10 @@ function countColor(count) {
 function moveShift(shiftId, offset) {
   store.moveShift(shiftId, offset);
 }
+
+function onMoveShiftToRotation(rotationId, shiftId) {
+  store.moveShiftToRotation(rotationId, shiftId);
+}
 </script>
 
 <template>
@@ -137,7 +142,13 @@ function moveShift(shiftId, offset) {
         </div>
 
         <div class="text-xs flex gap-x-2">
-          <select
+          <PopoverMove
+            :rotations="board.rotations"
+            :rotationId="rotation.id"
+            :shiftId="shift.id"
+            @move-shift-to-rotation="onMoveShiftToRotation"
+          />
+          <!-- <select
             class="py-1 px-2 rounded border border-gray-300 text-sm bg-gray-100"
           >
             <option>Move to:</option>
@@ -147,7 +158,7 @@ function moveShift(shiftId, offset) {
             >
               {{ r.name }}
             </option>
-          </select>
+          </select> -->
           <PopoverAssign
             :shift="{ rotationName: rotation.name, shiftIndex: index }"
           />

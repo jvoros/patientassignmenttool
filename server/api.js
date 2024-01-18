@@ -60,6 +60,12 @@ api.post("/moveShift", (req, res) => {
   responder(res);
 });
 
+api.post("/moveShiftToRotation", (req, res) => {
+  const { rotationId, shiftId } = req.body;
+  board.moveShiftToRotation(shiftId, rotationId);
+  responder(res);
+});
+
 api.post("/undo", (_req, res) => {
   board.undo();
   responder(res);

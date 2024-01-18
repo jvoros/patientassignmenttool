@@ -95,6 +95,10 @@ export const useAppStore = defineStore("board", {
       apiCall("api/moveShift", { shiftId, offset });
     },
 
+    async moveShiftToRotation(rotationId, shiftId) {
+      apiCall("api/moveShiftToRotation", { rotationId, shiftId });
+    },
+
     async undo() {
       apiCall("api/undo");
     },
