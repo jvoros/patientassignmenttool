@@ -66,6 +66,12 @@ api.post("/moveShiftToRotation", (req, res) => {
   responder(res);
 });
 
+api.post("/moveRotationPointer", (req, res) => {
+  const { rotationId, offset } = req.body;
+  board.moveRotationPointer(rotationId, offset);
+  responder(res);
+});
+
 api.post("/undo", (_req, res) => {
   board.undo();
   responder(res);

@@ -78,6 +78,10 @@ function moveShift(shiftId, offset) {
 function onMoveShiftToRotation(rotationId, shiftId) {
   store.moveShiftToRotation(rotationId, shiftId);
 }
+
+function movePointer(offset) {
+  store.moveRotationPointer(props.rotation.id, offset);
+}
 </script>
 
 <template>
@@ -201,8 +205,12 @@ function onMoveShiftToRotation(rotationId, shiftId) {
       v-if="pointer && isNurse() && rotation.shifts?.length > 1"
       class="flex gap-2 text-sm justify-between"
     >
-      <Button leftIcon="left-arrow">Back Doctor</Button>
-      <Button rightIcon="right-arrow">Skip Doctor</Button>
+      <Button leftIcon="left-arrow" @click="movePointer(-1)"
+        >Back Doctor</Button
+      >
+      <Button rightIcon="right-arrow" @click="movePointer(1)"
+        >Skip Doctor</Button
+      >
     </div>
   </section>
 </template>

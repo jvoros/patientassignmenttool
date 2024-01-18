@@ -136,13 +136,14 @@ function createBoardStore() {
   // POINTER functions
 
   function moveRotationPointer(rotationId, offset, noEvent = false) {
+    const startingPointer = findRotationById(rotationId).pointer;
     modifyRotationById(rotationId, Rotation.movePointer, offset);
+
     // event
     // flag to fire without event
     if (noEvent) return;
     // event has different shift based on pointer direction
     const endingPointer = findRotationById(rotationId).pointer;
-    const startingPointer = endingPointer - offset;
     const eventShift =
       offset === 1
         ? findShiftByOrder(rotationId, startingPointer)
