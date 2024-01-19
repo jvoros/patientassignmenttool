@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onBeforeMount } from "vue";
 import {
   Popover,
   PopoverButton,
@@ -12,12 +12,23 @@ import PopoverTransition from "./PopoverTransition.vue";
 import { useAppStore } from "../stores/appStore";
 import { socketData } from "../stores/socket";
 
+onBeforeMount(() => {
+  store.getDoctorsAndShifts();
+});
+
 const store = useAppStore();
 const board = computed(() => {
   return socketData.board;
 });
 
+const shifts = computed(() => {
+  return socketData.board.shifts;
+});
+
 const emit = defineEmits(["addDoctor"]);
+
+const filteredDoctors = store.doctors;
+console.log(shifts.value);
 
 const doctor = ref(null);
 const shift = ref({});
@@ -73,7 +84,7 @@ async function addDoctor(close) {
             v-model="doctor"
           >
             <option :value="null" disabled>Select Doctor:</option>
-            <option v-for="doctor in store.doctors" :value="doctor">
+            <option v-for="doctor in filteredDoctors" :value="doctor">
               {{ doctor.last }}, {{ doctor.first }}
             </option>
           </select>

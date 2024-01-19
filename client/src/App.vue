@@ -15,7 +15,6 @@ const board = computed(() => {
 
 onBeforeMount(() => {
   store.checkLoginStatus();
-  store.getDoctorsAndShifts();
 });
 
 function logout() {
@@ -42,16 +41,6 @@ function makeRotationWithShifts(board, rotationName) {
     : [];
   return { details, shifts };
 }
-
-// const main = computed(() => {
-//   const details = board.rotations ? board.rotations.filter(r=>r.name === "Main");
-//   const shifts =
-//   return store.board.shifts
-//     ? store.board.shifts.filter(
-//         (shift) => shift.rotationId === props.rotation.id
-//       )
-//     : null;
-// });
 </script>
 
 <template>

@@ -1,22 +1,7 @@
 import express from "express";
-
-import createBoardStore from "./controllers/board.js";
+import { board, getPath, responder } from "./index.js";
 
 const api = express.Router();
-
-const board = createBoardStore();
-
-// HELPERS
-function getPath(p) {
-  return new URL(p, import.meta.url).pathname;
-}
-
-function responder(res) {
-  // client browser needs a response to know transmission complete
-  res.status(200).json({ message: "success" });
-  // state payload sent to client by socket.io
-  res.io.emit("new state", board.getSortedState());
-}
 
 // MIDDLEWARE
 // if 'nurse' then admin actions at bottom

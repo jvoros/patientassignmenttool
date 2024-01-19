@@ -6,8 +6,8 @@ export const useAppStore = defineStore("board", {
   state: () => {
     return {
       user: { loggedIn: false }, //default state
-      doctors: {},
-      shift_details: {},
+      doctors: [],
+      shift_details: [],
       error: "", //{ text: 'Test Error'},
       loginError: "", //{ text: 'loginError' },
     };
@@ -41,11 +41,17 @@ export const useAppStore = defineStore("board", {
 
     async login(roleAndPassword) {
       this.loginError = null;
-      const res = await apiCall("api/login", roleAndPassword);
-      if (res.status === "success") {
-        this.user = { loggedIn: true, ...res.payload };
-      } else {
-        this.loginError = res;
+      try {
+        const res = await apiCall("api/login", roleAndPassword);
+        if (res.status === "success") {
+          this.user = { loggedIn: true, ...res.payload };
+        } else {
+          console.log(res);
+          this.loginError = res;
+        }
+      } catch (error) {
+        console.log("catching an error from apiCall");
+        console.log(error);
       }
     },
 

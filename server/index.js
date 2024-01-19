@@ -10,12 +10,15 @@ import { Server } from "socket.io";
 // will catch async errors and pass to error middleware without try/catch blocks
 import "express-async-errors";
 
+import createBoardStore from "./controllers/board.js";
 import api from "./api.js";
 
 const JWT_KEY = process.env.JWT_KEY;
 
 // setup
 const app = express();
+export const board = createBoardStore();
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
@@ -27,8 +30,15 @@ io.on("connection", (socket) => {
 });
 
 // HELPERS
-function getPath(p) {
+export function getPath(p) {
   return new URL(p, import.meta.url).pathname;
+}
+
+export function responder(res) {
+  // client browser needs a response to know transmission complete
+  res.status(200).json({ message: "success" });
+  // state payload sent to client by socket.io
+  res.io.emit("new state", board.getSortedState());
 }
 
 // response helper
@@ -67,10 +77,6 @@ app.get("/", (_req, res) => {
   res.sendFile(getPath("../client/dist/index.html"));
 });
 
-app.post("/test", (req, res) => {
-  res.json(req.body);
-});
-
 const userTable = {
   nurse: { pass: process.env.NURSE_PASSWORD, role: "nurse" },
   doctor: { pass: process.env.DOC_PASSWORD, role: "doctor" },
@@ -88,6 +94,7 @@ app.post("/api/login", (req, res) => {
       maxAge: 1000 * 60 * 60 * 24, // one day
     });
     res.status(200).json(message("success", "Logged In", user));
+    res.io.emit("new state", board.getSortedState());
   } else {
     res.status(401).json(message("unauthorized", "Incorrect password"));
   }

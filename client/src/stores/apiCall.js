@@ -5,12 +5,14 @@ export default async function apiCall(url, payload, method = "POST") {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message);
-    }
     return await response.json();
+    // if (response.ok) {
+    //   return json;
+    // } else {
+    //   console.log("API CALL: !response.ok", json);
+    // }
   } catch (error) {
-    throw new Error(error.message);
+    console.log("API CALL ERROR CATCH: ", error);
+    //throw new Error(error.message);
   }
 }
