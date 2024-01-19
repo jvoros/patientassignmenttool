@@ -1,33 +1,56 @@
-import * as dotenv from "dotenv";
-dotenv.config();
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import cookieSession from "cookie-session";
 import { createServer } from "http";
-import jwt from "jsonwebtoken";
-import cookieParser from "cookie-parser";
 import { Server } from "socket.io";
 // https://stackoverflow.com/a/57527735
 // will catch async errors and pass to error middleware without try/catch blocks
 import "express-async-errors";
+import nunjucks from "nunjucks";
 
-import createBoardStore from "./controllers/board.js";
-import api from "./api.js";
+import passport from "./server/passport.js";
+import createBoardStore from "./server/controllers/board.js";
+import api from "./server/api.js";
 
-const JWT_KEY = process.env.JWT_KEY;
-
-// setup
-const app = express();
+// SETUP
 export const board = createBoardStore();
-
+const app = express();
+app.set("view engine", "html");
 app.use(express.json());
-app.use(cookieParser());
 app.use(cors());
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+); // for login form
+nunjucks.configure("views", {
+  autoescape: true,
+  express: app,
+});
+
+// WEBSOCKET
 const server = createServer(app);
 const io = new Server(server);
-
 io.on("connection", (socket) => {
   console.log("SOCKET.IO: a user connected");
 });
+// passes io object to routers
+app.use((_req, res, next) => {
+  res.io = io;
+  return next();
+});
+
+// PASSPORT
+app.use(
+  cookieSession({
+    name: "session",
+    keys: ["key1key1", "key2key2"],
+    maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
 // HELPERS
 export function getPath(p) {
@@ -51,36 +74,56 @@ function message(status, text, payload = "") {
 }
 
 // custom authorization middlewares
-const authorization = (req, res, next) => {
-  const token = req.cookies.access_token;
-  if (!token) {
-    return res.status(401).json(message("error", "Unauthorized Request"));
-  }
-  try {
-    const data = jwt.verify(token, JWT_KEY);
-    req.user = data;
+// const authorization = (req, res, next) => {
+//   const token = req.cookies.access_token;
+//   if (!token) {
+//     return res.status(401).json(message("error", "Unauthorized Request"));
+//   }
+//   try {
+//     const data = jwt.verify(token, JWT_KEY);
+//     req.user = data;
+//     return next();
+//   } catch {
+//     return res.status(401).json(message("error", "Unauthorized Request"));
+//   }
+// };
+
+// AUTH MIDDLEWARE
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
     return next();
-  } catch {
-    return res.status(401).json(message("error", "Unauthorized Request"));
   }
-};
+  res.redirect("/login");
+}
 
-// passes io object to routers
-app.use((_req, res, next) => {
-  res.io = io;
-  return next();
+// ROUTES
+// app.use("/assets", express.static(getPath("../client/dist/assets")));
+app.use(express.static("public"));
+
+app.get("/login", (req, res) => {
+  res.render("login", {
+    user: "none",
+    message: !req.session.message ? "no message" : req.session.message[0],
+  });
 });
 
-app.use("/assets", express.static(getPath("../client/dist/assets")));
+// local auth
+app.post(
+  "/login/password",
+  passport.authenticate("local", {
+    successRedirect: "/",
+    failureRedirect: "/login",
+    failureMessage: true,
+  }),
+  (req, res) => {
+    console.log(req.body);
+  }
+);
 
-app.get("/", (_req, res) => {
-  res.sendFile(getPath("../client/dist/index.html"));
-});
-
-const userTable = {
-  nurse: { pass: process.env.NURSE_PASSWORD, role: "nurse" },
-  doctor: { pass: process.env.DOC_PASSWORD, role: "doctor" },
-};
+// const userTable = {
+//   nurse: { pass: process.env.NURSE_PASSWORD, role: "nurse" },
+//   doctor: { pass: process.env.DOC_PASSWORD, role: "doctor" },
+// };
 
 app.post("/api/login", (req, res) => {
   const { role, password } = req.body;
@@ -118,8 +161,17 @@ app.post("/api/logout", (_req, res) => {
   res.status(200).json(message("success", "Logged Out"));
 });
 
-// api routes, protected by middleware
-app.use(authorization);
+// ROUTES BEHIND AUTH
+app.use(ensureAuthenticated);
+
+app.get("/", (req, res) => {
+  res.render("home", { user: req.user });
+});
+
+app.get("/logout", (req, res) => {
+  req.logout();
+  res.redirect("/login");
+});
 
 app.use("/api", api);
 

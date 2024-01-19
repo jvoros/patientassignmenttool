@@ -1,5 +1,5 @@
 import express from "express";
-import { board, getPath, responder } from "./index.js";
+import { board, getPath, responder } from "../index.js";
 
 const api = express.Router();
 

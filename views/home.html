@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="pico.min.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+        }
+      }
+    </script>
+  </head>
+  <body class="container">
+    <nav>
+      <ul>
+        <li>
+          <strong>Patient Assignment Tool</strong> <small>version 0.2</small>
+        </li>
+      </ul>
+      <ul>
+        <li><a href="/logout">Logout</a></li>
+      </ul>
+    </nav>
+    <h1>Home Base</h1>
+
+    {% raw %}
+    <div id="app">{{ message }}</div>
+    {% endraw %}
+
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>
