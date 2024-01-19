@@ -178,7 +178,10 @@ describe("Board Functions", () => {
         board.getState().events[0].id,
         board.getState().shifts[1].id
       );
-      expect(board.getState().events[0].reassign).to.exist;
+      expect(board.getState().events[0].shift.id).to.equal(
+        board.getState().shifts[1].id
+      ); // new event for reassignment
+      expect(board.getState().events[1].reassign).to.exist; // reassign added to event that was modified
       expect(board.getState().shifts[0].patients.length).to.equal(0);
       expect(board.getState().shifts[1].patients.length).to.equal(1);
     });
