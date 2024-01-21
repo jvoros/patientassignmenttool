@@ -3,10 +3,10 @@
     <li><strong>Patient Assignment Tool</strong> <small>version 0.2</small></li>
   </ul>
   <ul>
-    <li>{% include "./addDoctorPopover.html" %}</li>
+    <li><%- include('./addDoctorPopover.ejs'); %></li>
     <li>
       <a role="button" class="contrast" href="/logout">
-        Logout&nbsp;&nbsp;{% include "../icons/logout.html" %}
+        Logout&nbsp;&nbsp;<%- include('../icons/logout.ejs'); %>
       </a>
     </li>
   </ul>

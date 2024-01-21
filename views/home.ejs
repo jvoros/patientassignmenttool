@@ -1,6 +1,10 @@
 <html>
   <head>
     <link rel="stylesheet" href="pico.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@next/css/pico.colors.min.css"
+    />
     <link rel="stylesheet" href="styles.css" />
     <script type="importmap">
       {
@@ -13,7 +17,7 @@
   </head>
   <body class="container">
     <div id="app" v-cloak>
-      {% include "./partials/nav.html" %}
+      <%- include('./partials/nav.ejs'); %>
 
       <main>
         <section class="timeline">
@@ -23,35 +27,28 @@
         <section class="mainRotation">
           <h4>Main Rotation</h4>
           <hr />
+          <template v-for="shift in board.rotations.main.shifts">
+            <%- include('./partials/shift.ejs'); %>
+          </template>
         </section>
         <section class="otherRotations">
           <h4>Fast Track</h4>
           <hr />
+          <template v-for="shift in board.rotations.fasttrack.shifts">
+            <%- include('./partials/shift.ejs'); %>
+          </template>
           <h4>Off Rotation</h4>
           <hr />
-          <div class="shiftBox">
-            <div class="shiftMain">
-              <div>
-                <div class="shiftName">6 am | FT 1pm - 2pm</div>
-                <div class="shiftDoc">Kelly Blake</div>
-              </div>
-              <div>
-                <button class="contrast">
-                  Assign &nbsp;&nbsp;{% include './icons/walkin.html' %}
-                </button>
-              </div>
-            </div>
-            <ul>
-              <li>total: <span>5</span></li>
-              <li>walk-in: <span>2</span></li>
-            </ul>
-          </div>
+          <template v-for="shift in board.rotations.off.shifts">
+            <%- include('./partials/shift.ejs'); %>
+          </template>
         </section>
       </main>
-      {% raw %}
-      <p>{{ user }}</p>
-      {% endraw %}
+
+      <p>Is nurse? {{ nurse }}</p>
+      <div>{{ board }}</div>
     </div>
+    <script src="./dummy.js"></script>
     <script src="./app.js" type="module"></script>
   </body>
 </html>

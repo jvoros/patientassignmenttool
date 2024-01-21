@@ -23,21 +23,25 @@ async function apiCall(url, payload, method = "POST") {
 createApp({
   data() {
     return {
-      user: { role: "none" },
+      nurse: false,
       ui: { showAddDoctorPopover: false },
+      board: board,
     };
   },
   methods: {
+    // AUTH
     async checkLoginStatus() {
       console.log("checking login status");
       const res = await apiCall("checklogin");
       if (res.status === "success" && res.payload) {
-        this.user = { loggedIn: true, ...res.payload };
+        //this.user = { loggedIn: true, ...res.payload };
+        this.nurse = res.payload.username === "nurse" ? true : false;
       }
       if (res.status === "error") {
         this.setError(res);
       }
     },
+    // POPOVERS
     toggleAddDoctorPopover() {
       this.ui.showAddDoctorPopover = !this.ui.showAddDoctorPopover;
     },

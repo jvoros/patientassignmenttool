@@ -27,7 +27,7 @@ function message(status, text, payload = "") {
 
 // SETUP
 const app = express();
-app.set("view engine", "html");
+app.set("view engine", "ejs");
 app.use(express.json());
 // app.use(cors());
 app.use(cookieParser());
@@ -36,10 +36,10 @@ app.use(
     extended: true,
   })
 ); // for login form
-nunjucks.configure("views", {
-  autoescape: true,
-  express: app,
-});
+// nunjucks.configure("views", {
+//   autoescape: true,
+//   express: app,
+// });
 
 // WEBSOCKET
 const server = createServer(app);
@@ -73,18 +73,14 @@ const authorization = (req, res, next) => {
   }
 };
 
-// ROUTES
+// ROUTES OUTSIDE AUTH
 
 app.use(express.static("public"));
 
 app.get("/login", (req, res) => {
-  res.render("login", {
-    user: "none",
-    message: !req.session.message ? "no message" : req.session.message[0],
-  });
+  res.render("login");
 });
 
-// local auth
 app.post("/login/password", (req, res) => {
   const { username, password } = req.body;
   if (password === userTable[username].pass) {

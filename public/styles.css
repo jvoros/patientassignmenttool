@@ -5,10 +5,25 @@
 /* MOD PICO */
 :root {
   --pico-font-size: 106.25%;
+  --my-muted-background: #b3b9c5;
 }
 
 button {
   padding: calc(var(--pico-spacing) / 2) var(--pico-spacing);
+}
+
+/* Dark color scheme (Auto) */
+/* Automatically enabled if user has Dark mode enabled */
+@media only screen and (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --my-muted-background: #525f7a;
+  }
+}
+
+/* Dark color scheme (Forced) */
+/* Enabled if forced with data-theme="dark" */
+[data-theme="dark"] {
+  --my-muted-background: #525f7a;
 }
 
 /* MAIN LAYOUT */
@@ -19,7 +34,7 @@ nav {
 main {
   display: flex;
   align-items: stretch;
-  gap: 1em;
+  gap: 2em;
 }
 section.timeline {
   width: 30%;
@@ -34,8 +49,10 @@ section.otherRotations {
 /* SHIFT BOX */
 .shiftBox {
   border-radius: var(--pico-border-radius);
+  background-color: var(--my-muted-background);
   border: 1px solid lightgray;
   padding: var(--pico-spacing);
+  margin-bottom: var(--pico-spacing);
 }
 
 .shiftMain {
@@ -56,13 +73,28 @@ section.otherRotations {
 
 .shiftBox ul {
   padding: 0;
+  padding-top: calc(var(--pico-spacing) / 2);
   margin: 0;
   display: flex;
-  gap: var(--pico-spacing);
+  gap: calc(var(--pico-spacing) / 2);
+  font-size: 70%;
 }
 
 .shiftBox li {
   display: inline;
+  padding: 2px 4px;
+
+  background-color: lightgray;
+  border-radius: 5px;
+  text-transform: uppercase;
+}
+
+.shiftCountNumber {
+  display: inline-block;
+  background-color: white;
+  border-radius: 25px;
+  padding: 0 5px;
+  margin: 2px 5px;
 }
 
 /* POPOVERS */
