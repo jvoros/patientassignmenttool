@@ -1,0 +1,23 @@
+<div class="popover" id="addDoctorPopover">
+  <a role="button" class="secondary" @click="toggleAddDoctorPopover">
+    {% include "../icons/doctor.html" %} &nbsp;&nbsp;Add Doctor
+  </a>
+  <div class="popoverWrapper" v-if="ui.showAddDoctorPopover">
+    <div class="popoverBlocker" @click="toggleAddDoctorPopover"></div>
+    <div class="popoverContent">
+      <form class="newDoctorForm">
+        <select id="newDoctor" name="newDoctor">
+          <option selected disabled>Doctor:</option>
+          <option value="one">Blake, Kelly</option>
+        </select>
+        <select id="newShift" name="newShift">
+          <option selected disabled>Shift:</option>
+        </select>
+        <select id="newRotation" name="newRotation">
+          <option selected disabled>Rotation:</option>
+        </select>
+        <button class="secondary" type="submit">Add</button>
+      </form>
+    </div>
+  </div>
+</div>

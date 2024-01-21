@@ -1,24 +1,23 @@
 import express from "express";
-import { board, getPath, responder } from "../index.js";
+import { board } from "../index.js";
 
 const api = express.Router();
 
-// MIDDLEWARE
-// if 'nurse' then admin actions at bottom
-const confirmRole = (requiredRole) => (req, res, next) => {
-  if (!req.user.role || req.user.role !== requiredRole) {
-    return res.status(401).json({ message: "Unauthorized Request" });
-  }
-  return next();
-};
+// HELPERS
+export function getPath(p) {
+  return new URL(p, import.meta.url).pathname;
+}
+
+export function responder(res) {
+  // client browser needs a response to know transmission complete
+  res.status(200).json({ message: "success" });
+  // state payload sent to client by socket.io
+  res.io.emit("new state", board.getSortedState());
+}
 
 // MAIN API
 api.post("/board", (_req, res) => {
   responder(res);
-});
-
-api.post("/history", (req, res) => {
-  res.json(history.getState());
 });
 
 api.post("/doctors", async (req, res) => {
@@ -73,10 +72,5 @@ api.post("/undo", (_req, res) => {
   board.undo();
   responder(res);
 });
-
-// PROTECTED ADMIN ACTIONS
-api.use(confirmRole("nurse"));
-
-api.get("/backintime", (req, res) => {});
 
 export default api;

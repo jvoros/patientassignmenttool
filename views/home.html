@@ -1,6 +1,7 @@
 <html>
   <head>
     <link rel="stylesheet" href="pico.min.css" />
+    <link rel="stylesheet" href="styles.css" />
     <script type="importmap">
       {
         "imports": {
@@ -8,24 +9,49 @@
         }
       }
     </script>
+    <script src="/socket.io/socket.io.js"></script>
   </head>
   <body class="container">
-    <nav>
-      <ul>
-        <li>
-          <strong>Patient Assignment Tool</strong> <small>version 0.2</small>
-        </li>
-      </ul>
-      <ul>
-        <li><a href="/logout">Logout</a></li>
-      </ul>
-    </nav>
-    <h1>Home Base</h1>
+    <div id="app" v-cloak>
+      {% include "./partials/nav.html" %}
 
-    {% raw %}
-    <div id="app">{{ message }}</div>
-    {% endraw %}
-
+      <main>
+        <section class="timeline">
+          <h4>Timeline</h4>
+          <hr />
+        </section>
+        <section class="mainRotation">
+          <h4>Main Rotation</h4>
+          <hr />
+        </section>
+        <section class="otherRotations">
+          <h4>Fast Track</h4>
+          <hr />
+          <h4>Off Rotation</h4>
+          <hr />
+          <div class="shiftBox">
+            <div class="shiftMain">
+              <div>
+                <div class="shiftName">6 am | FT 1pm - 2pm</div>
+                <div class="shiftDoc">Kelly Blake</div>
+              </div>
+              <div>
+                <button class="contrast">
+                  Assign &nbsp;&nbsp;{% include './icons/walkin.html' %}
+                </button>
+              </div>
+            </div>
+            <ul>
+              <li>total: <span>5</span></li>
+              <li>walk-in: <span>2</span></li>
+            </ul>
+          </div>
+        </section>
+      </main>
+      {% raw %}
+      <p>{{ user }}</p>
+      {% endraw %}
+    </div>
     <script src="./app.js" type="module"></script>
   </body>
 </html>
