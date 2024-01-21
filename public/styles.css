@@ -5,7 +5,12 @@
 /* MOD PICO */
 :root {
   --pico-font-size: 106.25%;
+  --drop-shadow: drop-shadow(1px 1px 5px #a1a1a1);
+  --my-background: rgb(249 250 251);
   --my-muted-background: #b3b9c5;
+  --my-ft-background: #d7fbc1;
+  --my-ft-border: #55c21e;
+  --my-next-background: #ffbf00;
 }
 
 button {
@@ -24,6 +29,11 @@ button {
 /* Enabled if forced with data-theme="dark" */
 [data-theme="dark"] {
   --my-muted-background: #525f7a;
+}
+
+/* MAIN COLORS */
+body {
+  background-color: var(--my-background);
 }
 
 /* MAIN LAYOUT */
@@ -49,16 +59,53 @@ section.otherRotations {
 /* SHIFT BOX */
 .shiftBox {
   border-radius: var(--pico-border-radius);
-  background-color: var(--my-muted-background);
-  border: 1px solid lightgray;
-  padding: var(--pico-spacing);
+  border: 2px solid lightgray;
+  background-color: var(--pico-background-color);
   margin-bottom: var(--pico-spacing);
 }
 
-.shiftMain {
+.shiftNext {
+  border-color: var(--my-next-background);
+  filter: var(--drop-shadow);
+}
+
+.shiftBox + .shiftNext {
+  background-color: lightyellow;
+}
+
+.shiftNextFlag {
+  display: none;
+  background-color: var(--my-next-background);
+  color: white;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 80%;
+  text-align: center;
+  padding: 1px 0;
+}
+
+.shiftNext > .shiftNextFlag {
+  display: block;
+}
+
+.shiftOff {
+  background-color: var(--my-muted-background);
+}
+
+.shiftFastTrack {
+  background-color: var(--my-ft-background);
+  border-color: var(--my-ft-border);
+}
+
+.shiftControls {
+  background-color: lightgray;
+}
+
+.shiftContent {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: var(--pico-spacing);
 }
 
 .shiftName {
@@ -72,8 +119,7 @@ section.otherRotations {
 }
 
 .shiftBox ul {
-  padding: 0;
-  padding-top: calc(var(--pico-spacing) / 2);
+  padding: 0 var(--pico-spacing) var(--pico-spacing) var(--pico-spacing);
   margin: 0;
   display: flex;
   gap: calc(var(--pico-spacing) / 2);
@@ -83,7 +129,6 @@ section.otherRotations {
 .shiftBox li {
   display: inline;
   padding: 2px 4px;
-
   background-color: lightgray;
   border-radius: 5px;
   text-transform: uppercase;
@@ -119,7 +164,7 @@ section.otherRotations {
   padding: var(--pico-spacing);
   background-color: var(--pico-background-color);
   border-radius: var(--pico-border-radius);
-  filter: drop-shadow(1px 1px 5px #a1a1a1);
+  filter: var(--drop-shadow);
   width: 250px;
 }
 

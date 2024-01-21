@@ -188,7 +188,7 @@ describe("Board Functions", () => {
     it("should add event for changing shift order", () => {
       board.moveShift(board.getState().shifts[1].id, 1);
       expect(board.getState().events[0].type).to.equal("order");
-      console.log(JSON.stringify(board.getSortedState()));
+      console.log(JSON.stringify(board.getState()));
     });
   });
   it("", () => {});

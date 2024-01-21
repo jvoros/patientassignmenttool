@@ -1,11 +1,9 @@
-<html>
+<!DOCTYPE html>
   <head>
     <link rel="stylesheet" href="pico.min.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@picocss/pico@next/css/pico.colors.min.css"
-    />
+    <link rel="stylesheet" href="pico.colors.min.css" />
     <link rel="stylesheet" href="styles.css" />
+    <script src="/socket.io/socket.io.js"></script>
     <script type="importmap">
       {
         "imports": {
@@ -13,10 +11,9 @@
         }
       }
     </script>
-    <script src="/socket.io/socket.io.js"></script>
   </head>
-  <body class="container">
-    <div id="app" v-cloak>
+  <body>
+    <div class="container" id="app" v-cloak>
       <%- include('./partials/nav.ejs'); %>
 
       <main>
@@ -27,28 +24,26 @@
         <section class="mainRotation">
           <h4>Main Rotation</h4>
           <hr />
-          <template v-for="shift in board.rotations.main.shifts">
-            <%- include('./partials/shift.ejs'); %>
+          <template v-for="rotation in findRotationByName('Main')">
+            <%- include('./partials/shifts.ejs'); %>
           </template>
         </section>
         <section class="otherRotations">
           <h4>Fast Track</h4>
           <hr />
-          <template v-for="shift in board.rotations.fasttrack.shifts">
-            <%- include('./partials/shift.ejs'); %>
+          <template v-for="rotation in findRotationByName('Fast Track')">
+            <%- include('./partials/shifts.ejs'); %>
           </template>
           <h4>Off Rotation</h4>
           <hr />
-          <template v-for="shift in board.rotations.off.shifts">
-            <%- include('./partials/shift.ejs'); %>
+          <template v-for="rotation in findRotationByName('Off')">
+            <%- include('./partials/shifts.ejs'); %>
           </template>
         </section>
       </main>
-
-      <p>Is nurse? {{ nurse }}</p>
-      <div>{{ board }}</div>
     </div>
     <script src="./dummy.js"></script>
+    <script src="./dummy2.js"></script>
     <script src="./app.js" type="module"></script>
   </body>
 </html>

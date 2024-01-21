@@ -25,10 +25,31 @@ createApp({
     return {
       nurse: false,
       ui: { showAddDoctorPopover: false },
-      board: board,
+      board: dummy2,
     };
   },
   methods: {
+    // HELPERS
+    findRotationById(id) {
+      const result = [];
+      Object.keys(this.board.rotations).forEach((key) => {
+        if (this.board.rotations[key].id === id) {
+          result.push(this.board.rotations[key]);
+        }
+      });
+      return result[0];
+    },
+
+    findRotationByName(name) {
+      return this.board.rotations.filter((r) => r.name === name);
+    },
+
+    findShiftsByRotation(rotationId) {
+      return this.board.shifts
+        .filter((s) => s.rotationId === rotationId)
+        .sort((a, b) => a.order - b.order);
+    },
+
     // AUTH
     async checkLoginStatus() {
       console.log("checking login status");
@@ -44,6 +65,26 @@ createApp({
     // POPOVERS
     toggleAddDoctorPopover() {
       this.ui.showAddDoctorPopover = !this.ui.showAddDoctorPopover;
+    },
+    // SHIFT
+    isNext(rotation, shift) {
+      if (rotation.name === "Off") return false;
+      return shift.order === rotation.pointer;
+    },
+    isMainNext(rotation, shift) {
+      return this.isNext(rotation, shift) && rotation.name === "Main";
+    },
+    getShiftClasses(rotation, shift) {
+      const shiftType = {
+        Off: "shiftOff",
+        "Fast Track": "shiftFastTrack",
+        Main: "shiftMain",
+      };
+      const mainNext =
+        this.isNext(rotation, shift) && rotation.name === "Main"
+          ? "shiftNext"
+          : "";
+      return `${shiftType[rotation.name]} ${mainNext}`;
     },
   },
   onBeforeMounted() {
