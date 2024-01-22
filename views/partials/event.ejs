@@ -37,7 +37,7 @@
   </div>
 
   <div v-if="index === 0 && nurse">
-    <button class="undo secondary outline">
+    <button class="undo secondary outline" @click="undo">
       <%- include ('../icons/undo.svg') %> Undo
     </button>
   </div>

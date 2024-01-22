@@ -155,6 +155,10 @@ createApp({
       apiCall("api/moveRotationPointer", { rotationId, offset });
     },
 
+    undo() {
+      apiCall("api/undo");
+    },
+
     // POPOVERS
     uiTogglerByShift(flag, shiftId) {
       this.ui[flag] = !this.ui[flag] ? shiftId : false;
