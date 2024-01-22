@@ -8,6 +8,9 @@
   </button>
   <div class="popoverWrapper" v-if="assignPopoverOpen(shift.id)">
     <div class="popoverBlocker" @click="toggleAssign(shift.id)"></div>
-    <%- include('./assignPopoverGuts.ejs'); %>
+    <div class="popoverContent">
+      <%- include('./assignPopoverGuts.ejs'); %>
+      <button class="contrast" @click="assignPatient(shift.id)">Assign</button>
+    </div>
   </div>
 </div>

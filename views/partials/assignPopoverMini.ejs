@@ -7,6 +7,11 @@
   </button>
   <div class="popoverWrapper" v-if="assignMiniOpen(shift.id)">
     <div class="popoverBlocker" @click="toggleAssignMini(shift.id)"></div>
-    <%- include('./assignPopoverGuts.ejs'); %>
+    <div class="popoverContent">
+      <%- include('./assignPopoverGuts.ejs'); %>
+      <button class="contrast" @click="assignPatientMini(shift.id)">
+        Assign
+      </button>
+    </div>
   </div>
 </div>

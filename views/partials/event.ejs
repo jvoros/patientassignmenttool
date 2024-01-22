@@ -5,7 +5,7 @@
       :class="[
         event.type !== 'assign' ? 'eventIconBell' : '', 
         event.patient?.type === 'ambo' ? 'eventIconAmbo' : '',
-        event.patient?.type === 'fasttrack' ? 'eventIconFt' : '',
+        event.patient?.type === 'ft' ? 'eventIconFt' : '',
         event.patient?.type === 'walkin' ? 'eventIconWalkin' : '',
         event.patient?.type === 'bonus' ? 'eventIconBonus' : ''
       ]"

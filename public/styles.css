@@ -229,6 +229,42 @@ section.otherRotations {
   gap: var(--pico-spacing);
 }
 
+.assignType {
+  display: flex;
+  width: 100%;
+  padding: 0;
+  justify-content: space-around;
+  border: 1px solid var(--my-light-gray);
+  border-radius: var(--pico-border-radius);
+}
+
+.assignType li {
+  list-style-type: none;
+  width: 100%;
+  margin: 0;
+}
+
+.assignType li:not(:last-of-type) {
+  border-right: 1px solid var(--my-light-gray);
+}
+
+.assignType li input {
+  position: absolute;
+  visibility: hidden;
+}
+
+.assignType li label {
+  cursor: pointer;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: var(--pico-spacing-half) 0;
+}
+
+.assignTypeSelected {
+  background-color: var(--my-light-gray);
+}
+
 /* TIMELINE */
 .event {
   display: flex;
@@ -299,7 +335,7 @@ section.otherRotations {
 
 .eventIconWalkin {
   background-image: url("./icons/walkin.svg");
-  background-color: var(--my-light-red);
+  background-color: lightblue;
 }
 
 .eventIconFt {
@@ -309,7 +345,7 @@ section.otherRotations {
 
 .eventIconBonus {
   background-image: url("./icons/bonus.svg");
-  background-color: var(--my-light-red);
+  background-color: lightyellow;
 }
 
 .undo {

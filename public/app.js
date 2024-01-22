@@ -37,6 +37,17 @@ createApp({
           shift: "",
           rotationId: "",
         },
+        assign: {
+          shiftId: "",
+          type: "",
+          room: "",
+        },
+        assignTypes: [
+          { type: "walkin", icon: "./icons/walkin.svg", tip: "walk in" },
+          { type: "ambo", icon: "./icons/ambo.svg", tip: "ambo" },
+          { type: "ft", icon: "./icons/ft.svg", tip: "fast track" },
+          { type: "bonus", icon: "./icons/bonus.svg", tip: "bonus" },
+        ],
       },
       board: { rotations: [], shifts: [], events: [] },
       doctors: doctors, // imported js files with constants
@@ -155,6 +166,18 @@ createApp({
       apiCall("api/moveRotationPointer", { rotationId, offset });
     },
 
+    assignPatient(shiftId) {
+      this.forms.assign.shiftId = shiftId;
+      apiCall("api/assignPatient", this.forms.assign);
+      this.toggleAssign(shiftId);
+    },
+
+    assignPatientMini(shiftId) {
+      this.forms.assign.shiftId = shiftId;
+      apiCall("api/assignPatient", this.forms.assign);
+      this.toggleAssignMini(shiftId);
+    },
+
     undo() {
       apiCall("api/undo");
     },
@@ -164,15 +187,21 @@ createApp({
       this.ui[flag] = !this.ui[flag] ? shiftId : false;
     },
 
+    // utility to reset the modeled form data
+    formDataReset(form) {
+      Object.keys(form).forEach((key) => {
+        form[key] = "";
+      });
+    },
+
     toggleAddShiftPopover() {
       this.ui.showAddShiftPopover = !this.ui.showAddShiftPopover;
-      Object.keys(this.forms.addShift).forEach(
-        (key) => (this.forms.addShift[key] = "")
-      );
+      this.formDataReset(this.forms.addShift);
     },
 
     toggleAssign(shiftId) {
       this.uiTogglerByShift("showAssignPopover", shiftId);
+      this.formDataReset(this.forms.assign);
     },
 
     assignPopoverOpen(shiftId) {
@@ -181,6 +210,7 @@ createApp({
 
     toggleAssignMini(shiftId) {
       this.uiTogglerByShift("showAssignMini", shiftId);
+      this.formDataReset(this.forms.assign);
     },
 
     assignMiniOpen(shiftId) {

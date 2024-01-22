@@ -1,22 +1,24 @@
-<div class="popoverContent">
-  <label>Patient type:</label>
-  <div role="group">
-    <button class="secondary" data-tooltip="walk in">
-      <%- include('../icons/walkin.svg') %>
-    </button>
-    <button class="secondary" data-tooltip="ambo">
-      <%- include('../icons/ambo.svg') %>
-    </button>
-    <button class="secondary" data-tooltip="fast track">
-      <%- include('../icons/ft.svg') %>
-    </button>
-    <button class="secondary" data-tooltip="bonus">
-      <%- include('../icons/bonus.svg') %>
-    </button>
-  </div>
-  <select id="newRoom" name="newRoom">
-    <option selected disabled>Room:</option>
-    <option v-for="room in rooms" :value="room">{{ room }}</option>
-  </select>
-  <button class="contrast">Assign</button>
-</div>
+<label>Patient type:</label>
+<ul class="assignType">
+  <li v-for="ptType in forms.assignTypes">
+    <input
+      type="radio"
+      name="type"
+      :id="ptType.type"
+      v-model="forms.assign.type"
+      :value="ptType.type"
+    />
+    <label
+      :for="ptType.type"
+      :class="[ptType.type === forms.assign.type ? 'assignTypeSelected' : '']"
+      :data-tooltip="ptType.tip"
+    >
+      <img :src="ptType.icon" />
+    </label>
+  </li>
+</ul>
+
+<select v-model="forms.assign.room">
+  <option selected disabled>Room:</option>
+  <option v-for="room in rooms" :value="room">{{ room }}</option>
+</select>
