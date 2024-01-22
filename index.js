@@ -46,6 +46,8 @@ const server = createServer(app);
 const io = new Server(server);
 io.on("connection", (socket) => {
   console.log("SOCKET.IO: a user connected");
+  console.log("SOCKET.IO: emitting new state");
+  socket.emit("new state", board.getState());
 });
 // passes io object to routers
 app.use((_req, res, next) => {
@@ -93,8 +95,9 @@ app.post("/login/password", (req, res) => {
       maxAge: 1000 * 60 * 60 * 24, // one day
     });
     res.status(200);
-    res.io.emit("new state", board.getSortedState());
     res.redirect("/");
+    res.io.emit("new state", board.getState());
+    return;
   } else {
     return res.redirect("/login");
   }

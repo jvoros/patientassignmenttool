@@ -42,6 +42,7 @@ button {
 body {
   background-color: var(--my-background);
   color: var(--pico-color);
+  min-height: 100vh;
 }
 
 /* MAIN LAYOUT */

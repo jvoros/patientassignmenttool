@@ -108,9 +108,9 @@ createApp({
         );
     },
 
-    // AUTH
+    // SERVER
     async checkLoginStatus() {
-      console.log("checking login status");
+      console.log("Checking login status");
       const res = await apiCall("checklogin");
       if (res.status === "success" && res.payload) {
         //this.user = { loggedIn: true, ...res.payload };
@@ -120,6 +120,11 @@ createApp({
         this.setError(res);
       }
     },
+
+    handleNewState(state) {
+      this.board = state;
+    },
+
     // POPOVERS
     uiTogglerByShift(flag, shiftId) {
       this.ui[flag] = !this.ui[flag] ? shiftId : false;
@@ -179,11 +184,8 @@ createApp({
       return `${shiftType[rotation.name]} ${mainNext}`;
     },
   },
-  onBeforeMounted() {
-    console.log("onBeforeMounted fired");
-  },
+
   mounted() {
-    console.log("Vue mounted");
     this.checkLoginStatus();
     const socket = io();
     socket.on("connect", () => {
@@ -194,6 +196,11 @@ createApp({
       // });
       // fire off first event after socket set up
       // this.apifetch("/api");
+    });
+    socket.on("new state", (state) => {
+      console.log("New state received");
+      this.handleNewState(state);
+      //console.log(state);
     });
   },
 }).mount("#app");
