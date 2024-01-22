@@ -38,7 +38,7 @@ createApp({
           rotationId: "",
         },
       },
-      board: dummy2,
+      board: { rotations: [], shifts: [], events: [] },
       doctors: doctors, // imported js files with constants
       shiftDetails: shiftDetails, // imported js files with constants
       rooms: [
@@ -144,6 +144,11 @@ createApp({
 
     moveShift(shiftId, offset) {
       apiCall("api/moveShift", { shiftId, offset });
+    },
+
+    moveShiftToRotation(rotationId, shiftId) {
+      apiCall("api/moveShiftToRotation", { rotationId, shiftId });
+      this.toggleMovePopover(shiftId);
     },
 
     // POPOVERS
