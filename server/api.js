@@ -12,22 +12,10 @@ export function responder(res) {
   // client browser needs a response to know transmission complete
   res.status(200).json({ message: "success" });
   // state payload sent to client by socket.io
-  res.io.emit("new state", board.getSortedState());
+  res.io.emit("new state", board.getState());
 }
 
 // MAIN API
-api.post("/board", (_req, res) => {
-  responder(res);
-});
-
-api.post("/doctors", async (req, res) => {
-  res.status(200).sendFile(getPath("./json/doctors.json"));
-});
-
-api.post("/shifts", async (req, res) => {
-  res.status(200).sendFile(getPath("./json/shift_details.json"));
-});
-
 api.post("/addShift", (req, res) => {
   const { doctor, options } = req.body;
   if (options.id === 1) {

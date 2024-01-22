@@ -25,11 +25,18 @@ createApp({
     return {
       nurse: false,
       ui: {
-        showAddDoctorPopover: false,
+        showAddShiftPopover: false,
         showAssignPopover: false,
         showAssignMini: false,
         showMovePopover: false,
         showReassignPopover: false,
+      },
+      forms: {
+        addShift: {
+          doctor: "",
+          shift: "",
+          rotationId: "",
+        },
       },
       board: dummy2,
       doctors: doctors, // imported js files with constants
@@ -125,13 +132,26 @@ createApp({
       this.board = state;
     },
 
+    // API Calls
+    addShift() {
+      const f = this.forms.addShift;
+      apiCall("api/addShift", {
+        doctor: f.doctor,
+        options: { ...f.shift, rotationId: f.rotationId },
+      });
+      this.toggleAddShiftPopover();
+    },
+
     // POPOVERS
     uiTogglerByShift(flag, shiftId) {
       this.ui[flag] = !this.ui[flag] ? shiftId : false;
     },
 
-    toggleAddDoctorPopover() {
-      this.ui.showAddDoctorPopover = !this.ui.showAddDoctorPopover;
+    toggleAddShiftPopover() {
+      this.ui.showAddShiftPopover = !this.ui.showAddShiftPopover;
+      Object.keys(this.forms.addShift).forEach(
+        (key) => (this.forms.addShift[key] = "")
+      );
     },
 
     toggleAssign(shiftId) {

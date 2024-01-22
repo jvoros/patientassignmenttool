@@ -14,6 +14,7 @@
   --my-next-background: #ffbf00;
   --my-light-gray: lightgray;
   --my-light-red: rgb(243, 143, 121);
+  --my-warn: rgb(216, 161, 0);
 }
 
 button {
@@ -43,6 +44,10 @@ body {
   background-color: var(--my-background);
   color: var(--pico-color);
   min-height: 100vh;
+}
+
+.warn {
+  color: rgb(216, 161, 0);
 }
 
 /* MAIN LAYOUT */
