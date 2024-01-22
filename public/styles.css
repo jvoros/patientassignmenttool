@@ -50,9 +50,19 @@ body {
   color: rgb(216, 161, 0);
 }
 
+.blank {
+  padding: 3rem;
+  background-color: rgb(239, 241, 244);
+  color: var(--pico-muted-color);
+  font-weight: 500;
+  border-radius: var(--pico-border-radius);
+  text-align: center;
+}
+
 /* MAIN LAYOUT */
 nav {
   margin-bottom: 2rem;
+  padding-top: var(--pico-spacing);
 }
 
 main {
@@ -74,6 +84,10 @@ section.mainRotation {
 
 section.otherRotations {
   width: 30%;
+}
+
+.otherRotations h4:not(:first-of-type) {
+  margin-top: calc(var(--pico-spacing) * 3);
 }
 
 /* SHIFT BOX */
@@ -109,7 +123,7 @@ section.otherRotations {
 }
 
 .shiftOff {
-  background-color: var(--my-muted-background);
+  background-color: var(--my-light-gray);
 }
 
 .shiftFastTrack {
@@ -213,7 +227,6 @@ section.otherRotations {
   padding: var(--pico-spacing);
   background-color: var(--pico-background-color);
   border-radius: var(--pico-border-radius);
-  box-shadow: var(--box-shadow);
   width: 300px;
 }
 
@@ -288,7 +301,7 @@ section.otherRotations {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 2px solid var(--my-light-gray);
+  border: 1px solid var(--my-light-gray);
   background-color: var(--pico-background-color);
   padding: var(--pico-spacing-half) var(--pico-spacing);
   border-radius: var(--pico-border-radius);

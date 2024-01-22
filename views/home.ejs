@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html data-theme="light">
   <head>
     <link rel="stylesheet" href="pico.colors.min.css" />
     <link rel="stylesheet" href="pico.min.css" />
@@ -21,42 +21,56 @@
         <section class="timeline">
           <h4>Timeline</h4>
           <hr />
-          <template v-for="(event, index) in board.events">
-            <%- include('./partials/event.ejs'); %>
+          <div class="blank" v-if="board.events.length === 0">No events</div>
+          <template v-else>
+            <template v-for="(event, index) in board.events">
+              <%- include('./partials/event.ejs'); %>
+            </template>
           </template>
         </section>
         <section class="mainRotation">
           <h4>Main Rotation</h4>
           <hr />
           <template v-for="rotation in findRotationByName('Main')">
-            <%- include('./partials/shifts.ejs'); %>
+            <template v-if="rotation.shiftCount === 0"
+              ><%- include('./partials/blank.ejs'); %></template
+            >
+            <template v-else
+              ><%- include('./partials/shifts.ejs'); %>
 
-            <div class="skipControls">
-              <button
-                class="secondary outline"
-                @click="moveRotationPointer(rotation.id, -1)"
-              >
-                <%- include('./icons/arrow-l.svg') %>Back Doctor
-              </button>
-              <button
-                class="secondary outline"
-                @click="moveRotationPointer(rotation.id, 1)"
-              >
-                Skip Doctor<%- include('./icons/arrow-r.svg') %>
-              </button>
-            </div>
+              <div class="skipControls">
+                <button
+                  class="secondary outline"
+                  @click="moveRotationPointer(rotation.id, -1)"
+                >
+                  <%- include('./icons/arrow-l.svg') %>Back Doctor
+                </button>
+                <button
+                  class="secondary outline"
+                  @click="moveRotationPointer(rotation.id, 1)"
+                >
+                  Skip Doctor<%- include('./icons/arrow-r.svg') %>
+                </button>
+              </div>
+            </template>
           </template>
         </section>
         <section class="otherRotations">
           <h4>Fast Track</h4>
           <hr />
           <template v-for="rotation in findRotationByName('Fast Track')">
-            <%- include('./partials/shifts.ejs'); %>
+            <template v-if="rotation.shiftCount === 0"
+              ><%- include('./partials/blank.ejs'); %></template
+            >
+            <template v-else><%- include('./partials/shifts.ejs'); %></template>
           </template>
           <h4>Off Rotation</h4>
           <hr />
           <template v-for="rotation in findRotationByName('Off')">
-            <%- include('./partials/shifts.ejs'); %>
+            <template v-if="rotation.shiftCount === 0"
+              ><%- include('./partials/blank.ejs'); %></template
+            >
+            <template v-else><%- include('./partials/shifts.ejs'); %></template>
           </template>
         </section>
       </main>
