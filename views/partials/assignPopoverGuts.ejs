@@ -1,15 +1,22 @@
 <div class="popoverContent">
-  <form class="newDoctorForm">
-    <select id="newDoctor" name="newDoctor">
-      <option selected disabled>Doctor:</option>
-      <option value="one">Blake, Kelly</option>
-    </select>
-    <select id="newShift" name="newShift">
-      <option selected disabled>Shift:</option>
-    </select>
-    <select id="newRotation" name="newRotation">
-      <option selected disabled>Rotation:</option>
-    </select>
-    <button class="secondary" type="submit">Add</button>
-  </form>
+  <label>Patient type:</label>
+  <div role="group">
+    <button class="secondary" data-tooltip="walk in">
+      <%- include('../icons/walkin.svg') %>
+    </button>
+    <button class="secondary" data-tooltip="ambo">
+      <%- include('../icons/ambo.svg') %>
+    </button>
+    <button class="secondary" data-tooltip="fast track">
+      <%- include('../icons/ft.svg') %>
+    </button>
+    <button class="secondary" data-tooltip="bonus">
+      <%- include('../icons/bonus.svg') %>
+    </button>
+  </div>
+  <select id="newRoom" name="newRoom">
+    <option selected disabled>Room:</option>
+    <option v-for="room in rooms" :value="room">{{ room }}</option>
+  </select>
+  <button class="contrast">Assign</button>
 </div>

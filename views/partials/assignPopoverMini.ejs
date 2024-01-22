@@ -1,5 +1,8 @@
 <div class="popover" id="assignButton">
-  <button class="secondary outline" @click="toggleAssignMini(shift.id)">
+  <button
+    class="secondary outline shiftControlButton"
+    @click="toggleAssignMini(shift.id)"
+  >
     <%- include('../icons/walkin.svg'); %>
   </button>
   <div class="popoverWrapper" v-if="assignMiniOpen(shift.id)">

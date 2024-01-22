@@ -32,6 +32,49 @@ createApp({
         showReassignPopover: false,
       },
       board: dummy2,
+      doctors: doctors, // imported js files with constants
+      shiftDetails: shiftDetails, // imported js files with constants
+      rooms: [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24",
+        "25",
+        "27",
+        "28",
+        "29",
+        "30",
+        "T.A",
+        "T.B",
+        "T.C",
+        "H.A",
+        "H.B",
+        "H.C",
+        "H.D",
+        "H.E",
+        "H.F",
+        "Other",
+      ],
     };
   },
   methods: {
@@ -44,6 +87,25 @@ createApp({
       return this.board.shifts
         .filter((s) => s.rotationId === rotationId)
         .sort((a, b) => a.order - b.order);
+    },
+
+    getShiftsSortedByDoc() {
+      return this.board.shifts.toSorted((a, b) => {
+        const nameA = a.doctor.last.toUpperCase();
+        const nameB = b.doctor.last.toUpperCase();
+        return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
+      });
+    },
+
+    filteredDoctors() {
+      return this.doctors
+        .map((doc) => `${doc.first} ${doc.last}`)
+        .filter(
+          (doc) =>
+            !this.board.shifts
+              .map((shift) => `${shift.doctor.first} ${shift.doctor.last}`)
+              .includes(doc)
+        );
     },
 
     // AUTH

@@ -115,14 +115,15 @@ section.otherRotations {
   background-color: var(--my-light-gray);
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: calc(var(--pico-spacing) / 2);
 }
 
-.shiftControls [role="group"] {
+.shiftControlsPositionGroup {
   margin-bottom: 0;
 }
 
-.shiftControls button {
+.shiftControlButton {
   font-size: 70%;
   padding: calc(var(--pico-spacing-half) / 3) var(--pico-spacing-half);
 }
@@ -130,6 +131,12 @@ section.otherRotations {
 .shiftControlsRight {
   display: flex;
   gap: var(--pico-spacing-half);
+  align-items: center;
+}
+
+#assignButton {
+  position: relative;
+  top: 2px;
 }
 
 .shiftContent {
@@ -148,7 +155,7 @@ section.otherRotations {
   font-weight: bold;
 }
 
-.shiftBox ul {
+.shiftCounts {
   padding: 0 var(--pico-spacing) var(--pico-spacing) var(--pico-spacing);
   margin: 0;
   display: flex;
@@ -157,13 +164,13 @@ section.otherRotations {
   font-size: 90%;
 }
 
-.shiftBox li {
+.shiftCounts li {
   display: inline;
   text-transform: capitalize;
   color: var(--pico-muted-color);
 }
 
-.shiftBox li:not(:last-child)::after {
+.shiftCounts li:not(:last-child)::after {
   content: "|";
   margin-left: calc(var(--pico-spacing) / 2);
 }
@@ -172,26 +179,10 @@ section.otherRotations {
   font-weight: bold;
 }
 
-/* .shiftBox li {
-  display: inline;
-  padding: 2px 8px;
-  background-color: var(--my-light-gray);
-  border-radius: 5px;
-  text-transform: uppercase;
-}
-
-.shiftCountNumber {
-  display: inline-block;
-  background-color: white;
-  border-radius: 30px;
-  padding: 0 8px;
-  margin: 2px 5px;
-} */
-
 /* POPOVERS */
 .popover {
   position: relative;
-  display: inline;
+  display: inline-block;
 }
 
 .popoverBlocker {
@@ -207,7 +198,10 @@ section.otherRotations {
 .popoverContent {
   position: absolute;
   z-index: 10;
+  width: 100%;
   display: flex;
+  flex-direction: column;
+  justify-content: right;
   right: 0;
   top: 2rem;
   padding: var(--pico-spacing);
@@ -215,6 +209,11 @@ section.otherRotations {
   border-radius: var(--pico-border-radius);
   box-shadow: var(--box-shadow);
   width: 300px;
+}
+
+.popoverContent > .dropdown,
+.popoverContent > [role="group"] {
+  width: 100%;
 }
 
 .newDoctorForm {
