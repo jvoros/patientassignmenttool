@@ -1,6 +1,9 @@
 <div class="shiftControls">
   <div role="group" class="shiftControlsPositionGroup">
-    <button class="secondary outline shiftControlButton">
+    <button
+      class="secondary outline shiftControlButton"
+      @click="moveShift(shift.id, -1)"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 12 12"
@@ -12,7 +15,10 @@
         ></path>
       </svg>
     </button>
-    <button class="secondary outline shiftControlButton">
+    <button
+      class="secondary outline shiftControlButton"
+      @click="moveShift(shift.id, 1)"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 12 12"

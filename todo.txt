@@ -1,0 +1,2 @@
+- less of drop shadow
+- blank fillers for rotations

@@ -142,6 +142,10 @@ createApp({
       this.toggleAddShiftPopover();
     },
 
+    moveShift(shiftId, offset) {
+      apiCall("api/moveShift", { shiftId, offset });
+    },
+
     // POPOVERS
     uiTogglerByShift(flag, shiftId) {
       this.ui[flag] = !this.ui[flag] ? shiftId : false;
