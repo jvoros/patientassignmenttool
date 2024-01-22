@@ -151,6 +151,10 @@ createApp({
       this.toggleMovePopover(shiftId);
     },
 
+    moveRotationPointer(rotationId, offset) {
+      apiCall("api/moveRotationPointer", { rotationId, offset });
+    },
+
     // POPOVERS
     uiTogglerByShift(flag, shiftId) {
       this.ui[flag] = !this.ui[flag] ? shiftId : false;

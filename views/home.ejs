@@ -30,15 +30,22 @@
           <hr />
           <template v-for="rotation in findRotationByName('Main')">
             <%- include('./partials/shifts.ejs'); %>
+
+            <div class="skipControls">
+              <button
+                class="secondary outline"
+                @click="moveRotationPointer(rotation.id, -1)"
+              >
+                <%- include('./icons/arrow-l.svg') %>Back Doctor
+              </button>
+              <button
+                class="secondary outline"
+                @click="moveRotationPointer(rotation.id, 1)"
+              >
+                Skip Doctor<%- include('./icons/arrow-r.svg') %>
+              </button>
+            </div>
           </template>
-          <div class="skipControls">
-            <button class="secondary outline">
-              <%- include('./icons/arrow-l.svg') %>Back Doctor
-            </button>
-            <button class="secondary outline">
-              Skip Doctor<%- include('./icons/arrow-r.svg') %>
-            </button>
-          </div>
         </section>
         <section class="otherRotations">
           <h4>Fast Track</h4>
