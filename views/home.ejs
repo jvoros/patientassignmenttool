@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html>
   <head>
     <link rel="stylesheet" href="pico.min.css" />
     <link rel="stylesheet" href="pico.colors.min.css" />
@@ -15,11 +16,13 @@
   <body>
     <div class="container" id="app" v-cloak>
       <%- include('./partials/nav.ejs'); %>
-
       <main>
         <section class="timeline">
           <h4>Timeline</h4>
           <hr />
+          <template v-for="(event, index) in board.events">
+            <%- include('./partials/event.ejs'); %>
+          </template>
         </section>
         <section class="mainRotation">
           <h4>Main Rotation</h4>
@@ -27,6 +30,10 @@
           <template v-for="rotation in findRotationByName('Main')">
             <%- include('./partials/shifts.ejs'); %>
           </template>
+          <div class="skipControls">
+            <button class="secondary outline">Back Doctor</button>
+            <button class="secondary outline">Skip Doctor</button>
+          </div>
         </section>
         <section class="otherRotations">
           <h4>Fast Track</h4>

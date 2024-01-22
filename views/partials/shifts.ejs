@@ -1,7 +1,7 @@
 <template v-for="shift in findShiftsByRotation(rotation.id)">
   <div class="shiftBox" :class="getShiftClasses(rotation, shift)">
     <div class="shiftNextFlag">next in rotation</div>
-    <div v-if="nurse" class="shiftControls">shift controls</div>
+    <template v-if="nurse"> <%- include('./shiftControls.ejs'); %> </template>
     <div class="shiftContent">
       <div>
         <div class="shiftName">{{ shift.name }}</div>
@@ -10,9 +10,9 @@
         </div>
       </div>
       <div>
-        <button v-if="nurse && isNext(rotation, shift)" class="contrast">
-          Assign &nbsp;&nbsp;<%- include('../icons/walkin.ejs'); %>
-        </button>
+        <template v-if="nurse && isNext(rotation, shift)">
+          <%- include('./assignPopover.ejs'); %>
+        </template>
       </div>
     </div>
     <ul v-if="shift.counts.total > 0">

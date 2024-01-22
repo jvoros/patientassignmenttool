@@ -1,0 +1,9 @@
+<div class="popover" id="assignButton">
+  <button class="secondary outline" @click="toggleMovePopover(shift.id)">
+    Move
+  </button>
+  <div class="popoverWrapper" v-if="movePopoverOpen(shift.id)">
+    <div class="popoverBlocker" @click="toggleMovePopover(shift.id)"></div>
+    <div class="popoverContent">move</div>
+  </div>
+</div>

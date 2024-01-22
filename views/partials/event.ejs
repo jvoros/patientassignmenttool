@@ -1,0 +1,40 @@
+<div class="event">
+  <div class="eventBox">
+    <div
+      class="eventIcon"
+      :class="[
+        event.type !== 'assign' ? 'eventIconBell' : '', 
+        event.patient?.type === 'ambo' ? 'eventIconAmbo' : '',
+        event.patient?.type === 'fasttrack' ? 'eventIconFt' : '',
+        event.patient?.type === 'walkin' ? 'eventIconWalkin' : '',
+        event.patient?.type === 'bonus' ? 'eventIconBonus' : ''
+      ]"
+    ></div>
+    <!-- non-assign event -->
+    <div v-if="event.type !=='assign'">
+      <div>{{ event.time }}</div>
+      <div>{{ event.message }}</div>
+    </div>
+    <!-- assign event -->
+    <div v-else class="eventAssignDetail">
+      <div>
+        <div class="eventAssignTime">{{ event.time }}</div>
+        <div class="eventAssignDoc">
+          {{ event.shift.doctor.first }} {{ event.shift.doctor.last }}
+        </div>
+        <div class="eventReassign" v-if="event.reassign">
+          Reassigned to: <b>{{ event.reassign.last }}</b>
+        </div>
+      </div>
+      <div class="eventAssignRoom">
+        <div>{{ event.patient.room }}</div>
+        <button v-if="nurse" class="secondary outline">
+          <%- include('../icons/arrow-r.svg') %>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div v-if="index === 0 && nurse">
+    <button class="undo secondary outline">Undo</button>
+  </div>
+</div>

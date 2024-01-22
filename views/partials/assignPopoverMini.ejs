@@ -1,0 +1,9 @@
+<div class="popover" id="assignButton">
+  <button class="secondary outline" @click="toggleAssignMini(shift.id)">
+    <%- include('../icons/walkin.svg'); %>
+  </button>
+  <div class="popoverWrapper" v-if="assignMiniOpen(shift.id)">
+    <div class="popoverBlocker" @click="toggleAssignMini(shift.id)"></div>
+    <%- include('./assignPopoverGuts.ejs'); %>
+  </div>
+</div>

@@ -5,12 +5,15 @@
 /* MOD PICO */
 :root {
   --pico-font-size: 106.25%;
-  --drop-shadow: drop-shadow(1px 1px 5px #a1a1a1);
+  --box-shadow: 0px 1px 17px 1px #a3a3a3;
+  --pico-spacing-half: calc(var(--pico-spacing) / 2);
   --my-background: rgb(249 250 251);
   --my-muted-background: #b3b9c5;
   --my-ft-background: #d7fbc1;
   --my-ft-border: #55c21e;
   --my-next-background: #ffbf00;
+  --my-light-gray: lightgray;
+  --my-light-red: rgb(243, 143, 121);
 }
 
 button {
@@ -34,6 +37,7 @@ button {
 /* MAIN COLORS */
 body {
   background-color: var(--my-background);
+  color: var(--pico-color);
 }
 
 /* MAIN LAYOUT */
@@ -52,6 +56,12 @@ section.timeline {
 section.mainRotation {
   width: 40%;
 }
+
+.skipControls {
+  display: flex;
+  justify-content: space-between;
+}
+
 section.otherRotations {
   width: 30%;
 }
@@ -59,14 +69,14 @@ section.otherRotations {
 /* SHIFT BOX */
 .shiftBox {
   border-radius: var(--pico-border-radius);
-  border: 2px solid lightgray;
+  border: 2px solid var(--my-light-gray);
   background-color: var(--pico-background-color);
   margin-bottom: var(--pico-spacing);
 }
 
 .shiftNext {
   border-color: var(--my-next-background);
-  filter: var(--drop-shadow);
+  box-shadow: var(--box-shadow);
 }
 
 .shiftBox + .shiftNext {
@@ -98,7 +108,24 @@ section.otherRotations {
 }
 
 .shiftControls {
-  background-color: lightgray;
+  background-color: var(--my-light-gray);
+  display: flex;
+  justify-content: space-between;
+  padding: calc(var(--pico-spacing) / 2);
+}
+
+.shiftControls [role="group"] {
+  margin-bottom: 0;
+}
+
+.shiftControls button {
+  font-size: 70%;
+  padding: calc(var(--pico-spacing-half) / 3) var(--pico-spacing-half);
+}
+
+.shiftControlsRight {
+  display: flex;
+  gap: var(--pico-spacing-half);
 }
 
 .shiftContent {
@@ -110,7 +137,6 @@ section.otherRotations {
 
 .shiftName {
   font-size: 90%;
-  color: var(--pico-muted-color);
 }
 
 .shiftDoc {
@@ -129,7 +155,7 @@ section.otherRotations {
 .shiftBox li {
   display: inline;
   padding: 2px 4px;
-  background-color: lightgray;
+  background-color: var(--my-light-gray);
   border-radius: 5px;
   text-transform: uppercase;
 }
@@ -145,7 +171,7 @@ section.otherRotations {
 /* POPOVERS */
 .popover {
   position: relative;
-  z-index: 10;
+  display: inline;
 }
 
 .popoverBlocker {
@@ -154,18 +180,20 @@ section.otherRotations {
   left: 0;
   bottom: 0;
   right: 0;
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 .popoverContent {
   position: absolute;
+  z-index: 10;
   display: flex;
   right: 0;
-  margin: var(--pico-spacing) 0;
+  top: 2rem;
   padding: var(--pico-spacing);
   background-color: var(--pico-background-color);
   border-radius: var(--pico-border-radius);
-  filter: var(--drop-shadow);
-  width: 250px;
+  box-shadow: var(--box-shadow);
+  width: 300px;
 }
 
 .newDoctorForm {
@@ -173,4 +201,92 @@ section.otherRotations {
   display: flex;
   flex-direction: column;
   gap: var(--pico-spacing);
+}
+
+/* TIMELINE */
+.event {
+  display: flex;
+  flex-direction: column;
+  border-left: 2px solid var(--my-light-gray);
+}
+
+.eventBox {
+  display: flex;
+  position: relative;
+  left: -16px;
+  gap: var(--pico-spacing);
+  align-items: center;
+  padding: var(--pico-spacing) 0;
+  color: var(--pico-muted-color);
+  font-size: 90%;
+}
+
+.eventAssignDetail {
+  width: 90%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 2px solid var(--my-light-gray);
+  background-color: var(--pico-background-color);
+  padding: var(--pico-spacing-half) var(--pico-spacing);
+  border-radius: var(--pico-border-radius);
+}
+
+.eventAssignDoc {
+  font-size: 115%;
+  font-weight: bold;
+}
+
+.eventAssignRoom {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.eventAssignRoom > div {
+  font-size: 115%;
+  font-weight: bold;
+}
+
+.eventAssignRoom button {
+  padding: 2px 6px;
+}
+
+.eventIcon {
+  display: block;
+  border-radius: 30px;
+  height: 30px;
+  width: 30px;
+  background-size: 16px 16px;
+  background-position: center;
+}
+
+.eventIconBell {
+  background-image: url("./icons/bell.svg");
+  background-color: var(--my-light-gray);
+}
+
+.eventIconAmbo {
+  background-image: url("./icons/ambo.svg");
+  background-color: var(--my-light-red);
+}
+
+.eventIconWalkin {
+  background-image: url("./icons/walkin.svg");
+  background-color: var(--my-light-red);
+}
+
+.eventIconFt {
+  background-image: url("./icons/ft.svg");
+  background-color: var(--my-ft-background);
+}
+
+.eventIconBonus {
+  background-image: url("./icons/bonus.svg");
+  background-color: var(--my-light-red);
+}
+
+.undo {
+  font-size: 90%;
+  float: right;
 }

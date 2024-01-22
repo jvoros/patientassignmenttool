@@ -24,22 +24,17 @@ createApp({
   data() {
     return {
       nurse: false,
-      ui: { showAddDoctorPopover: false },
+      ui: {
+        showAddDoctorPopover: false,
+        showAssignPopover: false,
+        showAssignMini: false,
+        showMovePopover: false,
+      },
       board: dummy2,
     };
   },
   methods: {
     // HELPERS
-    findRotationById(id) {
-      const result = [];
-      Object.keys(this.board.rotations).forEach((key) => {
-        if (this.board.rotations[key].id === id) {
-          result.push(this.board.rotations[key]);
-        }
-      });
-      return result[0];
-    },
-
     findRotationByName(name) {
       return this.board.rotations.filter((r) => r.name === name);
     },
@@ -63,16 +58,42 @@ createApp({
       }
     },
     // POPOVERS
+    uiTogglerByShift(flag, shiftId) {
+      this.ui[flag] = !this.ui[flag] ? shiftId : false;
+    },
+
     toggleAddDoctorPopover() {
       this.ui.showAddDoctorPopover = !this.ui.showAddDoctorPopover;
     },
+
+    toggleAssign(shiftId) {
+      this.uiTogglerByShift("showAssignPopover", shiftId);
+    },
+
+    assignOpen(shiftId) {
+      return shiftId === this.ui.showAssignPopover;
+    },
+
+    toggleAssignMini(shiftId) {
+      this.uiTogglerByShift("showAssignMini", shiftId);
+    },
+
+    assignMiniOpen(shiftId) {
+      return shiftId === this.ui.showAssignMini;
+    },
+
+    toggleMovePopover(shiftId) {
+      this.uiTogglerByShift("showMovePopover", shiftId);
+    },
+
+    movePopoverOpen(shiftId) {
+      return shiftId === this.ui.showMovePopover;
+    },
+
     // SHIFT
     isNext(rotation, shift) {
       if (rotation.name === "Off") return false;
       return shift.order === rotation.pointer;
-    },
-    isMainNext(rotation, shift) {
-      return this.isNext(rotation, shift) && rotation.name === "Main";
     },
     getShiftClasses(rotation, shift) {
       const shiftType = {
