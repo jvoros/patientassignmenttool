@@ -15,7 +15,9 @@
         <ul>
           <template v-for="shift in getShiftsSortedByDoc()">
             <li v-if="shift.doctor.last !== event.shift.doctor.last">
-              <a href="#">{{ shift.doctor.first }} {{ shift.doctor.last }}</a>
+              <a href="#" @click="reassign(event.id, shift.id)"
+                >{{ shift.doctor.first }} {{ shift.doctor.last }}</a
+              >
             </li>
           </template>
         </ul>

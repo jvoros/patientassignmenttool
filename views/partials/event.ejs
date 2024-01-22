@@ -31,7 +31,9 @@
 
       <div class="eventAssignRoom">
         <div>{{ event.patient.room }}</div>
-        <%- include('./reassignPopover.ejs') %>
+        <template v-if="!event.reassign"
+          ><%- include('./reassignPopover.ejs') %></template
+        >
       </div>
     </div>
   </div>

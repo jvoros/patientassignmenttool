@@ -178,6 +178,11 @@ createApp({
       this.toggleAssignMini(shiftId);
     },
 
+    reassign(eventId, shiftId) {
+      apiCall("api/reassign", { eventId, shiftId });
+      this.toggleReassignPopover(eventId);
+    },
+
     undo() {
       apiCall("api/undo");
     },
