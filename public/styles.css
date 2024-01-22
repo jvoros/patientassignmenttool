@@ -5,7 +5,7 @@
 /* MOD PICO */
 :root {
   --pico-font-size: 106.25%;
-  --box-shadow: -1px 1px 36px 0px #a3a3a3;
+  --box-shadow: 1px 5px 5px 2px #d6d6d6;
   --pico-spacing-half: calc(var(--pico-spacing) / 2);
   --my-background: rgb(249 250 251);
   --my-muted-background: #b3b9c5;
@@ -89,7 +89,7 @@ section.otherRotations {
   box-shadow: var(--box-shadow);
 }
 
-.shiftBox + .shiftNext {
+.shiftBox.shiftNext {
   background-color: lightyellow;
 }
 
@@ -269,7 +269,7 @@ section.otherRotations {
 .event {
   display: flex;
   flex-direction: column;
-  border-left: 2px solid var(--my-light-gray);
+  border-left: 1px solid var(--my-light-gray);
 }
 
 .eventBox {
