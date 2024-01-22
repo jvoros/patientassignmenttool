@@ -29,6 +29,7 @@ createApp({
         showAssignPopover: false,
         showAssignMini: false,
         showMovePopover: false,
+        showReassignPopover: false,
       },
       board: dummy2,
     };
@@ -70,7 +71,7 @@ createApp({
       this.uiTogglerByShift("showAssignPopover", shiftId);
     },
 
-    assignOpen(shiftId) {
+    assignPopoverOpen(shiftId) {
       return shiftId === this.ui.showAssignPopover;
     },
 
@@ -88,6 +89,14 @@ createApp({
 
     movePopoverOpen(shiftId) {
       return shiftId === this.ui.showMovePopover;
+    },
+
+    toggleReassignPopover(eventId) {
+      this.uiTogglerByShift("showReassignPopover", eventId);
+    },
+
+    reassignPopoverOpen(eventId) {
+      return eventId === this.ui.showReassignPopover;
     },
 
     // SHIFT

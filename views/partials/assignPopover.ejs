@@ -4,9 +4,9 @@
     @click="toggleAssign(shift.id)"
     class="contrast"
   >
-    Assign &nbsp;&nbsp;<%- include('../icons/walkin.svg'); %>
+    <%- include('../icons/walkin.svg'); %> Assign
   </button>
-  <div class="popoverWrapper" v-if="assignOpen(shift.id)">
+  <div class="popoverWrapper" v-if="assignPopoverOpen(shift.id)">
     <div class="popoverBlocker" @click="toggleAssign(shift.id)"></div>
     <%- include('./assignPopoverGuts.ejs'); %>
   </div>

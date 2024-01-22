@@ -10,11 +10,13 @@
         event.patient?.type === 'bonus' ? 'eventIconBonus' : ''
       ]"
     ></div>
+
     <!-- non-assign event -->
     <div v-if="event.type !=='assign'">
       <div>{{ event.time }}</div>
       <div>{{ event.message }}</div>
     </div>
+
     <!-- assign event -->
     <div v-else class="eventAssignDetail">
       <div>
@@ -26,15 +28,17 @@
           Reassigned to: <b>{{ event.reassign.last }}</b>
         </div>
       </div>
+
       <div class="eventAssignRoom">
         <div>{{ event.patient.room }}</div>
-        <button v-if="nurse" class="secondary outline">
-          <%- include('../icons/arrow-r.svg') %>
-        </button>
+        <%- include('./reassignPopover.ejs') %>
       </div>
     </div>
   </div>
+
   <div v-if="index === 0 && nurse">
-    <button class="undo secondary outline">Undo</button>
+    <button class="undo secondary outline">
+      <%- include ('../icons/undo.svg') %> Undo
+    </button>
   </div>
 </div>

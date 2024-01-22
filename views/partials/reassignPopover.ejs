@@ -1,0 +1,23 @@
+<div class="popover">
+  <button
+    v-if="nurse"
+    class="outline secondary"
+    data-tooltip="Reassign"
+    @click="toggleReassignPopover(event.id)"
+  >
+    <%- include('../icons/reassign.svg') %>
+  </button>
+  <div class="popoverWrapper" v-if="reassignPopoverOpen(event.id)">
+    <div class="popoverBlocker" @click="toggleReassignPopover(event.id)"></div>
+    <div class="popoverContent">
+      <form class="reassignForm">
+        <select id="newDoctor" name="newDoctor">
+          <option selected disabled>Doctor:</option>
+          <option value="one">Blake, Kelly</option>
+        </select>
+
+        <button class="secondary" type="submit">Reassign</button>
+      </form>
+    </div>
+  </div>
+</div>

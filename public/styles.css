@@ -5,7 +5,7 @@
 /* MOD PICO */
 :root {
   --pico-font-size: 106.25%;
-  --box-shadow: 0px 1px 17px 1px #a3a3a3;
+  --box-shadow: -1px 1px 36px 0px #a3a3a3;
   --pico-spacing-half: calc(var(--pico-spacing) / 2);
   --my-background: rgb(249 250 251);
   --my-muted-background: #b3b9c5;
@@ -17,6 +17,10 @@
 }
 
 button {
+  display: inline-flex;
+  justify-content: center;
+  gap: var(--pico-spacing-half);
+  align-items: center;
   padding: calc(var(--pico-spacing) / 2) var(--pico-spacing);
 }
 
@@ -148,13 +152,29 @@ section.otherRotations {
   padding: 0 var(--pico-spacing) var(--pico-spacing) var(--pico-spacing);
   margin: 0;
   display: flex;
+  justify-content: left;
   gap: calc(var(--pico-spacing) / 2);
-  font-size: 70%;
+  font-size: 90%;
 }
 
 .shiftBox li {
   display: inline;
-  padding: 2px 4px;
+  text-transform: capitalize;
+  color: var(--pico-muted-color);
+}
+
+.shiftBox li:not(:last-child)::after {
+  content: "|";
+  margin-left: calc(var(--pico-spacing) / 2);
+}
+
+.shiftCountNumber {
+  font-weight: bold;
+}
+
+/* .shiftBox li {
+  display: inline;
+  padding: 2px 8px;
   background-color: var(--my-light-gray);
   border-radius: 5px;
   text-transform: uppercase;
@@ -163,10 +183,10 @@ section.otherRotations {
 .shiftCountNumber {
   display: inline-block;
   background-color: white;
-  border-radius: 25px;
-  padding: 0 5px;
+  border-radius: 30px;
+  padding: 0 8px;
   margin: 2px 5px;
-}
+} */
 
 /* POPOVERS */
 .popover {
@@ -176,6 +196,7 @@ section.otherRotations {
 
 .popoverBlocker {
   position: fixed;
+  z-index: 1;
   top: 0;
   left: 0;
   bottom: 0;
@@ -239,7 +260,7 @@ section.otherRotations {
 
 .eventAssignRoom {
   display: flex;
-  gap: 10px;
+  gap: calc(var(--pico-spacing));
   align-items: center;
 }
 
@@ -249,7 +270,7 @@ section.otherRotations {
 }
 
 .eventAssignRoom button {
-  padding: 2px 6px;
+  padding: 0px 4px;
 }
 
 .eventIcon {
@@ -289,4 +310,5 @@ section.otherRotations {
 .undo {
   font-size: 90%;
   float: right;
+  margin-right: 16px;
 }

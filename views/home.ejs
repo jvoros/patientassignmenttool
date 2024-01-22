@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="pico.min.css" />
     <link rel="stylesheet" href="pico.colors.min.css" />
+    <link rel="stylesheet" href="pico.min.css" />
+
     <link rel="stylesheet" href="styles.css" />
     <script src="/socket.io/socket.io.js"></script>
     <script type="importmap">
@@ -31,8 +32,12 @@
             <%- include('./partials/shifts.ejs'); %>
           </template>
           <div class="skipControls">
-            <button class="secondary outline">Back Doctor</button>
-            <button class="secondary outline">Skip Doctor</button>
+            <button class="secondary outline">
+              <%- include('./icons/arrow-l.svg') %>Back Doctor
+            </button>
+            <button class="secondary outline">
+              Skip Doctor<%- include('./icons/arrow-r.svg') %>
+            </button>
           </div>
         </section>
         <section class="otherRotations">
