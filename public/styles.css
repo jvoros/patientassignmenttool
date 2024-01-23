@@ -9,8 +9,8 @@
   --pico-spacing-half: calc(var(--pico-spacing) / 2);
   --my-background: rgb(249 250 251);
   --my-muted-background: #b3b9c5;
-  --my-ft-background: #cbfce1;
-  --my-ft-border: #006d46;
+  --my-ft-background: #d7fbc1;
+  --my-ft-border: #2c6c0c;
   --my-next-background: #ffbf00;
   --my-light-gray: #cfd5e2;
   --my-light-red: rgb(243, 143, 121);
@@ -149,7 +149,7 @@ main {
 .shiftFastTrack {
   background-color: var(--my-ft-background);
   border-color: var(--my-ft-border);
-  color: #00452b;
+  color: var(--my-ft-border);
 }
 
 .shiftControls {
