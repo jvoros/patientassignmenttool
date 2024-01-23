@@ -6,8 +6,6 @@ This is a ground up rewrite of the first version. Key things: manages state just
 
 ## Backend
 
----
-
 `index.js` is the entry point for an Express.js server.
 
 ### Authentication
@@ -32,11 +30,9 @@ The functional approach also made testing _very_ easy. The controllers are well 
 
 ### SOCKET.IO
 
-All the clients stay in sync with **Socket.IO**. Using websockets means every client is subscribed to the server. The API endpoints don't have to return any site changes. After the API performs some action, the Socket.IO server just emits the new version of statIOe.
+All the clients stay in sync with **Socket.IO**. Using websockets means every client is subscribed to the server. The API endpoints don't have to return any site changes. After the API performs some action, the Socket.IO server just emits the new version of state.
 
 ## Frontend
-
----
 
 The front end is just HTML/CSS/JS.
 
