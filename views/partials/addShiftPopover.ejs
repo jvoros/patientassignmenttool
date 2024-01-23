@@ -27,7 +27,14 @@
             {{ rot.name }}
           </option>
         </select>
-        <button class="secondary" type="submit" @click="addShift">Add</button>
+        <button
+          class="secondary"
+          type="submit"
+          @click="addShift"
+          :disabled="!addShiftComplete()"
+        >
+          Add
+        </button>
       </form>
     </div>
   </div>

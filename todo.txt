@@ -1,3 +1,2 @@
 
-- don't submit forms if not complete
 - responsive layout

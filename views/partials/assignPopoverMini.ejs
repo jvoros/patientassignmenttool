@@ -9,7 +9,11 @@
     <div class="popoverBlocker" @click="toggleAssignMini(shift.id)"></div>
     <div class="popoverContent">
       <%- include('./assignPopoverGuts.ejs'); %>
-      <button class="contrast" @click="assignPatientMini(shift.id)">
+      <button
+        class="secondary"
+        @click="assignPatientMini(shift.id)"
+        :disabled="!assignPatientComplete()"
+      >
         Assign
       </button>
     </div>

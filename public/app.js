@@ -121,17 +121,6 @@ createApp({
       });
     },
 
-    filteredDoctors() {
-      return this.doctors
-        .map((doc) => `${doc.first} ${doc.last}`)
-        .filter(
-          (doc) =>
-            !this.board.shifts
-              .map((shift) => `${shift.doctor.first} ${shift.doctor.last}`)
-              .includes(doc)
-        );
-    },
-
     // SERVER
     async checkLoginStatus() {
       console.log("Checking login status");
@@ -159,6 +148,10 @@ createApp({
       this.toggleAddShiftPopover();
     },
 
+    addShiftComplete() {
+      return Object.values(this.forms.addShift).every(Boolean);
+    },
+
     moveShift(shiftId, offset) {
       apiCall("api/moveShift", { shiftId, offset });
     },
@@ -182,6 +175,10 @@ createApp({
       this.forms.assign.shiftId = shiftId;
       apiCall("api/assignPatient", this.forms.assign);
       this.toggleAssignMini(shiftId);
+    },
+
+    assignPatientComplete() {
+      return !!this.forms.assign.type && !!this.forms.assign.room;
     },
 
     reassign(eventId, shiftId) {
