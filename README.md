@@ -28,7 +28,7 @@ I tried to use a very functional approach. This should make each controller quit
 
 The functional approach also made testing _very_ easy. The controllers are well covered by unit tests.
 
-### SOCKET.IO
+### Socket.IO
 
 All the clients stay in sync with **Socket.IO**. Using websockets means every client is subscribed to the server. The API endpoints don't have to return any site changes. After the API performs some action, the Socket.IO server just emits the new version of state.
 
@@ -43,6 +43,8 @@ The HTML is served by the Express server using EJS. EJS is used basically just t
 ### CSS
 
 The CSS is just [Pico CSS v2](https://v2.picocss.com/). A very lightweight, nearly classless framework. Simple. Easy. Only made a few small modifications.
+
+The `public` folder includes some SVG files that were necessary where the CSS used `background-image` to place icons in the timeline. They couldn't be added by EJS and are linked by URL.
 
 ### JS
 
