@@ -1,9 +1,12 @@
 <nav>
   <ul>
-    <li><strong>Patient Assignment Tool</strong> <small>version 0.2</small></li>
+    <li><img src="./pat.svg" width="70" /></li>
+    <li class="siteName">
+      <strong>Patient Assignment Tool</strong> <small>v0.2</small>
+    </li>
   </ul>
   <ul>
-    <li><%- include('./addShiftPopover.ejs'); %></li>
+    <li v-if="nurse"><%- include('./addShiftPopover.ejs'); %></li>
     <li>
       <a role="button" class="contrast" href="/logout">
         Logout <%- include('../icons/logout.svg'); %>

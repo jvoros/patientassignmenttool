@@ -9,10 +9,10 @@
   --pico-spacing-half: calc(var(--pico-spacing) / 2);
   --my-background: rgb(249 250 251);
   --my-muted-background: #b3b9c5;
-  --my-ft-background: #d7fbc1;
-  --my-ft-border: #55c21e;
+  --my-ft-background: #cbfce1;
+  --my-ft-border: #006d46;
   --my-next-background: #ffbf00;
-  --my-light-gray: lightgray;
+  --my-light-gray: #cfd5e2;
   --my-light-red: rgb(243, 143, 121);
   --my-warn: rgb(216, 161, 0);
 }
@@ -63,6 +63,14 @@ body {
 nav {
   margin-bottom: 2rem;
   padding-top: var(--pico-spacing);
+}
+
+.siteName {
+  font-size: 150%;
+}
+
+.siteName small {
+  font-size: 70%;
 }
 
 main {
@@ -124,11 +132,13 @@ section.otherRotations {
 
 .shiftOff {
   background-color: var(--my-light-gray);
+  color: #525f7a;
 }
 
 .shiftFastTrack {
   background-color: var(--my-ft-background);
   border-color: var(--my-ft-border);
+  color: #00452b;
 }
 
 .shiftControls {
@@ -272,6 +282,7 @@ section.otherRotations {
   display: flex;
   justify-content: center;
   padding: var(--pico-spacing-half) 0;
+  border: 0;
 }
 
 .assignTypeSelected {
