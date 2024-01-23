@@ -1,6 +1,5 @@
 import "dotenv/config";
 import express from "express";
-// import cors from "cors";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import { createServer } from "http";
@@ -8,7 +7,6 @@ import { Server } from "socket.io";
 // https://stackoverflow.com/a/57527735
 // will catch async errors and pass to error middleware without try/catch blocks
 import "express-async-errors";
-import nunjucks from "nunjucks";
 import createBoardStore from "./server/controllers/board.js";
 
 import api from "./server/api.js";
@@ -29,17 +27,12 @@ function message(status, text, payload = "") {
 const app = express();
 app.set("view engine", "ejs");
 app.use(express.json());
-// app.use(cors());
 app.use(cookieParser());
 app.use(
   express.urlencoded({
     extended: true,
   })
-); // for login form
-// nunjucks.configure("views", {
-//   autoescape: true,
-//   express: app,
-// });
+);
 
 // WEBSOCKET
 const server = createServer(app);
@@ -49,7 +42,7 @@ io.on("connection", (socket) => {
   console.log("SOCKET.IO: emitting new state");
   socket.emit("new state", board.getState());
 });
-// passes io object to routers
+// middleware that passes io object to routers, so io is available on res object
 app.use((_req, res, next) => {
   res.io = io;
   return next();

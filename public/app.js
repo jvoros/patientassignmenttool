@@ -23,7 +23,9 @@ async function apiCall(url, payload, method = "POST") {
 createApp({
   data() {
     return {
+      // if nurse, show controls, otherwise no controls
       nurse: false,
+      // flags for UI popovers
       ui: {
         showAddShiftPopover: false,
         showAssignPopover: false,
@@ -31,6 +33,7 @@ createApp({
         showMovePopover: false,
         showReassignPopover: false,
       },
+      // variables for form control with v-model
       forms: {
         addShift: {
           doctor: "",
@@ -49,9 +52,12 @@ createApp({
           { type: "bonus", icon: "./icons/bonus.svg", tip: "bonus" },
         ],
       },
+      // the board from server, this is initialization version
       board: { rotations: [], shifts: [], events: [] },
-      doctors: doctors, // imported js files with constants
-      shiftDetails: shiftDetails, // imported js files with constants
+      // just some helper constants
+      doctors: doctors, // linked in home.ejs
+      shiftDetails: shiftDetails, // linked in home.ejs
+
       rooms: [
         "1",
         "2",
@@ -262,17 +268,10 @@ createApp({
     const socket = io();
     socket.on("connect", () => {
       console.log("Socket connected");
-      // establish sockets to listen
-      // socket.on("new state", (state) => {
-      //   this.handleState(state);
-      // });
-      // fire off first event after socket set up
-      // this.apifetch("/api");
     });
     socket.on("new state", (state) => {
       console.log("New state received");
       this.handleNewState(state);
-      //console.log(state);
     });
   },
 }).mount("#app");

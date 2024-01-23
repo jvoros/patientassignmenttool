@@ -32,26 +32,27 @@ function createBoardStore() {
     return state;
   }
 
-  function getRotationWithShifts(rotation) {
-    return {
-      ...rotation,
-      shifts: state.shifts
-        .filter((shift) => shift.rotationId === rotation.id)
-        .sort((a, b) => a.order - b.order),
-    };
-  }
+  // DON'T NEED SORTED VERSION
+  // function getRotationWithShifts(rotation) {
+  //   return {
+  //     ...rotation,
+  //     shifts: state.shifts
+  //       .filter((shift) => shift.rotationId === rotation.id)
+  //       .sort((a, b) => a.order - b.order),
+  //   };
+  // }
 
-  function getSortedState() {
-    return {
-      rotations: {
-        main: getRotationWithShifts(state.rotations[0]),
-        fasttrack: getRotationWithShifts(state.rotations[1]),
-        off: getRotationWithShifts(state.rotations[2]),
-      },
-      shifts: state.shifts,
-      events: state.events,
-    };
-  }
+  // function getSortedState() {
+  //   return {
+  //     rotations: {
+  //       main: getRotationWithShifts(state.rotations[0]),
+  //       fasttrack: getRotationWithShifts(state.rotations[1]),
+  //       off: getRotationWithShifts(state.rotations[2]),
+  //     },
+  //     shifts: state.shifts,
+  //     events: state.events,
+  //   };
+  // }
 
   // SHIFT Functions
 
@@ -203,21 +204,7 @@ function createBoardStore() {
     return;
   }
 
-  // HISTORY
-  function getHistory() {
-    return history;
-  }
-
-  function save(board) {
-    history = [JSON.stringify(board), ...history.slice(0, EVENT_LIMIT)];
-  }
-
-  function undo() {
-    // shift() removes and returns first array item
-    state = JSON.parse(history.shift());
-  }
-
-  // helpers
+  // HELPERS
   // function to take rotation or shift arrays
   // and modify just the specified shift, returns the full array
   // Shift and Rotation functions return a new shift that replaces the old
@@ -265,6 +252,12 @@ function createBoardStore() {
     });
   }
 
+  // HISTORY
+  function undo() {
+    // shift() removes and returns first array item
+    state = JSON.parse(history.shift());
+  }
+
   // limits # of events
   function addEvent(type, message, shift, patient = null) {
     state.events = [
@@ -287,7 +280,7 @@ function createBoardStore() {
 
   return {
     getState,
-    getSortedState,
+    //getSortedState,
     reset: withHistory(reset),
     addNewShift: withHistory(addNewShift),
     moveShiftToRotation: withHistory(moveShiftToRotation),
