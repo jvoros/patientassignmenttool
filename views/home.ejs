@@ -40,7 +40,7 @@
             <template v-else
               ><%- include('./partials/shifts.ejs'); %>
 
-              <div class="skipControls">
+              <div v-if="nurse" class="skipControls">
                 <button
                   class="secondary outline"
                   @click="moveRotationPointer(rotation.id, -1)"
