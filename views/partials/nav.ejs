@@ -6,6 +6,21 @@
     </li>
   </ul>
   <ul>
+    <li v-if="!nurse">
+      <details class="dropdown" id="carePointLinks">
+        <summary role="button" class="secondary">CarePoint Sites</summary>
+        <ul @click="closeCarePointLinks">
+          <li>
+            <a
+              href="https://sites.google.com/carepointhc.com/mycarepoint/clinical-divisions/emergency-medicine/epic/st-marks-hospital-smh"
+              target="_blank"
+              >SMH Intranet Site</a
+            >
+          </li>
+          <li><a href="https://edorders.com/" target="_blank">EDorders</a></li>
+        </ul>
+      </details>
+    </li>
     <li v-if="nurse"><%- include('./addShiftPopover.ejs'); %></li>
     <li>
       <a role="button" class="contrast" href="/logout">

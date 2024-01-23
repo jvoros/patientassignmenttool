@@ -121,6 +121,11 @@ createApp({
       });
     },
 
+    // UI
+    closeCarePointLinks(event) {
+      event.target.closest("details").removeAttribute("open");
+    },
+
     // SERVER
     async checkLoginStatus() {
       console.log("Checking login status");
