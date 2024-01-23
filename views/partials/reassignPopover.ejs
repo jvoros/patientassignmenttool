@@ -12,7 +12,7 @@
     <div class="popoverContent">
       <details class="dropdown">
         <summary>Reassign to:</summary>
-        <ul>
+        <ul @click="closeDropdown">
           <template v-for="shift in getShiftsSortedByDoc()">
             <li v-if="shift.doctor.last !== event.shift.doctor.last">
               <a href="#" @click="reassign(event.id, shift.id)"

@@ -10,7 +10,7 @@
     <div class="popoverContent">
       <details class="dropdown">
         <summary>Move to:</summary>
-        <ul>
+        <ul @click="closeDropdown">
           <template v-for="rot in board.rotations">
             <li v-if="rot.name !== rotation.name">
               <a href="#" @click="moveShiftToRotation(rot.id, shift.id)">{{

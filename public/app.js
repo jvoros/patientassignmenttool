@@ -122,7 +122,7 @@ createApp({
     },
 
     // UI
-    closeCarePointLinks(event) {
+    closeDropdown(event) {
       event.target.closest("details").removeAttribute("open");
     },
 
