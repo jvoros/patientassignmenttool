@@ -25,20 +25,6 @@ button {
   padding: calc(var(--pico-spacing) / 2) var(--pico-spacing);
 }
 
-/* Dark color scheme (Auto) */
-/* Automatically enabled if user has Dark mode enabled */
-@media only screen and (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    --my-muted-background: #525f7a;
-  }
-}
-
-/* Dark color scheme (Forced) */
-/* Enabled if forced with data-theme="dark" */
-[data-theme="dark"] {
-  --my-muted-background: #525f7a;
-}
-
 /* MAIN COLORS */
 body {
   background-color: var(--my-background);
@@ -75,14 +61,20 @@ nav {
 
 main {
   display: flex;
-  align-items: stretch;
+  flex-flow: row wrap;
   gap: 2em;
+  justify-content: space-between;
+  width: 100%;
 }
-section.timeline {
-  width: 30%;
+
+.timeline {
+  flex-basis: 100%;
+  order: 3;
 }
-section.mainRotation {
-  width: 40%;
+
+.mainRotation {
+  flex-basis: 100%;
+  order: 1;
 }
 
 .skipControls {
@@ -90,12 +82,31 @@ section.mainRotation {
   justify-content: space-between;
 }
 
-section.otherRotations {
-  width: 30%;
+.otherRotations {
+  flex-basis: 100%;
+  order: 2;
 }
 
 .otherRotations h4:not(:first-of-type) {
   margin-top: calc(var(--pico-spacing) * 3);
+}
+
+@media (min-width: 1024px) {
+  main {
+    flex-wrap: nowrap;
+  }
+  .mainRotation {
+    order: 2;
+    flex-basis: 38%;
+  }
+  .otherRotations {
+    order: 3;
+    flex-basis: 28%;
+  }
+  .timeline {
+    order: 1;
+    flex-basis: 28%;
+  }
 }
 
 /* SHIFT BOX */
