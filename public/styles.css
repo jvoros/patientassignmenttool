@@ -10,7 +10,8 @@
   --my-background: rgb(249 250 251);
   --my-muted-background: #b3b9c5;
   --my-ft-background: #d7fbc1;
-  --my-ft-border: #2c6c0c;
+  --my-ft-border: #398712;
+  --my-ft-color: #398712;
   --my-next-background: #ffbf00;
   --my-light-gray: #cfd5e2;
   --my-light-red: rgb(243, 143, 121);
@@ -114,7 +115,7 @@ main {
   border-radius: var(--pico-border-radius);
   border: 2px solid var(--my-light-gray);
   background-color: var(--pico-background-color);
-  margin-bottom: var(--pico-spacing);
+  margin-bottom: calc(var(--pico-spacing) * 2);
 }
 
 .shiftNext {
@@ -149,7 +150,7 @@ main {
 .shiftFastTrack {
   background-color: var(--my-ft-background);
   border-color: var(--my-ft-border);
-  color: var(--my-ft-border);
+  color: var(--my-ft-color);
 }
 
 .shiftControls {

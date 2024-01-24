@@ -8,8 +8,9 @@
   <ul>
     <li v-if="!nurse">
       <details class="dropdown">
-        <summary role="button" class="secondary">CarePoint Sites</summary>
+        <summary role="button" class="secondary">CarePoint Links</summary>
         <ul @click="closeDropdown">
+          <li><a href="https://edorders.com/" target="_blank">ED Orders</a></li>
           <li>
             <a
               href="https://sites.google.com/carepointhc.com/mycarepoint/clinical-divisions/emergency-medicine/epic/st-marks-hospital-smh"
@@ -17,7 +18,6 @@
               >SMH Intranet Site</a
             >
           </li>
-          <li><a href="https://edorders.com/" target="_blank">EDorders</a></li>
         </ul>
       </details>
     </li>
