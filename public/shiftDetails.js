@@ -48,4 +48,11 @@ const shiftDetails = [
     start: "23:00:00",
     bonus: 1,
   },
+  {
+    id: 8,
+    name: "APP: Noon - 10pm",
+    end: "22:00",
+    start: "12:00",
+    bonus: 0,
+  },
 ];

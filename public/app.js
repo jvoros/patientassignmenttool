@@ -261,7 +261,9 @@ createApp({
         this.isNext(rotation, shift) && rotation.name === "Main"
           ? "shiftNext"
           : "";
-      return `${shiftType[rotation.name]} ${mainNext}`;
+      const APP = shift.doctor.app ? "shiftApp" : "";
+
+      return `${shiftType[rotation.name]} ${mainNext} ${APP}`;
     },
   },
 

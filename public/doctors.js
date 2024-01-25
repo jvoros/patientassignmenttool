@@ -13,6 +13,7 @@ const doctors = [
   { last: "Hart", first: "Mike", id: 12 },
   { last: "Hollifield", first: "Matt", id: 13 },
   { last: "Hunt", first: "Steve", id: 14 },
+  { last: "Kasavana", first: "Brian", app: true },
   { last: "Lawliss", first: "Kathleen", id: 15 },
   { last: "Lemon", first: "Anthon", id: 16 },
   { last: "Li", first: "Helen", id: 17 },

@@ -7,6 +7,7 @@
   --pico-font-size: 106.25%;
   --box-shadow: 1px 5px 5px 2px #d6d6d6;
   --pico-spacing-half: calc(var(--pico-spacing) / 2);
+  --my-padding: var(--pico-spacing-half) var(--pico-spacing);
   --my-background: rgb(249 250 251);
   --my-muted-background: #b3b9c5;
   --my-ft-background: #d7fbc1;
@@ -113,6 +114,8 @@ main {
 /* SHIFT BOX */
 .shiftBox {
   border-radius: var(--pico-border-radius);
+  background-clip: padding-box;
+  overflow: hidden;
   border: 2px solid var(--my-light-gray);
   background-color: var(--pico-background-color);
   margin-bottom: calc(var(--pico-spacing) * 2);
@@ -125,6 +128,16 @@ main {
 
 .shiftBox.shiftNext {
   background-color: lightyellow;
+}
+
+.shiftFlag {
+  display: none;
+  color: white;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 80%;
+  text-align: center;
+  padding: 1px 0;
 }
 
 .shiftNextFlag {
@@ -151,6 +164,32 @@ main {
   background-color: var(--my-ft-background);
   border-color: var(--my-ft-border);
   color: var(--my-ft-color);
+}
+
+.shiftApp {
+  /* background-color: var(--my-ft-background); */
+}
+
+.shiftFtFlag {
+  background-color: var(--my-ft-background);
+  color: var(--my-ft-color);
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 75%;
+  text-align: center;
+  padding: 1px 0;
+}
+
+.shiftApp.shiftNext > .shiftFt {
+  display: none;
+}
+
+.shiftSkip {
+  color: #ffa23a;
+  font-weight: bold;
+  font-size: 80%;
+  text-align: center;
+  line-height: var(--pico-spacing);
 }
 
 .shiftControls {

@@ -1,13 +1,13 @@
 <div class="popover" id="addDoctorPopover">
   <a role="button" href="#" class="secondary" @click="toggleAddShiftPopover">
-    <%- include('../icons/doctor.svg'); %>Add Doctor
+    <%- include('../icons/doctor.svg'); %>Add to Rotation
   </a>
   <div class="popoverWrapper" v-if="ui.showAddShiftPopover">
     <div class="popoverBlocker" @click="toggleAddShiftPopover"></div>
     <div class="popoverContent">
       <form class="newDoctorForm">
         <select v-model="forms.addShift.doctor">
-          <option disabled value="">Doctor:</option>
+          <option disabled value="">Clinician:</option>
           <option v-for="doctor in doctors" :value="doctor">
             {{ doctor.last }}, {{ doctor.first }}
           </option>
