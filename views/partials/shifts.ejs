@@ -19,7 +19,7 @@
         <template v-if="nurse && isNext(rotation, shift)">
           <%- include('./assignPopover.ejs'); %>
         </template>
-        <div v-if="shift.skip" class="shiftSkip">Skips Next<br />Rotation</div>
+        <div v-if="shift.skip" class="shiftSkip">Skips Next<br />Turn</div>
       </div>
     </div>
     <ul class="shiftCounts" v-if="shift.counts.total > 0">

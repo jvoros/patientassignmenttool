@@ -115,7 +115,6 @@ main {
 .shiftBox {
   border-radius: var(--pico-border-radius);
   background-clip: padding-box;
-  overflow: hidden;
   border: 2px solid var(--my-light-gray);
   background-color: var(--pico-background-color);
   margin-bottom: calc(var(--pico-spacing) * 2);
@@ -180,7 +179,7 @@ main {
   padding: 1px 0;
 }
 
-.shiftApp.shiftNext > .shiftFt {
+.shiftApp.shiftNext > .shiftFtFlag {
   display: none;
 }
 
