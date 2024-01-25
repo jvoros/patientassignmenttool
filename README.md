@@ -28,6 +28,8 @@ I tried to use a very functional approach. This should make each controller quit
 
 The functional approach also made testing _very_ easy. The controllers are well covered by unit tests.
 
+But on further development, turns out `board.js` controller is **not** functional and uses a singleton pattern.
+
 ### Socket.IO
 
 All the clients stay in sync with **Socket.IO**. Using websockets means every client is subscribed to the server. The API endpoints don't have to return any site changes. After the API performs some action, the Socket.IO server just emits the new version of state.

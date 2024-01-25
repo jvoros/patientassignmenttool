@@ -28,6 +28,18 @@ describe("Shift Functions", () => {
     }
   );
 
+  let shift3 = Shift.make(
+    { first: "Emily", last: "Pierson", app: true },
+    {
+      start: "10:00",
+      end: "22:00",
+      name: "APP Shift",
+      bonus: 0,
+      rotationId: 1,
+      order: 0,
+    }
+  );
+
   it("should construct correctly", () => {
     const x = [
       "id",
@@ -38,6 +50,7 @@ describe("Shift Functions", () => {
       "bonus",
       "rotationId",
       "order",
+      "skip",
       "patients",
       "counts",
     ];
@@ -84,6 +97,20 @@ describe("Shift Functions", () => {
       ambo: 2,
       fasttrack: 2,
       zebra: 1,
+    });
+
+    it("should toggle skip flag for app shifts", () => {
+      expect(shift3.skip).to.equal(false);
+      shift3 = Shift.turnComplete(shift3);
+      expect(shift3.skip).to.equal(true);
+      shift3 = Shift.turnComplete(shift3);
+      expect(shift3.skip).to.equal(false);
+    });
+
+    it("should not toggle skip flag for non-app shifts", () => {
+      expect(shift1.skip).to.equal(false);
+      shift1 = Shift.turnComplete(shift1);
+      expect(shift1.skip).to.equal(false);
     });
   });
 });

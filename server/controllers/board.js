@@ -22,6 +22,10 @@ function createBoardStore() {
   let history = [];
 
   function reset() {
+    state.rotations.map((rot) => {
+      rot.pointer = 0;
+      rot.shiftCount = 0;
+    });
     state.shifts = [];
     state.events = [];
     addEvent("reset", "Board reset", null);
@@ -139,7 +143,22 @@ function createBoardStore() {
 
   function moveRotationPointer(rotationId, offset, noEvent = false) {
     const startingPointer = findRotationById(rotationId).pointer;
+    // turn complete handler for active shift
+    const activeShift = findShiftByOrder(
+      rotationId,
+      findRotationById(rotationId).pointer
+    );
+    modifyShiftById(activeShift.id, Shift.turnComplete);
+
+    // advance pointer
     modifyRotationById(rotationId, Rotation.movePointer, offset);
+    // check next shift for skip, if so, movePointer again
+    // the turnComplete method will then fire for skipped shift
+    const nextShift = findShiftByOrder(
+      rotationId,
+      findRotationById(rotationId).pointer
+    );
+    if (nextShift.skip) moveRotationPointer(rotationId, 1, true);
 
     // event
     // flag to fire without event
@@ -208,6 +227,7 @@ function createBoardStore() {
   // function to take rotation or shift arrays
   // and modify just the specified shift, returns the full array
   // Shift and Rotation functions return a new shift that replaces the old
+  // Don't need to pass shift or rotation to function, modifyById handles that as first arg
   function modifyById(arr, itemId, func, ...args) {
     return arr.map((item) => {
       return item.id === itemId ? func(item, ...args) : item;

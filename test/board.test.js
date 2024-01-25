@@ -10,7 +10,7 @@ const c = {
   doctors: [
     { last: "Voros", first: "Jeremy" },
     { last: "Blake", first: "Kelly" },
-    { last: "Kasavana", first: "Brian" },
+    { last: "Kasavana", first: "Brian", app: true },
   ],
   shifts: [
     {
@@ -93,7 +93,7 @@ describe("Board Functions", () => {
 
     board.moveRotationPointer(mainId, 1);
 
-    board.addNewShift(c.doctors[2], {
+    board.addNewShift(c.doctors[0], {
       ...c.shifts[2],
       rotationId: mainId,
     });
@@ -150,6 +150,24 @@ describe("Board Functions", () => {
     expect(board.getState().rotations[0].pointer).to.equal(startingPointer + 1);
   });
 
+  it("should advance pointer if skip is true for next shift", () => {
+    board.reset();
+
+    board.addNewShift(c.doctors[0], {
+      ...c.shifts[0],
+      rotationId: mainId,
+    });
+    board.addNewShift(c.doctors[2], {
+      ...c.shifts[0],
+      rotationId: mainId,
+    });
+
+    board.moveRotationPointer(mainId, 1); // should move from app shift and toggle skip to true
+    expect(board.getState().rotations[0].pointer).to.equal(1);
+    board.moveRotationPointer(mainId, 1); // should move from doc to APP, APP should skip, pointer should be at doc shift
+    expect(board.getState().rotations[0].pointer).to.equal(1);
+  });
+
   describe("Event Functions", () => {
     it("should add event for joining rotation", () => {
       board.addNewShift(c.doctors[0], { ...c.shifts[0], rotationId: mainId });
@@ -188,7 +206,7 @@ describe("Board Functions", () => {
     it("should add event for changing shift order", () => {
       board.moveShift(board.getState().shifts[1].id, 1);
       expect(board.getState().events[0].type).to.equal("order");
-      console.log(JSON.stringify(board.getState()));
+      //console.log(JSON.stringify(board.getState()));
     });
   });
   it("", () => {});

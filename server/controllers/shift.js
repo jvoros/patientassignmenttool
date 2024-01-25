@@ -11,6 +11,7 @@ function make(doctor, options) {
     bonus: options.bonus,
     rotationId: options.rotationId,
     order: options.order,
+    skip: false,
     patients: [],
     counts: {},
   };
@@ -46,4 +47,16 @@ function updateCounts(shift) {
   return { ...shift, counts };
 }
 
-export default { make, addPatient, removePatient, setOrder, setRotation };
+function turnComplete(shift) {
+  // if APP shift, toggle skip each time through
+  return shift.doctor.app ? { ...shift, skip: !shift.skip } : shift;
+}
+
+export default {
+  make,
+  addPatient,
+  removePatient,
+  setOrder,
+  setRotation,
+  turnComplete,
+};
