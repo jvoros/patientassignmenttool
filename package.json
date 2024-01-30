@@ -1,6 +1,6 @@
 {
-  "name": "pat-v2",
-  "version": "1.0.0",
+  "name": "patient-assignment-tools",
+  "version": "0.2.0",
   "description": "",
   "main": "index.js",
   "type": "module",
