@@ -60,4 +60,4 @@ I can't use single file components this way. But the amount of code required for
 The `dummy.js` and `dummy2.js` files are just dumps of the state from server. Used for development. Useful to see the shape of content from server. That's why I'm leaving them here.
 
 ## Docs
-The `client/docs` folder holds markdown files for the Quick Reference section of the website. There is one route in the express server that dynamically fetches the markdown files and uses the `docs.ejs` templates for the boilerplate code.
+The `client/docs` folder holds markdown files for the Quick Reference section of the website. There is one route in the express server that dynamically fetches the markdown files and uses the `docs.ejs` templates for the boilerplate code. [This was the reference tutorial](https://dev.to/khalby786/creating-a-markdown-blog-with-ejs-express-j40).

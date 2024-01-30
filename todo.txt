@@ -1,2 +1,0 @@
-- add quick reference page
-  - https://dev.to/khalby786/creating-a-markdown-blog-with-ejs-express-j40
