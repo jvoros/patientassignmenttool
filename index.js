@@ -29,7 +29,7 @@ function message(status, text, payload = "") {
 // SETUP
 const app = express();
 app.set("view engine", "ejs");
-app.set("views", ["./client", "./client-docs"]);
+app.set("views", "./client");
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -74,7 +74,7 @@ const authorization = (req, res, next) => {
 
 // ROUTES OUTSIDE AUTH
 
-app.use(express.static("public"));
+app.use(express.static("client/public"));
 
 app.get("/login", (req, res) => {
   res.render("login");
@@ -128,13 +128,9 @@ app.get("/", (req, res) => {
 app.use("/api", api);
 
 // dynamic routes to static content for docs
-app.get("/docs", (req, res) => {
-  res.render("docs");
-});
-
 app.get("/docs/:article", (req, res) => {
   // read the markdown file and front matter
-  const file = matter.read("client-docs/pages/" + req.params.article + ".md");
+  const file = matter.read("client/docs/" + req.params.article + ".md");
 
   res.render("docs", {
     page: req.url.split("/").pop(), // gets the active page
