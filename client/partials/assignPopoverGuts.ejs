@@ -19,6 +19,6 @@
 </ul>
 
 <select v-model="forms.assign.room">
-  <option selected disabled>Room:</option>
+  <option selected disabled value="">Room:</option>
   <option v-for="room in rooms" :value="room">{{ room }}</option>
 </select>

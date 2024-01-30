@@ -4,14 +4,17 @@ import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import matter from "gray-matter";
+import markdownit from "markdown-it";
 // https://stackoverflow.com/a/57527735
 // will catch async errors and pass to error middleware without try/catch blocks
 import "express-async-errors";
 import createBoardStore from "./server/controllers/board.js";
-
 import api from "./server/api.js";
+
 const JWT_KEY = process.env.JWT_KEY;
 export const board = createBoardStore();
+const md = markdownit();
 
 // HELPERS
 // response helper
@@ -26,6 +29,7 @@ function message(status, text, payload = "") {
 // SETUP
 const app = express();
 app.set("view engine", "ejs");
+app.set("views", ["./client", "./client-docs"]);
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -122,6 +126,22 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api", api);
+
+// dynamic routes to static content for docs
+app.get("/docs", (req, res) => {
+  res.render("docs");
+});
+
+app.get("/docs/:article", (req, res) => {
+  // read the markdown file and front matter
+  const file = matter.read("client-docs/pages/" + req.params.article + ".md");
+
+  res.render("docs", {
+    page: req.url.split("/").pop(), // gets the active page
+    post: md.render(file.content), // render content to HTML
+    title: file.data.title,
+  });
+});
 
 // ERROR HANDLING
 // comes after routes so it can catch any errors they throw

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html data-theme="light">
   <head>
+    <title>Patient Assignment Tools</title>
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="pico.colors.min.css" />
@@ -19,6 +20,41 @@
   <body>
     <div class="container" id="app" v-cloak>
       <%- include('./partials/nav.ejs'); %>
+      <dialog :open="ui.showWhatsNew">
+        <article>
+          <h2>What's New in v0.2</h2>
+          <ul>
+            <li>
+              Assigning patients now requires you to select a
+              <b>Patient Type</b>. The "bonus" type is for use if a clinician
+              picks up a patient when it is not their turn.
+            </li>
+            <li>
+              <button class="secondary outline">
+                <%- include('./icons/walkin.svg'); %>
+              </button>
+              This button can be used to assign patients to clinicians when it
+              is not their turn. Using this button to assign patients does not
+              affect the rotation.
+            </li>
+            <li>
+              <button class="secondary outline">
+                <%- include('./icons/reassign.svg') %>
+              </button>
+              This button shows up in the Timeline section for patient
+              assignments. It allows you to reassign a previously assigned
+              patient to another clinician without changing the rotation.<br /><br />For
+              example, if one doctor is in with a critical patient and another
+              doctor wants to pick up their patient without changing the
+              rotation, you can use this button to reassign that patient.
+            </li>
+          </ul>
+          <footer>
+            <button className="secondary" @click="toggleWhatsNew">Close</button>
+          </footer>
+        </article>
+      </dialog>
+
       <main>
         <section class="timeline">
           <h4>Timeline</h4>

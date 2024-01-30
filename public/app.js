@@ -32,6 +32,7 @@ createApp({
         showAssignMini: false,
         showMovePopover: false,
         showReassignPopover: false,
+        showWhatsNew: false,
       },
       // variables for form control with v-model
       forms: {
@@ -121,11 +122,6 @@ createApp({
       });
     },
 
-    // UI
-    closeDropdown(event) {
-      event.target.closest("details").removeAttribute("open");
-    },
-
     // SERVER
     async checkLoginStatus() {
       console.log("Checking login status");
@@ -195,7 +191,15 @@ createApp({
       apiCall("api/undo");
     },
 
-    // POPOVERS
+    // POPOVERS & UI
+    closeDropdown(event) {
+      event.target.closest("details").removeAttribute("open");
+    },
+
+    toggleWhatsNew() {
+      this.ui.showWhatsNew = !this.ui.showWhatsNew;
+    },
+
     uiTogglerByShift(flag, shiftId) {
       this.ui[flag] = !this.ui[flag] ? shiftId : false;
     },

@@ -1,7 +1,7 @@
 <div class="popover" id="addDoctorPopover">
-  <a role="button" href="#" class="secondary" @click="toggleAddShiftPopover">
+  <button class="secondary" @click="toggleAddShiftPopover">
     <%- include('../icons/doctor.svg'); %>Add to Rotation
-  </a>
+  </button>
   <div class="popoverWrapper" v-if="ui.showAddShiftPopover">
     <div class="popoverBlocker" @click="toggleAddShiftPopover"></div>
     <div class="popoverContent">
