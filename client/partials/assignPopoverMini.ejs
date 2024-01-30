@@ -1,0 +1,22 @@
+<div class="popover" id="assignButton">
+  <button
+    class="secondary outline shiftControlButton"
+    @click="toggleAssignMini(shift.id)"
+    data-tooltip="Assign when not their turn."
+  >
+    <%- include('../icons/walkin.svg'); %>
+  </button>
+  <div class="popoverWrapper" v-if="assignMiniOpen(shift.id)">
+    <div class="popoverBlocker" @click="toggleAssignMini(shift.id)"></div>
+    <div class="popoverContent">
+      <%- include('./assignPopoverGuts.ejs'); %>
+      <button
+        class="secondary"
+        @click="assignPatientMini(shift.id)"
+        :disabled="!assignPatientComplete()"
+      >
+        Assign
+      </button>
+    </div>
+  </div>
+</div>

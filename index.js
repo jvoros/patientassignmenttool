@@ -1,91 +1,149 @@
-import * as dotenv from "dotenv";
-dotenv.config();
-
+import "dotenv/config";
 import express from "express";
-import bodyParser from "body-parser";
-import cors from "cors";
-import http from "http";
-import cookieSession from "cookie-session";
+import jwt from "jsonwebtoken";
+import cookieParser from "cookie-parser";
+import { createServer } from "http";
 import { Server } from "socket.io";
-
+import matter from "gray-matter";
+import markdownit from "markdown-it";
 // https://stackoverflow.com/a/57527735
 // will catch async errors and pass to error middleware without try/catch blocks
 import "express-async-errors";
+import createBoardStore from "./server/controllers/board.js";
+import api from "./server/api.js";
 
-// passport setup
-import passport from "./src/passport.js";
+const JWT_KEY = process.env.JWT_KEY;
+export const board = createBoardStore();
+const md = markdownit();
 
-// api routes
-import api from "./src/api.js";
-
-// initialize app, ejs, and socket.io
-const app = express();
-app.set("view engine", "ejs");
-const server = http.createServer(app);
-const io = new Server(server);
-
-// custom auth middleware
-function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect("/login");
+// HELPERS
+// response helper
+function message(status, text, payload = "") {
+  return {
+    status,
+    text,
+    payload,
+  };
 }
 
-// load middlewares
-app.use(cors());
-app.use(bodyParser.urlencoded({ extended: true }));
+// SETUP
+const app = express();
+app.set("view engine", "ejs");
+app.set("views", ["./client", "./client-docs"]);
+app.use(express.json());
+app.use(cookieParser());
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
 
-// passes io object to routers
-app.use((req, res, next) => {
+// WEBSOCKET
+const server = createServer(app);
+const io = new Server(server);
+io.on("connection", (socket) => {
+  console.log("SOCKET.IO: a user connected");
+  console.log("SOCKET.IO: emitting new state");
+  socket.emit("new state", board.getState());
+});
+// middleware that passes io object to routers, so io is available on res object
+app.use((_req, res, next) => {
   res.io = io;
   return next();
 });
 
-// cookie session
-app.use(
-  cookieSession({
-    name: "session",
-    keys: ["key1key1", "key2key2"],
-    maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days
-  })
-);
+// AUTH MIDDLEWARE
+const userTable = {
+  nurse: { pass: process.env.NURSE_PASSWORD, username: "nurse" },
+  doctor: { pass: process.env.DOC_PASSWORD, username: "doctor" },
+};
 
-// passport init
-app.use(passport.initialize());
-app.use(passport.session());
+const authorization = (req, res, next) => {
+  const token = req.cookies.access_token;
+  if (!token) {
+    return res.redirect("/login");
+  }
+  try {
+    const data = jwt.verify(token, JWT_KEY);
+    req.user = data;
+    return next();
+  } catch {
+    return res.redirect("/login");
+  }
+};
 
-// routes
+// ROUTES OUTSIDE AUTH
+
 app.use(express.static("public"));
 
 app.get("/login", (req, res) => {
-  res.render("login", { user: "none" });
+  res.render("login");
 });
 
-// local auth
-app.post(
-  "/login/password",
-  passport.authenticate("local", {
-    successRedirect: "/",
-    failureRedirect: "/login",
-  })
-);
+app.post("/login/password", (req, res) => {
+  const { username, password } = req.body;
+  if (password === userTable[username].pass) {
+    const user = { username };
+    const token = jwt.sign(user, JWT_KEY);
 
-// behind authentication
-app.use(ensureAuthenticated);
-
-app.get("/", (req, res) => {
-  res.render("board", { user: req.user });
+    res.cookie("access_token", token, {
+      httpOnly: true,
+      sameSite: "Strict",
+      maxAge: 1000 * 60 * 60 * 24, // one day
+    });
+    res.status(200);
+    res.redirect("/");
+    res.io.emit("new state", board.getState());
+    return;
+  } else {
+    return res.redirect("/login");
+  }
 });
+
+app.post("/checklogin", (req, res) => {
+  const token = req.cookies.access_token;
+  if (!token) {
+    return res.status(200).json(message("success", "Not logged in yet."));
+  }
+  try {
+    const user = jwt.verify(token, JWT_KEY);
+    return res.status(200).json(message("success", "Already logged in", user));
+  } catch {
+    return res.status(200).json(message("success", "Invalid token"));
+  }
+});
+
+// ROUTES BEHIND AUTH
+app.use(authorization);
 
 app.get("/logout", (req, res) => {
-  req.logout();
+  res.clearCookie("access_token");
   res.redirect("/login");
+});
+
+app.get("/", (req, res) => {
+  res.render("home");
 });
 
 app.use("/api", api);
 
-// error handling
+// dynamic routes to static content for docs
+app.get("/docs", (req, res) => {
+  res.render("docs");
+});
+
+app.get("/docs/:article", (req, res) => {
+  // read the markdown file and front matter
+  const file = matter.read("client-docs/pages/" + req.params.article + ".md");
+
+  res.render("docs", {
+    page: req.url.split("/").pop(), // gets the active page
+    post: md.render(file.content), // render content to HTML
+    title: file.data.title,
+  });
+});
+
+// ERROR HANDLING
 // comes after routes so it can catch any errors they throw
 app.use(function (err, req, res, next) {
   // catches the error message from db functions
@@ -97,7 +155,7 @@ app.use(function (err, req, res, next) {
   return next();
 });
 
-// start server
+// LAUNCH
 const port = process.env.PORT || 4000;
 server.listen(port, () => {
   console.log(`listening on ${port}`);

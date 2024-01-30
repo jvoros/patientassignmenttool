@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="pico.min.css" />
+    <style>
+      main {
+        width: 400px;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <img src="pat.svg" width="90" /><br /><br />
+      <h1>Welcome to the Rotation.</h1>
+      <form action="/login/password" method="post">
+        <select name="username">
+          <option value="nurse">Nurse</option>
+          <option value="doctor">Doctor</option>
+        </select>
+        <input
+          type="password"
+          placeholder="Enter Password"
+          name="password"
+          required
+        />
+
+        <button type="submit" class="contrast">Login</button>
+      </form>
+    </main>
+  </body>
+</html>

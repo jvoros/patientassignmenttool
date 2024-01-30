@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html data-theme="light">
+  <head>
+    <title>Patient Assignment Tools</title>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="pico.colors.min.css" />
+    <link rel="stylesheet" href="pico.min.css" />
+
+    <link rel="stylesheet" href="styles.css" />
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container" id="app" v-cloak>
+      <%- include('./partials/nav.ejs'); %>
+      <dialog :open="ui.showWhatsNew">
+        <article>
+          <h2>What's New in v0.2</h2>
+          <ul>
+            <li>
+              Assigning patients now requires you to select a
+              <b>Patient Type</b>. The "bonus" type is for use if a clinician
+              picks up a patient when it is not their turn.
+            </li>
+            <li>
+              <button class="secondary outline">
+                <%- include('./icons/walkin.svg'); %>
+              </button>
+              This button can be used to assign patients to clinicians when it
+              is not their turn. Using this button to assign patients does not
+              affect the rotation.
+            </li>
+            <li>
+              <button class="secondary outline">
+                <%- include('./icons/reassign.svg') %>
+              </button>
+              This button shows up in the Timeline section for patient
+              assignments. It allows you to reassign a previously assigned
+              patient to another clinician without changing the rotation.<br /><br />For
+              example, if one doctor is in with a critical patient and another
+              doctor wants to pick up their patient without changing the
+              rotation, you can use this button to reassign that patient.
+            </li>
+          </ul>
+          <footer>
+            <button className="secondary" @click="toggleWhatsNew">Close</button>
+          </footer>
+        </article>
+      </dialog>
+
+      <main>
+        <section class="timeline">
+          <h4>Timeline</h4>
+          <hr />
+          <div class="blank" v-if="board.events.length === 0">No events</div>
+          <template v-else>
+            <template v-for="(event, index) in board.events">
+              <%- include('./partials/event.ejs'); %>
+            </template>
+          </template>
+        </section>
+        <section class="mainRotation">
+          <h4>Main Rotation</h4>
+          <hr />
+          <template v-for="rotation in findRotationByName('Main')">
+            <template v-if="rotation.shiftCount === 0"
+              ><%- include('./partials/blank.ejs'); %></template
+            >
+            <template v-else
+              ><%- include('./partials/shifts.ejs'); %>
+
+              <div v-if="nurse" class="skipControls">
+                <button
+                  class="secondary outline"
+                  @click="moveRotationPointer(rotation.id, -1)"
+                >
+                  <%- include('./icons/arrow-l.svg') %>Back Doctor
+                </button>
+                <button
+                  class="secondary outline"
+                  @click="moveRotationPointer(rotation.id, 1)"
+                >
+                  Skip Doctor<%- include('./icons/arrow-r.svg') %>
+                </button>
+              </div>
+            </template>
+          </template>
+        </section>
+        <section class="otherRotations">
+          <h4>Fast Track</h4>
+          <hr />
+          <template v-for="rotation in findRotationByName('Fast Track')">
+            <template v-if="rotation.shiftCount === 0"
+              ><%- include('./partials/blank.ejs'); %></template
+            >
+            <template v-else><%- include('./partials/shifts.ejs'); %></template>
+          </template>
+          <h4>Off Rotation</h4>
+          <hr />
+          <template v-for="rotation in findRotationByName('Off')">
+            <template v-if="rotation.shiftCount === 0"
+              ><%- include('./partials/blank.ejs'); %></template
+            >
+            <template v-else><%- include('./partials/shifts.ejs'); %></template>
+          </template>
+        </section>
+      </main>
+    </div>
+
+    <script src="./dummy.js"></script>
+    <script src="./dummy2.js"></script>
+    <script src="./doctors.js"></script>
+    <script src="./shiftDetails.js"></script>
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>

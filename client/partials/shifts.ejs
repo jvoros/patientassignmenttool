@@ -1,0 +1,31 @@
+<template v-for="shift in findShiftsByRotation(rotation.id)">
+  <div class="shiftBox" :class="getShiftClasses(rotation, shift)">
+    <div class="shiftNextFlag">next in rotation</div>
+    <template v-if="nurse"> <%- include('./shiftControls.ejs'); %> </template>
+    <template v-if="shift.doctor.app"
+      ><div class="shiftFtFlag">fast track provider</div></template
+    >
+
+    <div class="shiftContent">
+      <div>
+        <div class="shiftName">
+          {{ shift.name }}
+        </div>
+        <div class="shiftDoc">
+          {{ shift.doctor.first }} {{ shift.doctor.last }}
+        </div>
+      </div>
+      <div>
+        <template v-if="nurse && isNext(rotation, shift)">
+          <%- include('./assignPopover.ejs'); %>
+        </template>
+        <div v-if="shift.skip" class="shiftSkip">Skips Next<br />Turn</div>
+      </div>
+    </div>
+    <ul class="shiftCounts" v-if="shift.counts.total > 0">
+      <li v-for="(count, key) in shift.counts">
+        {{ key }}: <span class="shiftCountNumber">{{ count }}</span>
+      </li>
+    </ul>
+  </div>
+</template>

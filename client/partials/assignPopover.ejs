@@ -1,0 +1,22 @@
+<div class="popover" id="assignButton">
+  <button
+    v-if="nurse && isNext(rotation, shift)"
+    @click="toggleAssign(shift.id)"
+    class="contrast"
+  >
+    <%- include('../icons/walkin.svg'); %> Assign
+  </button>
+  <div class="popoverWrapper" v-if="assignPopoverOpen(shift.id)">
+    <div class="popoverBlocker" @click="toggleAssign(shift.id)"></div>
+    <div class="popoverContent">
+      <%- include('./assignPopoverGuts.ejs'); %>
+      <button
+        class="secondary"
+        @click="assignPatient(shift.id)"
+        :disabled="!assignPatientComplete()"
+      >
+        Assign
+      </button>
+    </div>
+  </div>
+</div>

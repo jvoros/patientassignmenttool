@@ -1,0 +1,41 @@
+<nav>
+  <ul>
+    <li><img src="/pat.svg" width="70" /></li>
+    <li class="siteName">
+      <strong>Patient Assignment Tool</strong> <small>v0.2</small>
+    </li>
+  </ul>
+  <ul>
+    <li>
+      <a class="secondary outline" @click="toggleWhatsNew" href="#">
+        What's New
+      </a>
+    </li>
+    <template v-if="!nurse">
+      <li><a href="/docs/home" target="_blank">Quick Reference</a></li>
+      <li>
+        <details class="dropdown">
+          <summary role="button" class="secondary">CarePoint Links</summary>
+          <ul @click="closeDropdown">
+            <li>
+              <a href="https://edorders.com/" target="_blank">ED Orders</a>
+            </li>
+            <li>
+              <a
+                href="https://sites.google.com/carepointhc.com/mycarepoint/clinical-divisions/emergency-medicine/epic/st-marks-hospital-smh"
+                target="_blank"
+                >SMH Intranet Site</a
+              >
+            </li>
+          </ul>
+        </details>
+      </li>
+    </template>
+    <li v-if="nurse"><%- include('./addShiftPopover.ejs'); %></li>
+    <li>
+      <a role="button" class="contrast" href="/logout">
+        Logout <%- include('../icons/logout.svg'); %>
+      </a>
+    </li>
+  </ul>
+</nav>

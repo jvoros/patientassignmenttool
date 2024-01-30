@@ -1,0 +1,27 @@
+<div class="popover">
+  <button
+    v-if="nurse"
+    class="outline secondary"
+    data-tooltip="Reassign to another doctor"
+    @click="toggleReassignPopover(event.id)"
+  >
+    <%- include('../icons/reassign.svg') %>
+  </button>
+  <div class="popoverWrapper" v-if="reassignPopoverOpen(event.id)">
+    <div class="popoverBlocker" @click="toggleReassignPopover(event.id)"></div>
+    <div class="popoverContent">
+      <details class="dropdown">
+        <summary>Reassign to:</summary>
+        <ul @click="closeDropdown">
+          <template v-for="shift in getShiftsSortedByDoc()">
+            <li v-if="shift.doctor.last !== event.shift.doctor.last">
+              <a href="#" @click="reassign(event.id, shift.id)"
+                >{{ shift.doctor.first }} {{ shift.doctor.last }}</a
+              >
+            </li>
+          </template>
+        </ul>
+      </details>
+    </div>
+  </div>
+</div>
