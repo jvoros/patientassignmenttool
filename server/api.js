@@ -4,10 +4,6 @@ import { board } from "../index.js";
 const api = express.Router();
 
 // HELPERS
-export function getPath(p) {
-  return new URL(p, import.meta.url).pathname;
-}
-
 export function responder(res) {
   // client browser needs a response to know transmission complete
   res.status(200).json({ message: "success" });
@@ -19,7 +15,6 @@ export function responder(res) {
 api.post("/addShift", (req, res) => {
   const { doctor, options } = req.body;
   if (options.id === 1) {
-    console.log("Resetting board...");
     board.reset();
   }
   board.addNewShift(doctor, options);
