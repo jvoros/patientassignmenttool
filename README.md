@@ -24,11 +24,12 @@ The API runs off the functions in the controllers folder. The routes basically j
 
 The controllers are based on a simple functional pattern inspired by [this tutorial](https://dev.to/nas5w/learn-the-basics-of-redux-by-writing-your-own-version-in-30-lines-1if3). Originally used a reducer but realized that could be removed all together.
 
-I tried to use a very functional approach. This should make each controller quite easy to understand. One unique feature is the `withHistory()` wrapper. This function is used to control which functions save a snapshot to the history stack.
+I tried to use a very functional approach. This should make each controller quite easy to understand. The controllers handle plain javascript objects. This means the whole board state can be stored in a JSON string. The functional approach also made testing _very_ easy. The controllers are well covered by unit tests.
 
-The functional approach also made testing _very_ easy. The controllers are well covered by unit tests.
+The main `board.js` controller is **not** functional and uses a singleton pattern.
 
-But on further development, turns out `board.js` controller is **not** functional and uses a singleton pattern.
+One unique feature is the `withHistory()` wrapper. This function is used to control which functions save a snapshot to the history stack.
+
 
 ### Socket.IO
 
@@ -50,7 +51,7 @@ The `public` folder includes some SVG files that were necessary where the CSS us
 
 ### JS
 
-The JS is run by Vue v3. The Vue instance doesn't require a build step. I followed the directions in the docs for the embedded setup. I originally had a Vite setup, running on a different port with proxies to connect front and back ends. Way to complicated for a simple site.
+The JS is run by Vue v3. The Vue instance doesn't require a build step. I followed the directions in the docs for the embedded setup. I originally had a Vite setup, running on a different port with proxies to connect front and back ends. Way to0 complicated for a simple site.
 
 The first version of the site used `petite-vue`. This version uses the full thing. Vue handles the conditional rendering, flow control, etc.
 
