@@ -61,3 +61,5 @@ The `dummy.js` and `dummy2.js` files are just dumps of the state from server. Us
 
 ## Docs
 The `client/docs` folder holds markdown files for the Quick Reference section of the website. There is one route in the express server that dynamically fetches the markdown files and uses the `docs.ejs` templates for the boilerplate code. [This was the reference tutorial](https://dev.to/khalby786/creating-a-markdown-blog-with-ejs-express-j40).
+
+Any new Markdown pages need to be added to the `docs_sidenav.ejs` partial.
