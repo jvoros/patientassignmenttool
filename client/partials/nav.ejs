@@ -33,9 +33,9 @@
     </template>
     <li v-if="nurse"><%- include('./addShiftPopover.ejs'); %></li>
     <li>
-      <button class="contrast" onclick="location.href='/logout'">
+      <a role="button" class="contrast" href="/logout">
         Logout <%- include('../icons/logout.svg'); %>
-      </button>
+      </a>
     </li>
   </ul>
 </nav>

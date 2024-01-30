@@ -53,7 +53,8 @@ nav {
   padding-top: var(--pico-spacing);
 }
 
-nav ul {
+nav a[role="button"] {
+  margin-top: 1px;
 }
 
 .siteName {
