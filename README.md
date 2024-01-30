@@ -57,3 +57,6 @@ The first version of the site used `petite-vue`. This version uses the full thin
 I can't use single file components this way. But the amount of code required for each section of the site is fairly minimal and can be neatly organized into a single file with less than 300 lines of code.
 
 The `dummy.js` and `dummy2.js` files are just dumps of the state from server. Used for development. Useful to see the shape of content from server. That's why I'm leaving them here.
+
+## Docs
+The `client-docs` folder holds markdown files for the Quick Reference section of the website. There is one route in the express server that dynamically fetches the markdown files and uses the `.ejs` templates for the boilerplate code.
