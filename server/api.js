@@ -40,8 +40,9 @@ api.post("/moveRotationPointer", (req, res) => {
 });
 
 api.post("/assignPatient", (req, res) => {
-  const { shiftId, type, room } = req.body;
-  board.assignPatient(shiftId, type, room);
+  const { shiftId, type, room, movePointer } = req.body;
+  console.log("movePointer: ", movePointer);
+  board.assignPatient(shiftId, type, room, movePointer);
   responder(res);
 });
 

@@ -175,7 +175,7 @@ createApp({
 
     assignPatientMini(shiftId) {
       this.forms.assign.shiftId = shiftId;
-      apiCall("api/assignPatient", this.forms.assign);
+      apiCall("api/assignPatient", {...this.forms.assign, movePointer: false });
       this.toggleAssignMini(shiftId);
     },
 

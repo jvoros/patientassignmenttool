@@ -180,13 +180,15 @@ function createBoardStore() {
 
   // PATIENT functions
 
-  function assignPatient(shiftId, type, room) {
+  function assignPatient(shiftId, type, room, movePointer = true) {
     const newPatient = Patient.make(type, room);
     modifyShiftById(shiftId, Shift.addPatient, newPatient);
 
     const shift = findShiftById(shiftId);
+
     // if new total > bonus move pointer without pointer event
-    if (shift.counts.total > shift.bonus)
+    // AND movePointer === true
+    if (shift.counts.total > shift.bonus && movePointer === true)
       moveRotationPointer(shift.rotationId, 1, "noEvent");
 
     // make event
