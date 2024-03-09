@@ -16,7 +16,7 @@
         </div>
       </div>
       <div>
-        <!-- <span v-if="isNextApp(rotation, shift)" class="nextApp" @click="nextApp(rotation.id, shift.id)">Next APP</span> -->
+        <span v-if="isNextApp(rotation, shift)" class="nextApp" @click="nextApp(rotation.id, shift.id)">Next APP</span>
         <template v-if="nurse && isNext(rotation, shift)">
           <%- include('./assignPopover.ejs'); %>
         </template>

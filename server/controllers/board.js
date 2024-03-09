@@ -179,15 +179,11 @@ function createBoardStore() {
   }
 
   function moveAppPointer(rotationId, shiftId, noEvent = false) {
-    modifyRotationById(rotationId, Rotation.moveAppPointer, 1);
-    // check next shift for APP, if so, moveAppPointer again
-    const nextShift = findShiftByOrder(
+    const currentShift = findShiftByOrder(
       rotationId,
       findRotationById(rotationId).appPointer
     );
-    if (nextShift.doctor.app) moveAppPointer(rotationId, shiftId, true);
-
-    if (!noEvent) {
+    if (!noEvent && !currentShift.doctor.app) {
       modifyShiftById(shiftId, Shift.addPatient, Patient.make("app", 0));
       const eventShift = findShiftById(shiftId);
       const message = [
@@ -197,6 +193,14 @@ function createBoardStore() {
       ].join(" ");
       addEvent("app", message, eventShift);
     }
+
+    modifyRotationById(rotationId, Rotation.moveAppPointer, 1);
+    // check next shift for APP, if so, moveAppPointer again
+    const nextShift = findShiftByOrder(
+      rotationId,
+      findRotationById(rotationId).appPointer
+    );
+    if (nextShift.doctor.app) moveAppPointer(rotationId, shiftId, true);
   }
 
   // PATIENT functions
