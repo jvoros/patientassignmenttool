@@ -167,6 +167,10 @@ createApp({
       apiCall("api/moveRotationPointer", { rotationId, offset });
     },
 
+    nextApp(rotationId, shiftId) {
+      apiCall("api/moveAppPointer", { rotationId, shiftId});
+    },
+
     assignPatient(shiftId) {
       this.forms.assign.shiftId = shiftId;
       apiCall("api/assignPatient", this.forms.assign);
@@ -256,6 +260,11 @@ createApp({
       if (rotation.name === "Off") return false;
       return shift.order === rotation.pointer;
     },
+
+    isNextApp(rotation, shift) {
+      return shift.order === rotation.appPointer;
+    },  
+
     getShiftClasses(rotation, shift) {
       const shiftType = {
         Off: "shiftOff",

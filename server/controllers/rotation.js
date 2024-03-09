@@ -7,6 +7,7 @@ function make(name, usePointer = false) {
     name,
     usePointer,
     pointer: 0,
+    appPointer: 0,
     shiftCount: 0,
   };
 }
@@ -19,6 +20,15 @@ function movePointer(rotation, offset) {
     ...rotation,
     pointer:
       (rotation.pointer + offset + rotation.shiftCount) % rotation.shiftCount,
+  };
+}
+
+function moveAppPointer(rotation, offset) {
+  return {
+    ...rotation,
+    appPointer:
+      (rotation.appPointer + offset + rotation.shiftCount) %
+      rotation.shiftCount,
   };
 }
 
@@ -48,4 +58,4 @@ function adjustShiftCount(rotation, offset) {
   };
 }
 
-export default { make, movePointer, addShift, removeShift };
+export default { make, movePointer, moveAppPointer, addShift, removeShift };

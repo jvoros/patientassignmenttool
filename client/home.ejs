@@ -69,6 +69,7 @@
         <section class="mainRotation">
           <h4>Main Rotation</h4>
           <hr />
+          <!-- <p style="font-size: 85%;">The <b>NEXT APP</b> flag highlights which attending is next to staff with APP. After staffing, click <b>NEXT APP</b> to advance the flag to the next doctor. Nursing can undo this event if needed.</p> -->
           <template v-for="rotation in findRotationByName('Main')">
             <template v-if="rotation.shiftCount === 0"
               ><%- include('./partials/blank.ejs'); %></template

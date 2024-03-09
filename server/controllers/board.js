@@ -178,6 +178,27 @@ function createBoardStore() {
     return;
   }
 
+  function moveAppPointer(rotationId, shiftId, noEvent = false) {
+    modifyRotationById(rotationId, Rotation.moveAppPointer, 1);
+    // check next shift for APP, if so, moveAppPointer again
+    const nextShift = findShiftByOrder(
+      rotationId,
+      findRotationById(rotationId).appPointer
+    );
+    if (nextShift.doctor.app) moveAppPointer(rotationId, shiftId, true);
+
+    if (!noEvent) {
+      modifyShiftById(shiftId, Shift.addPatient, Patient.make("app", 0));
+      const eventShift = findShiftById(shiftId);
+      const message = [
+        eventShift.doctor.first,
+        eventShift.doctor.last,
+        "staffed with APP",
+      ].join(" ");
+      addEvent("app", message, eventShift);
+    }
+  }
+
   // PATIENT functions
 
   function assignPatient(shiftId, type, room, movePointer = true) {
@@ -307,6 +328,7 @@ function createBoardStore() {
     addNewShift: withHistory(addNewShift),
     moveShiftToRotation: withHistory(moveShiftToRotation),
     moveRotationPointer: withHistory(moveRotationPointer),
+    moveAppPointer: withHistory(moveAppPointer),
     moveShift: withHistory(moveShift),
     assignPatient: withHistory(assignPatient),
     reassignPatient: withHistory(reassignPatient),

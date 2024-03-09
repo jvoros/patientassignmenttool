@@ -244,6 +244,18 @@ main {
   font-weight: bold;
 }
 
+.nextApp {
+  margin-right: 1rem;
+  font-size: 75%;
+  font-weight: bold;
+  color: var(--my-next-background);
+  text-transform: uppercase;
+}
+
+.nextApp:hover {
+  cursor: pointer;
+}
+
 .shiftCounts {
   padding: 0 var(--pico-spacing) var(--pico-spacing) var(--pico-spacing);
   margin: 0;
