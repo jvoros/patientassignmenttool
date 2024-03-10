@@ -245,6 +245,7 @@ main {
 }
 
 .nextApp {
+  display: none;
   margin-right: 1rem;
   font-size: 75%;
   font-weight: bold;
@@ -254,6 +255,10 @@ main {
 
 .nextApp:hover {
   cursor: pointer;
+}
+
+.shiftMain > .nextApp {
+  display: block;
 }
 
 .shiftCounts {
