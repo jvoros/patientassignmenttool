@@ -257,8 +257,8 @@ main {
   cursor: pointer;
 }
 
-.shiftMain > .nextApp {
-  display: block;
+.shiftMain .nextApp {
+  display: inline;
 }
 
 .shiftCounts {
