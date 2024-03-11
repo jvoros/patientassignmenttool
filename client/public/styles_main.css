@@ -216,6 +216,11 @@ main {
   align-items: center;
 }
 
+.miniAssignButton {
+  position: relative;
+  top: 2px;
+}
+
 .shiftContent {
   display: flex;
   justify-content: space-between;
