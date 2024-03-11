@@ -136,7 +136,7 @@ main {
   background-clip: padding-box;
   border: 2px solid var(--my-light-gray);
   background-color: var(--pico-background-color);
-  margin-bottom: calc(var(--pico-spacing) * 2);
+  margin-bottom: var(--pico-spacing);
 }
 
 .shiftNext {
@@ -167,7 +167,6 @@ main {
 }
 
 .shiftApp {
-  /* background-color: var(--my-ft-background); */
   border-color: var(--my-ft-border);
 }
 
@@ -186,11 +185,10 @@ main {
 }
 
 .shiftSkip {
-  color: #ffa23a;
+  color: var(--my-next-background);
   font-weight: bold;
   font-size: 80%;
   text-align: center;
-  margin-right: var(--pico-spacing);
 }
 
 .shiftControls {
@@ -198,7 +196,7 @@ main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: calc(var(--pico-spacing) / 2);
+  padding: calc(var(--pico-spacing) / 3);
 }
 
 .shiftControlsPositionGroup {
@@ -225,7 +223,7 @@ main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--pico-spacing);
+  padding: var(--pico-spacing-half) var(--pico-spacing);
 }
 
 .shiftName {
@@ -233,7 +231,7 @@ main {
 }
 
 .shiftDoc {
-  font-size: 150%;
+  font-size: 135%;
   font-weight: bold;
 }
 
@@ -254,7 +252,7 @@ main {
 }
 
 .shiftCounts {
-  padding: 0 var(--pico-spacing) var(--pico-spacing) var(--pico-spacing);
+  padding: 0 var(--pico-spacing) var(--pico-spacing-half) var(--pico-spacing);
   margin: 0;
   display: flex;
   justify-content: left;
