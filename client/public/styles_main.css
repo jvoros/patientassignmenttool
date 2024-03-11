@@ -17,6 +17,7 @@
   --my-light-gray: #cfd5e2;
   --my-light-red: rgb(243, 143, 121);
   --my-warn: rgb(216, 161, 0);
+  --my-light-blue: var(--pico-color-azure-200);
 }
 
 button {
@@ -57,6 +58,10 @@ nav a[role="button"] {
   margin-top: 1px;
 }
 
+.nav-dropdown {
+  margin-top: 5px;
+}
+
 .siteName {
   font-size: 150%;
 }
@@ -68,6 +73,10 @@ nav a[role="button"] {
 
 .siteName small {
   font-size: 70%;
+}
+
+.whatsnew {
+  color: var(--my-next-background);
 }
 
 main {
@@ -91,6 +100,7 @@ main {
 .skipControls {
   display: flex;
   justify-content: space-between;
+  margin-bottom: var(--pico-spacing);
 }
 
 .otherRotations {
@@ -131,25 +141,11 @@ main {
 
 .shiftNext {
   border-color: var(--my-next-background);
-  box-shadow: var(--box-shadow);
-}
-
-.shiftBox.shiftNext {
+  /* box-shadow: var(--box-shadow); */
   background-color: lightyellow;
 }
 
-.shiftFlag {
-  display: none;
-  color: white;
-  text-transform: uppercase;
-  font-weight: bold;
-  font-size: 80%;
-  text-align: center;
-  padding: 1px 0;
-}
-
 .shiftNextFlag {
-  display: none;
   background-color: var(--my-next-background);
   color: white;
   text-transform: uppercase;
@@ -157,10 +153,6 @@ main {
   font-size: 80%;
   text-align: center;
   padding: 1px 0;
-}
-
-.shiftNext > .shiftNextFlag {
-  display: block;
 }
 
 .shiftOff {
@@ -176,11 +168,16 @@ main {
 
 .shiftApp {
   /* background-color: var(--my-ft-background); */
+  border-color: var(--my-ft-border);
+}
+
+.shiftNext.shiftApp {
+  border-color: var(--my-next-background);
 }
 
 .shiftFtFlag {
-  background-color: var(--my-ft-background);
-  color: var(--my-ft-color);
+  background-color: var(--my-ft-border);
+  color: white;
   text-transform: uppercase;
   font-weight: bold;
   font-size: 75%;
@@ -188,16 +185,12 @@ main {
   padding: 1px 0;
 }
 
-.shiftApp.shiftNext > .shiftFtFlag {
-  display: none;
-}
-
 .shiftSkip {
   color: #ffa23a;
   font-weight: bold;
   font-size: 80%;
   text-align: center;
-  line-height: var(--pico-spacing);
+  margin-right: var(--pico-spacing);
 }
 
 .shiftControls {
@@ -223,11 +216,6 @@ main {
   align-items: center;
 }
 
-#assignButton {
-  position: relative;
-  top: 2px;
-}
-
 .shiftContent {
   display: flex;
   justify-content: space-between;
@@ -244,21 +232,20 @@ main {
   font-weight: bold;
 }
 
-.nextApp {
-  display: none;
-  margin-right: 1rem;
+.shiftButtons {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  gap: 1em;
+}
+
+.nextMidlevel {
+  display: inline;
   font-size: 75%;
   font-weight: bold;
-  color: var(--my-next-background);
+  color: white;
   text-transform: uppercase;
-}
-
-.nextApp:hover {
-  cursor: pointer;
-}
-
-.shiftMain .nextApp {
-  display: inline;
+  background-color: var(--pico-color-azure-500);
 }
 
 .shiftCounts {
@@ -276,10 +263,10 @@ main {
   color: var(--pico-muted-color);
 }
 
-.shiftCounts li:not(:last-child)::after {
+/* .shiftCounts li:not(:last-child)::after {
   content: "|";
   margin-left: calc(var(--pico-spacing) / 2);
-}
+} */
 
 .shiftCountNumber {
   font-weight: bold;
@@ -435,7 +422,7 @@ main {
 
 .eventIconWalkin {
   background-image: url("./icons/walkin.svg");
-  background-color: lightblue;
+  background-color: var(--my-light-blue);
 }
 
 .eventIconFt {

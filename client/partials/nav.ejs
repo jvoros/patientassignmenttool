@@ -2,21 +2,20 @@
   <ul>
     <li><img src="/pat.svg" width="70" /></li>
     <li class="siteName">
-      <strong>Patient Assignment Tools</strong> <small>v0.21</small>
+      <strong>Patient Assignment Tools</strong> <small>v0.3</small>
     </li>
   </ul>
   <ul>
     <li>
-      <a class="secondary outline" @click="toggleWhatsNew" href="#">
-        What's New
+      <a class="secondary outline whatsnew" @click="toggleWhatsNew" href="#">
+        What's New v0.3
       </a>
     </li>
-    <template v-if="!nurse">
-      <li><a href="/docs/home" target="_blank">Quick Reference</a></li>
-      <li>
+      <li class="nav-dropdown">
         <details class="dropdown">
-          <summary role="button" class="secondary">CarePoint Links</summary>
+          <summary role="button" class="secondary outline">CarePoint Links</summary>
           <ul @click="closeDropdown">
+            <li><a href="/docs/home" target="_blank">Quick Reference</a></li>
             <li>
               <a href="https://edorders.com/" target="_blank">ED Orders</a>
             </li>
@@ -30,7 +29,7 @@
           </ul>
         </details>
       </li>
-    </template>
+ 
     <li v-if="nurse"><%- include('./addShiftPopover.ejs'); %></li>
     <li>
       <a role="button" class="contrast" href="/logout">

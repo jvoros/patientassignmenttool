@@ -9,7 +9,7 @@ export const EVENT_LIMIT = 25;
 
 const initialState = {
   rotations: [
-    Rotation.make("Main", true),
+    Rotation.make("Main", true, true),
     Rotation.make("Fast Track"),
     Rotation.make("Off"),
   ],
@@ -24,7 +24,6 @@ function createBoardStore() {
   function reset() {
     state.rotations.map((rot) => {
       rot.pointer = 0;
-      rot.shiftCount = 0;
     });
     state.shifts = [];
     state.events = [];
@@ -36,28 +35,6 @@ function createBoardStore() {
     return state;
   }
 
-  // DON'T NEED SORTED VERSION
-  // function getRotationWithShifts(rotation) {
-  //   return {
-  //     ...rotation,
-  //     shifts: state.shifts
-  //       .filter((shift) => shift.rotationId === rotation.id)
-  //       .sort((a, b) => a.order - b.order),
-  //   };
-  // }
-
-  // function getSortedState() {
-  //   return {
-  //     rotations: {
-  //       main: getRotationWithShifts(state.rotations[0]),
-  //       fasttrack: getRotationWithShifts(state.rotations[1]),
-  //       off: getRotationWithShifts(state.rotations[2]),
-  //     },
-  //     shifts: state.shifts,
-  //     events: state.events,
-  //   };
-  // }
-
   // SHIFT Functions
 
   function addNewShift(doctor, options) {
@@ -67,22 +44,62 @@ function createBoardStore() {
 
   function addShift(newShift, noEvent = false) {
     const rot = findRotationById(newShift.rotationId);
-    newShift.order = rot.usePointer ? rot.pointer : 0;
-    modifyRotationById(newShift.rotationId, Rotation.addShift);
+
+    // adjust order of rotation shifts
+    const newOrder =
+      rot.cycle.patient && shiftCount(rot.id) > 0
+        ? findShiftById(rot.next.patient).order
+        : 0;
+    newShift.order = newOrder;
     state.shifts = [
       newShift,
-      ...handleRotationOrder(newShift.rotationId, rot.pointer, "add"),
+      ...handleRotationOrder(newShift.rotationId, newOrder, "add"),
     ];
+
+    // handle nextShift assignments
+    // new shift becomes next in rotation
+    modifyRotationById(
+      newShift.rotationId,
+      Rotation.setNext,
+      "patient",
+      newShift.id
+    );
+    // if no one on nextMidlevel, and new shift not midlevel, make next
+    if (!rot.next.midlevel && !newShift.doctor.app) {
+      modifyRotationById(
+        newShift.rotationId,
+        Rotation.setNext,
+        "midlevel",
+        newShift.id
+      );
+    }
+
     // event
-    // flag to run function without event creation
     if (noEvent) return;
     const message = `${newShift.doctor.first} ${newShift.doctor.last} joined ${rot.name}`;
     addEvent("join", message, newShift);
     return;
   }
 
+  // needs some work, doesn't handle case where midlevel is only one left on rotation
   function moveShiftToRotation(moveShiftId, newRotationId) {
     let moveShift = findShiftById(moveShiftId);
+    const startingRot = findRotationById(moveShift.rotationId);
+
+    // handle any active nextShift assignments
+    // need to do this before changing order because needs shift order to work
+    // if it is last shift in rotation
+    if (shiftCount(startingRot.id) === 1) {
+      startingRot.next.patient = null;
+      startingRot.next.midlevel = null;
+    } else {
+      // if was not last shift
+      ["patient", "midlevel"].forEach((cycle) => {
+        if (startingRot.next[cycle] === moveShift.id)
+          moveNext(cycle, startingRot.id, 1, true);
+      });
+    }
+
     // filter out the moved shift
     state.shifts = state.shifts.filter((s) => s.id !== moveShiftId);
     // redo orders
@@ -91,16 +108,11 @@ function createBoardStore() {
       moveShift.order,
       "remove"
     );
-    // update rotation
-    modifyRotationById(
-      moveShift.rotationId,
-      Rotation.removeShift,
-      moveShift.order
-    );
+
     // add shift back in to new rotation
-    // need shift for event also, let's make its own variable
     moveShift = Shift.setRotation(moveShift, newRotationId);
     addShift(moveShift, "noEvent");
+
     // event
     const message = [
       moveShift.doctor.first,
@@ -118,8 +130,8 @@ function createBoardStore() {
     const oldOrder = shift.order;
     const newOrder = shift.order + offset;
     //early return for moving beyond bounds of rotation
-    if (newOrder < 0 || newOrder >= findRotationById(rotationId).shiftCount)
-      return;
+    if (newOrder < 0 || newOrder >= shiftCount(rotationId)) return;
+
     state.shifts = state.shifts.map((shift) =>
       shift.id === shiftId
         ? Shift.setOrder(shift, newOrder)
@@ -139,38 +151,46 @@ function createBoardStore() {
     return;
   }
 
-  // POINTER functions
+  // CYCLE functions
 
-  function moveRotationPointer(rotationId, offset, noEvent = false) {
-    const startingPointer = findRotationById(rotationId).pointer;
-    // turn complete handler for active shift
-    const activeShift = findShiftByOrder(
-      rotationId,
-      findRotationById(rotationId).pointer
-    );
-    modifyShiftById(activeShift.id, Shift.turnComplete);
+  function moveNext(cycle, rotationId, offset, noEvent = false) {
+    const rot = findRotationById(rotationId);
+    if (!rot.cycle[cycle]) return;
 
-    // advance pointer
-    modifyRotationById(rotationId, Rotation.movePointer, offset);
-    // check next shift for skip, if so, movePointer again
-    // the turnComplete method will then fire for skipped shift
-    const nextShift = findShiftByOrder(
-      rotationId,
-      findRotationById(rotationId).pointer
-    );
-    if (nextShift.skip) moveRotationPointer(rotationId, 1, true);
+    const startShift = findShiftById(rot.next[cycle]);
+    const nextShift = findNeighborShift(rotationId, startShift.order, offset);
+
+    // fire turn complete for current shift if patient cycle
+    if (cycle === "patient") modifyShiftById(startShift.id, Shift.turnComplete);
+
+    // set new next[cycle]Shift
+    // have to set before skip check, otherwise infinite recurrence off start shift and next shift having skip
+    // need to start next recurrence from the skip shift
+    modifyRotationById(rotationId, Rotation.setNext, cycle, nextShift.id);
+
+    // handle skip conditions for patient cycle or midlevel cycle
+    if (cycle === "patient" && nextShift.skip)
+      moveNext("patient", rotationId, offset, true);
+
+    if (cycle === "midlevel" && nextShift.doctor.app) {
+      // first check that there is a doc shift in rotation
+
+      // if so, can advance
+      moveNext("midlevel", rotationId, offset, true);
+
+      // otherwise set nextMidlevelShift to null
+    }
 
     // event
     // flag to fire without event
     if (noEvent) return;
     // event has different shift based on pointer direction
-    const endingPointer = findRotationById(rotationId).pointer;
-    const eventShift =
-      offset === 1
-        ? findShiftByOrder(rotationId, startingPointer)
-        : findShiftByOrder(rotationId, endingPointer);
+    const eventShift = offset === 1 ? startShift : nextShift;
+    // event has different 'skip' and 'back' based on cycle
+    const skip = cycle === "midlevel" ? "APP Skipped" : "Skipped";
+    const back = cycle === "midlevel" ? "APP Back to" : "Back to";
     const message = [
-      offset === 1 ? "Skipped" : "Back to",
+      offset === 1 ? skip : back,
       eventShift.doctor.first,
       eventShift.doctor.last,
     ].join(" ");
@@ -178,43 +198,17 @@ function createBoardStore() {
     return;
   }
 
-  function moveAppPointer(rotationId, shiftId, noEvent = false) {
-    const currentShift = findShiftByOrder(
-      rotationId,
-      findRotationById(rotationId).appPointer
-    );
-    if (!noEvent && !currentShift.doctor.app) {
-      modifyShiftById(shiftId, Shift.addPatient, Patient.make("app", 0));
-      const eventShift = findShiftById(shiftId);
-      const message = [
-        eventShift.doctor.first,
-        eventShift.doctor.last,
-        "staffed with APP",
-      ].join(" ");
-      addEvent("app", message, eventShift);
-    }
-
-    modifyRotationById(rotationId, Rotation.moveAppPointer, 1);
-    // check next shift for APP, if so, moveAppPointer again
-    const nextShift = findShiftByOrder(
-      rotationId,
-      findRotationById(rotationId).appPointer
-    );
-    if (nextShift.doctor.app) moveAppPointer(rotationId, shiftId, true);
-  }
-
-  // PATIENT functions
+  // PATIENT & MIDLEVEL functions
 
   function assignPatient(shiftId, type, room, movePointer = true) {
     const newPatient = Patient.make(type, room);
     modifyShiftById(shiftId, Shift.addPatient, newPatient);
-
     const shift = findShiftById(shiftId);
 
     // if new total > bonus move pointer without pointer event
     // AND movePointer === true
     if (shift.counts.total > shift.bonus && movePointer === true)
-      moveRotationPointer(shift.rotationId, 1, "noEvent");
+      moveNext("patient", shift.rotationId, 1, true);
 
     // make event
     const message = [
@@ -248,6 +242,18 @@ function createBoardStore() {
     ].join(" ");
     addEvent("assign", message, newShift, event.patient);
     return;
+  }
+
+  function staffMidlevel(rotationId, shiftId) {
+    const shift = findShiftById(shiftId);
+    modifyShiftById(shiftId, Shift.addPatient, Patient.make("app", 0));
+    moveNext("midlevel", rotationId, 1, "noEvent");
+    const message = [
+      shift.doctor.first,
+      shift.doctor.last,
+      "staffed with APP",
+    ].join(" ");
+    addEvent("staff", message, shift);
   }
 
   // HELPERS
@@ -286,6 +292,19 @@ function createBoardStore() {
     return state.shifts.find(
       (s) => s.rotationId === rotationId && s.order === order
     );
+  }
+
+  function shiftCount(rotationId) {
+    return state.shifts.filter((s) => s.rotationId === rotationId).length;
+  }
+
+  function findNeighborShift(rotationId, order, offset) {
+    const rot = findRotationById(rotationId);
+    const startShift = findShiftByOrder(rotationId, order);
+    const newOrder =
+      (startShift.order + offset + shiftCount(rotationId)) %
+      shiftCount(rotationId);
+    return findShiftByOrder(rotationId, newOrder);
   }
 
   // takes all shifts, adjusts order just for shifts in a rotation
@@ -327,15 +346,14 @@ function createBoardStore() {
 
   return {
     getState,
-    //getSortedState,
     reset: withHistory(reset),
     addNewShift: withHistory(addNewShift),
     moveShiftToRotation: withHistory(moveShiftToRotation),
-    moveRotationPointer: withHistory(moveRotationPointer),
-    moveAppPointer: withHistory(moveAppPointer),
+    moveNext: withHistory(moveNext),
     moveShift: withHistory(moveShift),
     assignPatient: withHistory(assignPatient),
     reassignPatient: withHistory(reassignPatient),
+    staffMidlevel: withHistory(staffMidlevel),
     undo,
   };
 }

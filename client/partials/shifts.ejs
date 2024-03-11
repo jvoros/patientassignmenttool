@@ -1,11 +1,9 @@
 <template v-for="shift in findShiftsByRotation(rotation.id)">
   <div class="shiftBox" :class="getShiftClasses(rotation, shift)">
-    <div class="shiftNextFlag">next in rotation</div>
-    <template v-if="nurse"> <%- include('./shiftControls.ejs'); %> </template>
-    <template v-if="shift.doctor.app"
-      ><div class="shiftFtFlag">taking fast track patients</div></template
-    >
-
+    <div v-if="isNext(rotation, shift)" class="shiftNextFlag">next in rotation</div>
+    <div v-if="shift.doctor.app && !isNext(rotation, shift)" class="shiftFtFlag">taking fast track patients</div>
+    <template v-if="nurse"><%- include('./shiftControls.ejs'); %></template>
+    
     <div class="shiftContent">
       <div>
         <div class="shiftName">
@@ -15,12 +13,13 @@
           {{ shift.doctor.first }} {{ shift.doctor.last }}
         </div>
       </div>
-      <div>
-        <span v-if="isNextApp(rotation, shift)" class="nextApp" @click="nextApp(rotation.id, shift.id)">Next APP</span>
+      <div class="shiftButtons">
+        <button v-if="isNextMidlevel(rotation, shift)" class="nextMidlevel" @click="staffMidlevel(rotation.id, shift.id)">+ APP</button>
+        <div v-if="shift.skip" class="shiftSkip">Skips Next</div>
         <template v-if="nurse && isNext(rotation, shift)">
           <%- include('./assignPopover.ejs'); %>
         </template>
-        <div v-if="shift.skip" class="shiftSkip">Skips Next<br />Turn</div>
+        
       </div>
     </div>
     <ul class="shiftCounts" v-if="shift.counts.total > 0">

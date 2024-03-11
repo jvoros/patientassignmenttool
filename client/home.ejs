@@ -22,8 +22,14 @@
       <%- include('./partials/nav.ejs'); %>
       <dialog :open="ui.showWhatsNew">
         <article>
-          <h2>What's New in v0.2</h2>
+          <h2>What's New in v0.3</h2>
           <ul>
+            <li>
+              The <b>APP</b> flag highlights which attending is next to staff with APP. After staffing, click <b>APP</b> to advance the flag to the next doctor. If an APP ends up with the flag, just click to advance.
+            </li>
+            </ul>
+            <h4>What's New v0.2</h4>
+            <ul>
             <li>
               Assigning patients now requires you to select a
               <b>Patient Type</b>. The "bonus" type is for use if a clinician
@@ -69,7 +75,6 @@
         <section class="mainRotation">
           <h4>Main Rotation</h4>
           <hr />
-          <p style="font-size: 85%;">The <b>NEXT APP</b> flag highlights which attending is next to staff with APP. After staffing, click <b>NEXT APP</b> to advance the flag to the next doctor. Nursing can undo this event if needed. If an APP ends up with the flag, just click to advance.</p>
           <template v-for="rotation in findRotationByName('Main')">
             <template v-if="rotation.shiftCount === 0"
               ><%- include('./partials/blank.ejs'); %></template
@@ -80,15 +85,25 @@
               <div v-if="nurse" class="skipControls">
                 <button
                   class="secondary outline"
-                  @click="moveRotationPointer(rotation.id, -1)"
+                  @click="moveNext('patient', rotation.id, -1)"
                 >
                   <%- include('./icons/arrow-l.svg') %>Back Doctor
                 </button>
                 <button
                   class="secondary outline"
-                  @click="moveRotationPointer(rotation.id, 1)"
+                  @click="moveNext('patient', rotation.id, 1)"
                 >
                   Skip Doctor<%- include('./icons/arrow-r.svg') %>
+                </button>
+              </div>
+              <div v-if="nurse" class="skipControls">
+                <button class="secondary outline"
+                  @click="moveNext('midlevel', rotation.id, -1)">
+                  <%- include('./icons/arrow-l.svg') %>APP Back
+                </button>
+                <button class="secondary outline"
+                  @click="moveNext('midlevel', rotation.id, 1)">
+                  APP Skip<%- include('./icons/arrow-r.svg') %>
                 </button>
               </div>
             </template>

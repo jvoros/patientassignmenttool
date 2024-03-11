@@ -53,62 +53,60 @@ describe("Board Functions", () => {
       ...c.shifts[1],
       rotationId: mainId,
     });
-    expect(board.getState().shifts.length).to.equal(2);
-    expect(board.getState().shifts[0].order).to.equal(0); // confirms adds at 0
-    expect(board.getState().rotations[0].shiftCount).to.equal(2);
-  });
 
-  it("should move rotation pointer if usePointer true", () => {
-    board.moveRotationPointer(mainId, 1);
-    expect(board.getState().rotations[0].pointer).to.equal(1);
-    board.moveRotationPointer(mainId, -1);
-  });
-
-  it("should add at order 0 if rotation doesn't use pointer, and change order", () => {
-    board.addNewShift(c.doctors[1], {
-      ...c.shifts[1],
-      rotationId: ftId,
-    });
-    board.addNewShift(c.doctors[1], {
-      ...c.shifts[1],
-      rotationId: ftId,
-    });
-    board.addNewShift(c.doctors[1], {
-      ...c.shifts[1],
-      rotationId: ftId,
-    });
-    expect(board.getState().shifts[0].order).to.equal(0);
-    expect(board.getState().shifts[2].order).to.equal(2);
-  });
-
-  it("should add at pointer and change order", () => {
-    board.addNewShift(c.doctors[0], {
-      ...c.shifts[0],
-      rotationId: mainId,
-    });
-    board.addNewShift(c.doctors[1], {
-      ...c.shifts[1],
-      rotationId: mainId,
-    });
-
-    board.moveRotationPointer(mainId, 1);
-
-    board.addNewShift(c.doctors[0], {
+    board.addNewShift(c.doctors[2], {
       ...c.shifts[2],
       rotationId: mainId,
     });
-    expect(board.getState().shifts[0].order).to.equal(1); // last shift in should be order 1 to match pointer
-    expect(board.getState().shifts[1].order).to.equal(0); // second to last shift should still be 0, didn't move
-    expect(board.getState().shifts[2].order).to.equal(2); // first shift added should have been pushed to order 2
+
+    expect(board.getState().shifts.length).to.equal(3);
+    expect(board.getState().shifts[0].order).to.equal(0); // confirms adds at 0
   });
 
-  it("should move shifts between rotations, and adjust order", () => {
+  it("should move next patient shift forward and backward and handle skip APP", () => {
+    board.moveNext("patient", mainId, 1); // moves from kasavan to blake and sets skip to true
+    expect(board.getState().rotations[0].next.patient).to.equal(
+      board.getState().shifts[1].id
+    );
+    board.moveNext("patient", mainId, 1); // moves from blake to voros
+    expect(board.getState().rotations[0].next.patient).to.equal(
+      board.getState().shifts[2].id
+    );
+    board.moveNext("patient", mainId, 1); // moves from voros to kasavan, but skip is set, skips to blake
+    expect(board.getState().rotations[0].next.patient).to.equal(
+      board.getState().shifts[1].id
+    );
+    board.moveNext("patient", mainId, -1); // moves from blake back to kasavana, skip should be false after last skip
+    expect(board.getState().rotations[0].next.patient).to.equal(
+      board.getState().shifts[0].id
+    );
+    board.moveNext("patient", mainId, -1); // moves from kasavana back around to voros at end of list
+    expect(board.getState().rotations[0].next.patient).to.equal(
+      board.getState().shifts[2].id
+    );
+  });
+
+  it("should move APP next, skipping APP shift", () => {
+    // midlevel next should be on voros from when first added
+    // this should move around rotation, skip Kasavana and end on Blake
+    board.moveNext("midlevel", mainId, 1);
+    expect(board.getState().rotations[0].next.midlevel).to.equal(
+      board.getState().shifts[1].id
+    );
+  });
+
+  it("should move shifts between rotations, and adjust order and next values", () => {
     // relies on board.addNewShift and rotation.removeShift which are tested elsewhere
     // don't need to test internals of pointer movement, etc.
+    // advance so midlevel and pt nexts are same
+    board.moveNext("midlevel", mainId, 1);
     const shiftCount = board.getState().shifts.length;
+    const nextIds = board.getState().rotations[0].nextPatientShift;
     board.moveShiftToRotation(board.getState().shifts[0].id, ftId);
     expect(board.getState().shifts[0].rotationId).to.equal(ftId);
     expect(board.getState().shifts.length).to.equal(shiftCount);
+    expect(board.getState().rotations[0].next.patient).to.not.equal(nextIds);
+    expect(board.getState().rotations[0].next.midlevel).to.not.equal(nextIds);
     // see above, shifts should have order 1, 0, 2 before move
     expect(board.getState().shifts[0].order).to.equal(0);
     expect(board.getState().shifts[1].order).to.equal(0); // order less than moved, shouldn't change
@@ -116,56 +114,43 @@ describe("Board Functions", () => {
   });
 
   it("should move shifts within rotations", () => {
-    // see above shift[1] is in main rotation with 3 other shifts
+    // move shift[0] back to main, now three shifts on main
+    board.moveShiftToRotation(board.getState().shifts[0].id, mainId);
     const shiftId = board.getState().shifts[1].id;
-    board.moveShift(shiftId, 1);
     // move up
+    board.moveShift(shiftId, 1);
     expect(board.getState().shifts[1].order).to.equal(1);
-    expect(board.getState().shifts[2].order).to.equal(0);
+    expect(board.getState().shifts[0].order).to.equal(0);
     // move down
     board.moveShift(shiftId, -1);
     expect(board.getState().shifts[1].order).to.equal(0);
-    expect(board.getState().shifts[2].order).to.equal(1);
+    expect(board.getState().shifts[0].order).to.equal(1);
     // not down from order 0
     board.moveShift(shiftId, -1);
     expect(board.getState().shifts[1].order).to.equal(0);
     // not up from order 0
-    board.moveShift(board.getState().shifts[7].id, 1);
-    expect(board.getState().shifts[7].order).to.equal(3);
+    board.moveShift(board.getState().shifts[2].id, 1);
+    expect(board.getState().shifts[2].order).to.equal(2);
   });
+
+  it("should set next.midlevel to null if no docs left on rotation");
 
   it("should add patients to shifts", () => {
     board.assignPatient(board.getState().shifts[0].id, "fasttrack", "TrA");
     expect(board.getState().shifts[0].counts.total).to.equal(1);
   });
 
-  it("should only move pointer when bonus reached", () => {
-    const startingPointer = board.getState().rotations[0].pointer;
+  it("should only move cycle when bonus reached", () => {
     board.addNewShift(c.doctors[0], { ...c.shifts[0], rotationId: mainId });
+    const startingShift = board.getState().rotations[0].next.patient;
     board.assignPatient(board.getState().shifts[0].id, "fasttrack", "TrA");
-    expect(board.getState().rotations[0].pointer).to.equal(startingPointer);
+    expect(board.getState().rotations[0].next.patient).to.equal(startingShift);
     board.assignPatient(board.getState().shifts[0].id, "fasttrack", "TrA");
-    expect(board.getState().rotations[0].pointer).to.equal(startingPointer);
+    expect(board.getState().rotations[0].next.patient).to.equal(startingShift);
     board.assignPatient(board.getState().shifts[0].id, "fasttrack", "TrA");
-    expect(board.getState().rotations[0].pointer).to.equal(startingPointer + 1);
-  });
-
-  it("should advance pointer if skip is true for next shift", () => {
-    board.reset();
-
-    board.addNewShift(c.doctors[0], {
-      ...c.shifts[0],
-      rotationId: mainId,
-    });
-    board.addNewShift(c.doctors[2], {
-      ...c.shifts[0],
-      rotationId: mainId,
-    });
-
-    board.moveRotationPointer(mainId, 1); // should move from app shift and toggle skip to true
-    expect(board.getState().rotations[0].pointer).to.equal(1);
-    board.moveRotationPointer(mainId, 1); // should move from doc to APP, APP should skip, pointer should be at doc shift
-    expect(board.getState().rotations[0].pointer).to.equal(1);
+    expect(board.getState().rotations[0].next.patient).to.not.equal(
+      startingShift
+    );
   });
 
   describe("Event Functions", () => {
@@ -175,11 +160,11 @@ describe("Board Functions", () => {
     });
     it("should add event for moving pointer", () => {
       board.addNewShift(c.doctors[1], { ...c.shifts[1], rotationId: mainId });
-      board.moveRotationPointer(mainId, 1);
+      board.moveNext("patient", mainId, 1);
       expect(board.getState().events[0].type).to.equal("pointer");
       expect(board.getState().events[0].shift.doctor.last).to.equal("Blake");
-      board.moveRotationPointer(mainId, 1); //skip Voros
-      board.moveRotationPointer(mainId, -1); // back to Voros
+      board.moveNext("patient", mainId, 1); //skip Voros
+      board.moveNext("patient", mainId, -1); // back to Voros
       expect(board.getState().events[0].shift.doctor.last).to.equal("Voros");
     });
     it("should add event for moving rotation", () => {
@@ -209,5 +194,4 @@ describe("Board Functions", () => {
       //console.log(JSON.stringify(board.getState()));
     });
   });
-  it("", () => {});
 });

@@ -33,15 +33,10 @@ api.post("/moveShiftToRotation", (req, res) => {
   responder(res);
 });
 
-api.post("/moveRotationPointer", (req, res) => {
-  const { rotationId, offset } = req.body;
-  board.moveRotationPointer(rotationId, offset);
-  responder(res);
-});
-
-api.post("/moveAppPointer", (req, res) => {
-  const { rotationId, shiftId } = req.body;
-  board.moveAppPointer(rotationId, shiftId);
+api.post("/moveNext", (req, res) => {
+  const { cycle, rotationId, offset } = req.body;
+  console.log("moveNext args: ", cycle, rotationId, offset);
+  board.moveNext(cycle, rotationId, offset);
   responder(res);
 });
 
@@ -54,6 +49,12 @@ api.post("/assignPatient", (req, res) => {
 api.post("/reassign", (req, res) => {
   const { eventId, shiftId } = req.body;
   board.reassignPatient(eventId, shiftId);
+  responder(res);
+});
+
+api.post("/staffMidlevel", (req, res) => {
+  const { rotationId, shiftId } = req.body;
+  board.staffMidlevel(rotationId, shiftId);
   responder(res);
 });
 

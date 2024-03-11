@@ -163,12 +163,8 @@ createApp({
       this.toggleMovePopover(shiftId);
     },
 
-    moveRotationPointer(rotationId, offset) {
-      apiCall("api/moveRotationPointer", { rotationId, offset });
-    },
-
-    nextApp(rotationId, shiftId) {
-      apiCall("api/moveAppPointer", { rotationId, shiftId});
+    moveNext(cycle, rotationId, offset) {
+      apiCall("api/moveNext", { cycle, rotationId, offset });
     },
 
     assignPatient(shiftId) {
@@ -190,6 +186,10 @@ createApp({
     reassign(eventId, shiftId) {
       apiCall("api/reassign", { eventId, shiftId });
       this.toggleReassignPopover(eventId);
+    },
+
+    staffMidlevel(rotationId, shiftId) {
+      apiCall("api/staffMidlevel", { rotationId, shiftId});
     },
 
     undo() {
@@ -257,12 +257,11 @@ createApp({
 
     // SHIFT
     isNext(rotation, shift) {
-      if (rotation.name === "Off") return false;
-      return shift.order === rotation.pointer;
+      return rotation.cycle.patient && shift.id === rotation.next.patient;
     },
 
-    isNextApp(rotation, shift) {
-      return shift.order === rotation.appPointer;
+    isNextMidlevel(rotation, shift) {
+      return rotation.cycle.midlevel && shift.id === rotation.next.midlevel;
     },  
 
     getShiftClasses(rotation, shift) {
@@ -271,13 +270,10 @@ createApp({
         "Fast Track": "shiftFastTrack",
         Main: "shiftMain",
       };
-      const mainNext =
-        this.isNext(rotation, shift) && rotation.name === "Main"
-          ? "shiftNext"
-          : "";
-      const APP = shift.doctor.app ? "shiftApp" : "";
+      const next = this.isNext(rotation, shift) ? "shiftNext" : "";
+      const midlevel = shift.doctor.app ? "shiftApp" : "";
 
-      return `${shiftType[rotation.name]} ${mainNext} ${APP}`;
+      return `${shiftType[rotation.name]} ${next} ${midlevel}`;
     },
   },
 
