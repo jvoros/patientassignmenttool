@@ -14,7 +14,7 @@
         </div>
       </div>
       <div class="shiftButtons">
-        <button v-if="isNextMidlevel(rotation, shift)" class="nextMidlevel" @click="staffMidlevel(rotation.id, shift.id)">APP</button>
+        <button v-if="isNextMidlevel(rotation, shift)" class="nextMidlevel" @click="staffMidlevel(rotation.id, shift.id)"><%- include('../icons/people.svg'); %> APP</button>
         <div v-if="shift.skip" class="shiftSkip">Skips Next</div>
         <template v-if="nurse && isNext(rotation, shift)">
           <%- include('./assignPopover.ejs'); %>
