@@ -23,7 +23,8 @@ function createBoardStore() {
 
   function reset() {
     state.rotations.map((rot) => {
-      rot.pointer = 0;
+      rot.next.patient = null;
+      rot.next.midlevel = null;
     });
     state.shifts = [];
     state.events = [];
