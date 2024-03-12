@@ -11,6 +11,7 @@ const initialState = {
   rotations: [
     Rotation.make("Main", true, true),
     // Rotation.make("Fast Track"),
+    // dummy push
     Rotation.make("Off"),
   ],
   shifts: [],
