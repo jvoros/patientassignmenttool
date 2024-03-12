@@ -47,6 +47,6 @@ const doctors = [
   { last: "Voros", first: "Jeremy", id: 31 },
   { last: "Wiesley", first: "Brett", id: 32 },
   { last: "Yeates", first: "Todd", id: 33 },
-  { last: "Doc - Not Listed", first: "Doc" },
-  { last: "APP - Not Listed", first: "APP", app: true },
+  { last: "Doc - Not Listed", first: "" },
+  { last: "APP - Not Listed", first: "", app: true },
 ];

@@ -206,6 +206,14 @@ main {
   padding: 1px 0;
 }
 
+.shiftOff.shiftApp {
+  border-color: var(--my-light-gray);
+}
+
+.shiftOff .shiftFtFlag {
+  display: none;
+}
+
 .shiftSkip {
   color: var(--my-next-background);
   font-weight: bold;
