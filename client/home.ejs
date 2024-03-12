@@ -76,6 +76,11 @@
         <section class="mainRotation">
           <h4>Main Rotation</h4>
           <hr />
+          <div>
+            <p style="font-size: 85%; color: gray"><b>APP button</b> highlights which physician is up next to staff a patient.</p>
+            <p style="font-size: 85%; color: gray">APP should click the button after staffing, and the <b>APP button</b> will advance to next physician.</p>
+          </div>
+          
           <template v-for="rotation in findRotationByName('Main')">
             <template v-if="rotation.shiftCount === 0"
               ><%- include('./partials/blank.ejs'); %></template
@@ -83,28 +88,29 @@
             <template v-else
               ><%- include('./partials/shifts.ejs'); %>
 
+              <hr>
               <div v-if="nurse" class="skipControls">
                 <button
                   class="secondary outline"
                   @click="moveNext('patient', rotation.id, -1)"
                 >
-                  <%- include('./icons/arrow-l.svg') %>Back Doctor
+                  <%- include('./icons/arrow-l.svg') %>Rotation Back
                 </button>
                 <button
                   class="secondary outline"
                   @click="moveNext('patient', rotation.id, 1)"
                 >
-                  Skip Doctor<%- include('./icons/arrow-r.svg') %>
+                  Rotation Skip<%- include('./icons/arrow-r.svg') %>
                 </button>
               </div>
               <div v-if="nurse" class="skipControls">
-                <button class="secondary outline"
+                <button class="secondary"
                   @click="moveNext('midlevel', rotation.id, -1)">
-                  <%- include('./icons/arrow-l.svg') %>APP Back
+                  <%- include('./icons/arrow-l.svg') %>APP Staffing Back
                 </button>
-                <button class="secondary outline"
+                <button class="secondary"
                   @click="moveNext('midlevel', rotation.id, 1)">
-                  APP Skip<%- include('./icons/arrow-r.svg') %>
+                  APP Staffing Skip<%- include('./icons/arrow-r.svg') %>
                 </button>
               </div>
             </template>

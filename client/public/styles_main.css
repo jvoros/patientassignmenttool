@@ -103,6 +103,10 @@ main {
   margin-bottom: var(--pico-spacing);
 }
 
+.skipControls button {
+  font-size: 85%;
+}
+
 .otherRotations {
   flex-basis: 100%;
   order: 2;
@@ -223,11 +227,14 @@ main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--pico-spacing-half) var(--pico-spacing);
+  padding: var(--pico-spacing) var(--pico-spacing) var(--pico-spacing-half) var(--pico-spacing);
 }
 
 .shiftName {
-  font-size: 90%;
+  font-size: 80%;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--pico-color-zinc-500);
 }
 
 .shiftDoc {

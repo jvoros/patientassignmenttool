@@ -14,6 +14,13 @@ const shiftDetails = [
     bonus: 2,
   },
   {
+    id: 8,
+    name: "12pm - 9pm",
+    end: "21:00",
+    start: "12:00",
+    bonus: 1,
+  },
+  {
     id: 3,
     name: "10am - 6pm",
     end: "18:00:00",
@@ -46,13 +53,6 @@ const shiftDetails = [
     name: "11pm - 6am",
     end: "06:00:00",
     start: "23:00:00",
-    bonus: 1,
-  },
-  {
-    id: 8,
-    name: "APP: 12pm - 9pm",
-    end: "21:00",
-    start: "12:00",
     bonus: 1,
   },
 ];

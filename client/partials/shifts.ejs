@@ -2,13 +2,10 @@
   <div class="shiftBox" :class="getShiftClasses(rotation, shift)">
     <div v-if="isNext(rotation, shift)" class="shiftNextFlag">next in rotation</div>
     <div v-if="shift.doctor.app && !isNext(rotation, shift)" class="shiftFtFlag">taking fast track patients</div>
-    <template v-if="nurse"><%- include('./shiftControls.ejs'); %></template>
+    <%- include('./shiftControls.ejs'); %>
     
     <div class="shiftContent">
       <div>
-        <div class="shiftName">
-          {{ shift.name }}
-        </div>
         <div class="shiftDoc">
           {{ shift.doctor.first }} {{ shift.doctor.last }}
         </div>
