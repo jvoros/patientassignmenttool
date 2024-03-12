@@ -50,7 +50,6 @@ body {
 
 /* MAIN LAYOUT */
 nav {
-  margin-bottom: 2rem;
   padding-top: var(--pico-spacing);
 }
 
@@ -77,6 +76,25 @@ nav a[role="button"] {
 
 .whatsnew {
   color: var(--my-next-background);
+}
+
+.header-info {
+  display: flex;
+  font-size: 85%;
+  justify-content: space-around;
+  gap: calc(var(--pico-spacing)*3);
+  margin: 0 auto calc(var(--pico-spacing)*2) auto;
+  padding: var(--pico-spacing) 0 ;
+  border-radius: var(--pico-border-radius);
+}
+
+.header-info div {
+  flex-basis: 30%;
+  color: gray;
+}
+
+.header-info p {
+  color: gray;
 }
 
 main {
