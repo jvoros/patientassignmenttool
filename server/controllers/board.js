@@ -52,12 +52,14 @@ function createBoardStore() {
         ? findShiftById(rot.next.patient).order
         : 0;
     newShift.order = newOrder;
+
+    // add shift
     state.shifts = [
       newShift,
       ...handleRotationOrder(newShift.rotationId, newOrder, "add"),
     ];
 
-    // handle nextShift assignments
+    // handle next[cycle] assignments
     // new shift becomes next in rotation
     modifyRotationById(
       newShift.rotationId,
@@ -75,7 +77,7 @@ function createBoardStore() {
       );
     }
 
-    // event
+    // Event
     if (noEvent) return;
     const message = `${newShift.doctor.first} ${newShift.doctor.last} joined ${rot.name}`;
     addEvent("join", message, newShift);
@@ -156,7 +158,16 @@ function createBoardStore() {
 
   function moveNext(cycle, rotationId, offset, noEvent = false) {
     const rot = findRotationById(rotationId);
+    // make sure rotation is supposed to cycle
     if (!rot.cycle[cycle]) return;
+    // make sure there is a next shift to move from
+    if (
+      !rot.next[cycle] ||
+      findShiftById(rot.next[cycle].rotationId !== rotationId)
+    ) {
+      rot.next[cycle] = findShiftByOrder(rotationId, 0).id;
+      return;
+    }
 
     const startShift = findShiftById(rot.next[cycle]);
     const nextShift = findNeighborShift(rotationId, startShift.order, offset);
@@ -165,11 +176,9 @@ function createBoardStore() {
     if (cycle === "patient") modifyShiftById(startShift.id, Shift.turnComplete);
 
     // set new next[cycle]Shift
-    // have to set before skip check, otherwise infinite recurrence off start shift and next shift having skip
-    // need to start next recurrence from the skip shift
     modifyRotationById(rotationId, Rotation.setNext, cycle, nextShift.id);
 
-    // handle skip conditions for patient cycle or midlevel cycle
+    // check if new shift should be skipped
     if (cycle === "patient" && nextShift.skip)
       moveNext("patient", rotationId, offset, true);
 
@@ -310,6 +319,7 @@ function createBoardStore() {
 
   // takes all shifts, adjusts order just for shifts in a rotation
   // cutoff can be pointer, or the order of shift being moved
+  // cutoff is where new shift will be added
   function handleRotationOrder(rotationId, cutoff, operation = "add") {
     const offset = operation === "add" ? 1 : -1;
     return state.shifts.map((shift) => {

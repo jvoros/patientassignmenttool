@@ -61,6 +61,12 @@ nav a[role="button"] {
   margin-top: 5px;
 }
 
+#carepointlinks, #carepointlinks:focus {
+  border: 0;
+  background-color: transparent;
+  box-shadow: none;
+}
+
 .siteName {
   font-size: 150%;
 }

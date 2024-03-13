@@ -64,7 +64,7 @@ describe("Board Functions", () => {
   });
 
   it("should move next patient shift forward and backward and handle skip APP", () => {
-    board.moveNext("patient", mainId, 1); // moves from kasavan to blake and sets skip to true
+    board.moveNext("patient", mainId, 1); // moves from kasavana to blake and sets skip to true
     expect(board.getState().rotations[0].next.patient).to.equal(
       board.getState().shifts[1].id
     );
@@ -96,8 +96,6 @@ describe("Board Functions", () => {
   });
 
   it("should move shifts between rotations, and adjust order and next values", () => {
-    // relies on board.addNewShift and rotation.removeShift which are tested elsewhere
-    // don't need to test internals of pointer movement, etc.
     // advance so midlevel and pt nexts are same
     board.moveNext("midlevel", mainId, 1);
     const shiftCount = board.getState().shifts.length;
@@ -134,6 +132,7 @@ describe("Board Functions", () => {
   });
 
   it("should set next.midlevel to null if no docs left on rotation");
+  it("should add patient, event, move next.midlevel after staffing w/APP");
 
   it("should add patients to shifts", () => {
     board.assignPatient(board.getState().shifts[0].id, "fasttrack", "TrA");
@@ -192,6 +191,15 @@ describe("Board Functions", () => {
       board.moveShift(board.getState().shifts[1].id, 1);
       expect(board.getState().events[0].type).to.equal("order");
       //console.log(JSON.stringify(board.getState()));
+    });
+  });
+
+  describe("Reset Function", () => {
+    it("should remove all shifts and set all pointers to null on reset", () => {
+      board.reset();
+      expect(board.getState().shifts.length).to.equal(0);
+      expect(board.getState().rotations[0].next.patient).to.equal(null);
+      expect(board.getState().rotations[0].next.midlevel).to.equal(null);
     });
   });
 });
