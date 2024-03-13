@@ -260,6 +260,7 @@ main {
   justify-content: space-between;
   align-items: center;
   padding: var(--pico-spacing);
+  padding-bottom: 0;
 }
 
 .shiftName {
@@ -270,8 +271,8 @@ main {
 }
 
 .shiftDoc {
-  font-size: 135%;
-  font-weight: bold;
+  font-size: 150%;
+  font-weight: 500;
 }
 
 .shiftButtons {
@@ -292,7 +293,7 @@ main {
 
 .shiftCounts {
   margin-bottom: 0;
-  padding: 0 var(--pico-spacing) var(--pico-spacing-half) var(--pico-spacing);
+  padding: var(--pico-spacing-half) var(--pico-spacing);
   /* border-top: 1px solid var(--my-light-gray); */
   display: flex;
   justify-content: left;

@@ -13,20 +13,21 @@
 
     <!-- non-assign event -->
     <div v-if="event.type !=='assign'">
-      <div>{{ event.message }}</div>
       <div class="eventTime">{{ event.time }}</div>
+      <div>{{ event.message }}</div>
     </div>
 
     <!-- assign event -->
     <div v-else class="eventAssignDetail">
       <div>
+        <div class="eventTime">{{ event.time }}</div>
         <div class="eventAssignDoc">
           {{ event.shift.doctor.first }} {{ event.shift.doctor.last }}
         </div>
         <div class="eventReassign" v-if="event.reassign">
           Reassigned to: <b>{{ event.reassign.last }}</b>
         </div>
-        <div class="eventTime">{{ event.time }}</div>
+        
       </div>
 
       <div class="eventAssignRoom">
