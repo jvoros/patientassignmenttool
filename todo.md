@@ -1,6 +1,6 @@
 ## To Dos
 
-- [ ] better styling on pt counts
+- [ ] help link
 - [ ] filter shifts/docs
 - [ ] delete shifts
 - [ ] blank filler for rotations
