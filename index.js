@@ -4,8 +4,6 @@ import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import matter from "gray-matter";
-import markdownit from "markdown-it";
 // https://stackoverflow.com/a/57527735
 // will catch async errors and pass to error middleware without try/catch blocks
 import "express-async-errors";
@@ -14,7 +12,6 @@ import api from "./server/api.js";
 
 const JWT_KEY = process.env.JWT_KEY;
 export const board = createBoardStore();
-const md = markdownit();
 
 // HELPERS
 // response helper
