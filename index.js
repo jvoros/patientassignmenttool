@@ -127,18 +127,6 @@ app.get("/", (req, res) => {
 
 app.use("/api", api);
 
-// dynamic routes to static content for docs
-app.get("/docs/:article", (req, res) => {
-  // read the markdown file and front matter
-  const file = matter.read("client/docs/" + req.params.article + ".md");
-
-  res.render("docs", {
-    page: req.url.split("/").pop(), // gets the active page
-    post: md.render(file.content), // render content to HTML
-    title: file.data.title,
-  });
-});
-
 // ERROR HANDLING
 // comes after routes so it can catch any errors they throw
 app.use(function (err, req, res, next) {
