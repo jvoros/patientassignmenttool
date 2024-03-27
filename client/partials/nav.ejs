@@ -2,20 +2,21 @@
   <ul>
     <li><img src="/pat.svg" width="70" /></li>
     <li class="siteName">
-      <strong>Patient Assignment Tools</strong> <small>v0.3</small>
+      <strong>Patient Assignment Tools</strong> <small>v0.4</small>
     </li>
   </ul>
   <ul>
+    <li><a href="https://patientassignmenttools-quickref.netlify.app" target="_blank">Quick Reference</a></li>
     <!-- <li>
       <a class="secondary outline whatsnew" @click="toggleWhatsNew" href="#">
         What's New v0.3
       </a>
     </li> -->
-      <li class="nav-dropdown">
+      <!-- <li class="nav-dropdown">
         <details class="dropdown">
-          <summary role="button" class="secondary outline">CarePoint Links</summary>
+          <summary id="carepointlinks" class="secondary outline">Reference Links</summary>
           <ul @click="closeDropdown">
-            <li><a href="/docs/home" target="_blank">Quick Reference</a></li>
+            <li><a href="https://patientassignmenttools-quickref.netlify.app" target="_blank">Quick Reference</a></li>
             <li>
               <a href="https://edorders.com/" target="_blank">ED Orders</a>
             </li>
@@ -28,7 +29,7 @@
             </li>
           </ul>
         </details>
-      </li>
+      </li> -->
  
     <li v-if="nurse"><%- include('./addShiftPopover.ejs'); %></li>
     <li>

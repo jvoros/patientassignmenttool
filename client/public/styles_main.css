@@ -61,6 +61,12 @@ nav a[role="button"] {
   margin-top: 5px;
 }
 
+#carepointlinks, #carepointlinks:focus {
+  border: 0;
+  background-color: transparent;
+  box-shadow: none;
+}
+
 .siteName {
   font-size: 150%;
 }
@@ -253,7 +259,8 @@ main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--pico-spacing) var(--pico-spacing) var(--pico-spacing-half) var(--pico-spacing);
+  padding: var(--pico-spacing);
+  padding-bottom: 0;
 }
 
 .shiftName {
@@ -264,8 +271,8 @@ main {
 }
 
 .shiftDoc {
-  font-size: 135%;
-  font-weight: bold;
+  font-size: 150%;
+  font-weight: 600;
 }
 
 .shiftButtons {
@@ -285,27 +292,26 @@ main {
 }
 
 .shiftCounts {
-  padding: 0 var(--pico-spacing) var(--pico-spacing-half) var(--pico-spacing);
-  margin: 0;
+  margin-bottom: 0;
+  padding: var(--pico-spacing-half) var(--pico-spacing);
+  /* border-top: 1px solid var(--my-light-gray); */
   display: flex;
   justify-content: left;
   gap: calc(var(--pico-spacing) / 2);
-  font-size: 90%;
+  font-size: 85%;
 }
 
 .shiftCounts li {
+  margin-bottom: 0;
   display: inline;
   text-transform: capitalize;
   color: var(--pico-muted-color);
 }
 
-/* .shiftCounts li:not(:last-child)::after {
-  content: "|";
-  margin-left: calc(var(--pico-spacing) / 2);
-} */
-
-.shiftCountNumber {
-  font-weight: bold;
+.shiftCounts li:first-of-type {
+  padding-right: var(--pico-spacing-half);
+  border-right: 1px solid var(--my-light-gray);
+  color: var(--pico-text);
 }
 
 /* POPOVERS */
@@ -404,6 +410,11 @@ main {
   padding: var(--pico-spacing) 0;
   color: var(--pico-muted-color);
   font-size: 90%;
+}
+
+.eventTime {
+  font-size: 85%;
+  color: var(--pico-muted-color);
 }
 
 .eventAssignDetail {
