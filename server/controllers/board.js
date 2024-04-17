@@ -184,7 +184,6 @@ function createBoardStore() {
 
     if (cycle === "midlevel" && nextShift.doctor.app) {
       // first check that there is a doc shift in rotation
-
       // if so, can advance
       moveNext("midlevel", rotationId, offset, true);
 
@@ -264,6 +263,17 @@ function createBoardStore() {
       "staffed with APP",
     ].join(" ");
     addEvent("staff", message, shift);
+  }
+
+  function toggleSkip(shiftId) {
+    const shift = findShiftById(shiftId);
+    modifyShiftById(shiftId, Shift.toggleSkip);
+    const message = [
+      shift.doctor.first,
+      shift.doctor.last,
+      "cancelled skip",
+    ].join(" ");
+    addEvent("pointer", message, shift);
   }
 
   // HELPERS
@@ -365,6 +375,7 @@ function createBoardStore() {
     assignPatient: withHistory(assignPatient),
     reassignPatient: withHistory(reassignPatient),
     staffMidlevel: withHistory(staffMidlevel),
+    toggleSkip: withHistory(toggleSkip),
     undo,
   };
 }
