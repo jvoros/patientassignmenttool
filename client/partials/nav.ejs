@@ -6,31 +6,7 @@
     </li>
   </ul>
   <ul>
-    <li><a href="https://patientassignmenttools-quickref.netlify.app" target="_blank">Quick Reference</a></li>
-    <!-- <li>
-      <a class="secondary outline whatsnew" @click="toggleWhatsNew" href="#">
-        What's New v0.3
-      </a>
-    </li> -->
-      <!-- <li class="nav-dropdown">
-        <details class="dropdown">
-          <summary id="carepointlinks" class="secondary outline">Reference Links</summary>
-          <ul @click="closeDropdown">
-            <li><a href="https://patientassignmenttools-quickref.netlify.app" target="_blank">Quick Reference</a></li>
-            <li>
-              <a href="https://edorders.com/" target="_blank">ED Orders</a>
-            </li>
-            <li>
-              <a
-                href="https://sites.google.com/carepointhc.com/mycarepoint/clinical-divisions/emergency-medicine/epic/st-marks-hospital-smh"
-                target="_blank"
-                >SMH Intranet Site</a
-              >
-            </li>
-          </ul>
-        </details>
-      </li> -->
- 
+    <li><a href="https://patientassignmenttools-quickref.netlify.app" target="_blank">Quick Reference</a></li> 
     <li v-if="nurse"><%- include('./addShiftPopover.ejs'); %></li>
     <li>
       <a role="button" class="contrast" href="/logout">

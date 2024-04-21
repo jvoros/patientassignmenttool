@@ -192,6 +192,10 @@ createApp({
       apiCall("api/staffMidlevel", { rotationId, shiftId});
     },
 
+    toggleSkip(shiftId) {
+      apiCall("api/toggleSkip", {shiftId});
+    },  
+
     undo() {
       apiCall("api/undo");
     },

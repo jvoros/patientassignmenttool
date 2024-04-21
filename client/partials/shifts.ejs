@@ -3,7 +3,7 @@
     <div v-if="isNext(rotation, shift)" class="shiftNextFlag">next in rotation</div>
     <div v-if="shift.doctor.app && !isNext(rotation, shift)" class="shiftFtFlag">taking fast track patients</div>
     <%- include('./shiftControls.ejs'); %>
-    
+
     <div class="shiftContent">
       <div>
         <div class="shiftDoc">
@@ -12,7 +12,7 @@
       </div>
       <div class="shiftButtons">
         <button v-if="isNextMidlevel(rotation, shift)" class="nextMidlevel" @click="staffMidlevel(rotation.id, shift.id)"><%- include('../icons/people.svg'); %> APP</button>
-        <div v-if="shift.skip" class="shiftSkip">Skips Next</div>
+        <button v-if="shift.skip" class="outline secondary shiftSkip" data-tooltip="Click to cancel skip" @click="toggleSkip(shift.id)">Skips Next</button>
         <template v-if="nurse && isNext(rotation, shift)">
           <%- include('./assignPopover.ejs'); %>
         </template>

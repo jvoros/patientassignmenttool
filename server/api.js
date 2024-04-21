@@ -58,6 +58,12 @@ api.post("/staffMidlevel", (req, res) => {
   responder(res);
 });
 
+api.post("/toggleSkip", (req, res) => {
+  const { shiftId } = req.body;
+  board.toggleSkip(shiftId);
+  responder(res);
+});
+
 api.post("/undo", (_req, res) => {
   board.undo();
   responder(res);

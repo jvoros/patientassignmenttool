@@ -49,6 +49,10 @@ function updateCounts(shift) {
 
 function turnComplete(shift) {
   // if APP shift, toggle skip each time through
+  return toggleSkip(shift);
+}
+
+function toggleSkip(shift) {
   return shift.doctor.app ? { ...shift, skip: !shift.skip } : shift;
 }
 
@@ -59,4 +63,5 @@ export default {
   setOrder,
   setRotation,
   turnComplete,
+  toggleSkip,
 };
