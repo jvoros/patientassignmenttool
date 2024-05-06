@@ -8,17 +8,17 @@ const shiftDetails = [
   },
   {
     id: 10,
-    name: "8am - 5pm",
-    end: "17:00:00",
+    name: "8am - 4pm DOC SHIFT",
+    end: "16:00:00",
     start: "08:00:00",
-    bonus: 1,
+    bonus: 2,
   },
   {
     id: 2,
-    name: "9am - 4pm",
+    name: "8am - 5pm APP SHIFT",
     end: "16:00:00",
     start: "09:00:00",
-    bonus: 2,
+    bonus: 1,
   },
 
   {
@@ -33,7 +33,7 @@ const shiftDetails = [
     name: "2pm - 10pm",
     end: "22:00",
     start: "14:00",
-    bonus: 1,
+    bonus: 2,
   },
   {
     id: 4,
@@ -44,7 +44,7 @@ const shiftDetails = [
   },
   {
     id: 11,
-    name: "5pm - 2am",
+    name: "5pm - 2am APP SHIFT",
     end: "17:00:00",
     start: "02:00:00",
     bonus: 1,
@@ -54,13 +54,6 @@ const shiftDetails = [
     name: "7pm - 2am",
     end: "02:00:00",
     start: "19:00:00",
-    bonus: 2,
-  },
-  {
-    id: 6,
-    name: "6pm - 1am",
-    end: "01:00:00",
-    start: "18:00:00",
     bonus: 2,
   },
   {
