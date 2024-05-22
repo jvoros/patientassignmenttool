@@ -211,8 +211,15 @@ function createBoardStore() {
 
   function assignPatient(shiftId, type, room, movePointer = true) {
     const newPatient = Patient.make(type, room);
-    modifyShiftById(shiftId, Shift.addPatient, newPatient);
     const shift = findShiftById(shiftId);
+    const associatedDoctorShiftId = shift.doctor.app
+      ? findRotationById(shift.rotationId).next.midlevel
+      : null;
+    modifyShiftById(shiftId, Shift.addPatient, newPatient);
+    // if midlevel also assign pt to doctor
+    if (shift.doctor.app) {
+      staffMidlevel(shift.rotationId, associatedDoctorShiftId);
+    }
 
     // if new total > bonus move pointer without pointer event
     // AND movePointer === true
@@ -226,7 +233,14 @@ function createBoardStore() {
       shift.doctor.first,
       shift.doctor.last,
     ].join(" ");
-    addEvent("assign", message, shift, newPatient);
+    const eventDetail = associatedDoctorShiftId
+      ? [
+          "with",
+          findShiftById(associatedDoctorShiftId).doctor.first,
+          findShiftById(associatedDoctorShiftId).doctor.last,
+        ].join(" ")
+      : null;
+    addEvent("assign", message, shift, newPatient, eventDetail);
     return;
   }
 
@@ -239,8 +253,8 @@ function createBoardStore() {
     state.events = modifyById(
       state.events,
       eventId,
-      Event.setReassign,
-      newShift.doctor
+      Event.setDetail,
+      "reassigned to " + newShift.doctor.first + " " + newShift.doctor.last
     );
     // make event
     const message = [
@@ -257,12 +271,12 @@ function createBoardStore() {
     const shift = findShiftById(shiftId);
     modifyShiftById(shiftId, Shift.addPatient, Patient.make("app", 0));
     moveNext("midlevel", rotationId, 1, "noEvent");
-    const message = [
-      shift.doctor.first,
-      shift.doctor.last,
-      "staffed with APP",
-    ].join(" ");
-    addEvent("staff", message, shift);
+    // const message = [
+    //   shift.doctor.first,
+    //   shift.doctor.last,
+    //   "staffed with APP",
+    // ].join(" ");
+    // addEvent("staff", message, shift);
   }
 
   function toggleSkip(shiftId) {
@@ -346,9 +360,9 @@ function createBoardStore() {
   }
 
   // limits # of events
-  function addEvent(type, message, shift, patient = null) {
+  function addEvent(type, message, shift, patient = null, detail = null) {
     state.events = [
-      Event.make(type, message, shift, patient),
+      Event.make(type, message, shift, patient, detail),
       ...state.events.slice(0, EVENT_LIMIT),
     ];
   }

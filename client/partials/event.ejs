@@ -24,8 +24,8 @@
         <div class="eventAssignDoc">
           {{ event.shift.doctor.first }} {{ event.shift.doctor.last }}
         </div>
-        <div class="eventReassign" v-if="event.reassign">
-          Reassigned to: <b>{{ event.reassign.last }}</b>
+        <div class="eventReassign" v-if="event.detail">
+        {{ event.detail}}
         </div>
         
       </div>

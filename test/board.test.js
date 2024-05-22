@@ -133,6 +133,7 @@ describe("Board Functions", () => {
 
   it("should set next.midlevel to null if no docs left on rotation");
   it("should add patient, event, move next.midlevel after staffing w/APP");
+  it("should add Doctor that is next APP when assign patient to midlevel");
 
   it("should add patients to shifts", () => {
     board.assignPatient(board.getState().shifts[0].id, "fasttrack", "TrA");

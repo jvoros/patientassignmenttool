@@ -20,7 +20,7 @@ const uid = new ShortUniqueId();
  *
  */
 
-function make(type, message, shift, patient = null) {
+function make(type, message, shift, patient = null, detail = null) {
   return {
     id: uid.rnd(),
     time: shortTimestamp(),
@@ -28,11 +28,12 @@ function make(type, message, shift, patient = null) {
     shift,
     message,
     patient,
+    detail,
   };
 }
 
-function setReassign(event, newDoctor) {
-  return { ...event, reassign: newDoctor };
+function setDetail(event, detailMessage) {
+  return { ...event, detail: detailMessage };
 }
 
-export default { make, setReassign };
+export default { make, setDetail };
