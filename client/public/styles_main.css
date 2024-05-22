@@ -288,7 +288,7 @@ main {
   font-weight: bold;
   color: white;
   text-transform: uppercase;
-  background-color: var(--my-next-background);
+  background-color: var(--pico-color-azure-500);
 }
 
 .shiftCounts {
