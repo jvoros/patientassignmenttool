@@ -282,8 +282,9 @@ main {
 
 .nextMidlevel {
   display: inline;
-  font-size: 75%;
-  font-weight: bold;
+  padding: 2pt 4pt;
+  border-radius: var(--pico-border-radius);
+  font-size: 70%;
   color: white;
   text-transform: uppercase;
   background-color: var(--pico-color-azure-500);
