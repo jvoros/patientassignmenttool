@@ -25,6 +25,9 @@ api.post("/getboard", async (req, res) => {
   const board = {};
   board.site_id = req.token.site_id;
   board.name = req.token.site_name;
+  board.events = [];
+  board.rotations = [];
+  board.shifts = [];
   res.json({ status: "success", message: "board incoming", data: board });
 });
 
