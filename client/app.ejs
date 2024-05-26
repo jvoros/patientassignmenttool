@@ -124,6 +124,11 @@ createApp({
     },
 
     // SERVER
+    async getBoard() {
+      console.log('Getting board...');
+      const res = await apiCall("getboard");
+    },
+
     async checkLoginStatus() {
       console.log("Checking login status");
       const res = await apiCall("checklogin");
@@ -283,6 +288,7 @@ createApp({
 
   mounted() {
     this.checkLoginStatus();
+    this.getBoard();
   },
 }).mount("#app");
 </script>

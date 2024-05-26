@@ -39,11 +39,6 @@ const supabase = createClient(
 );
 
 // AUTH MIDDLEWARE
-const userTable = {
-  nurse: { pass: process.env.NURSE_PASSWORD, username: "nurse" },
-  doctor: { pass: process.env.DOC_PASSWORD, username: "doctor" },
-};
-
 const authorization = (req, res, next) => {
   const token = req.cookies.access_token;
   if (!token) {
@@ -51,7 +46,10 @@ const authorization = (req, res, next) => {
   }
   try {
     const data = jwt.verify(token, JWT_KEY);
-    req.user = data;
+    // add token info to req object
+    // token will include the site_id where user logged in
+    // every future request will include the site_id from the token cookie
+    req.token = data;
     return next();
   } catch {
     return res.redirect("/login");
@@ -71,11 +69,14 @@ app.post("/login/password", async (req, res) => {
   const { site_id, password } = req.body;
   const { data, error } = await supabase
     .from("sites")
-    .select("name, access_code")
+    .select("name, site_id, access_code")
     .eq("site_id", site_id);
+
   if (password === data[0].access_code) {
-    const user = { username: data[0].name };
-    const token = jwt.sign(user, JWT_KEY);
+    // successful login
+    // add site info to token to accompany all future requests
+    const site_info = { site_name: data[0].name, site_id: data[0].site_id };
+    const token = jwt.sign(site_info, JWT_KEY);
 
     res.cookie("access_token", token, {
       httpOnly: true,
@@ -111,8 +112,17 @@ app.get("/logout", (_req, res) => {
   res.redirect("/login");
 });
 
-app.get("/", (_req, res) => {
+app.get("/", (req, res) => {
   res.render("home");
+});
+
+// takes site info from token, then queries database to get data for site
+app.post("/getboard", async (req, res) => {
+  console.log("getting board...");
+  const board = {};
+  board.site_id = req.token.site_id;
+  console.log(board);
+  res.json(message(200, "board incoming"));
 });
 
 // ERROR HANDLING
