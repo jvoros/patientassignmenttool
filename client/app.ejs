@@ -24,8 +24,6 @@ async function apiCall(url, payload, method = "POST") {
 createApp({
   data() {
     return {
-      // if nurse, show controls, otherwise no controls
-      nurse: false,
       // flags for UI popovers
       ui: {
         showAddShiftPopover: false,
@@ -55,7 +53,7 @@ createApp({
         ],
       },
       // the board from server, this is initialization version
-      board: { rotations: [], shifts: [], events: [] },
+      board: { site_name: 'rogers house', rotations: [], shifts: [], events: [] },
       // just some helper constants
       doctors: doctors, // linked in home.ejs
       shiftDetails: shiftDetails, // linked in home.ejs
@@ -125,8 +123,7 @@ createApp({
 
     // SERVER
     async getBoard() {
-      console.log('Getting board...');
-      const res = await apiCall("api/getboard");
+      this.board = await apiCall("api/getboard").data;
     },
 
     async checkLoginStatus() {
@@ -286,7 +283,7 @@ createApp({
     },
   },
 
-  mounted() {
+  async mounted() {
     this.checkLoginStatus();
     this.getBoard();
   },

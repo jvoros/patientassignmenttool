@@ -3,11 +3,12 @@
     <li><img src="/pat.svg" width="70" /></li>
     <li class="siteName">
       <strong>Patient Assignment Tools</strong> <small>v1.0 SUPABASE CLIENT</small>
+      <p>{{ board.site_name }}</p>
     </li>
   </ul>
   <ul>
     <li><a href="https://patientassignmenttools-quickref.netlify.app" target="_blank">Quick Reference</a></li> 
-    <li v-if="nurse"><%- include('./addShiftPopover.ejs'); %></li>
+    <li><%- include('./addShiftPopover.ejs'); %></li>
     <li>
       <a role="button" class="contrast" href="/logout">
         Logout <%- include('../icons/logout.svg'); %>

@@ -22,11 +22,10 @@ export function responder(res) {
 
 // takes site info from token, then queries database to get data for site
 api.post("/getboard", async (req, res) => {
-  console.log("getting board...");
   const board = {};
   board.site_id = req.token.site_id;
-  console.log(board);
-  res.json(message("success", "board incoming"));
+  board.name = req.token.site_name;
+  res.json({ status: "success", message: "board incoming", data: board });
 });
 
 // OLD API
