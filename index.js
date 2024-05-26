@@ -6,7 +6,8 @@ import { createServer } from "http";
 // https://stackoverflow.com/a/57527735
 // will catch async errors and pass to error middleware without try/catch blocks
 import "express-async-errors";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "./server/api.js";
+import apiRoutes from "./server/api.js";
 
 const JWT_KEY = process.env.JWT_KEY;
 
@@ -30,12 +31,6 @@ app.use(
   express.urlencoded({
     extended: true,
   })
-);
-
-// SUPABASE
-const supabase = createClient(
-  "http://localhost:54321",
-  process.env.SUPABASE_API
 );
 
 // AUTH MIDDLEWARE
@@ -116,14 +111,7 @@ app.get("/", (req, res) => {
   res.render("home");
 });
 
-// takes site info from token, then queries database to get data for site
-app.post("/getboard", async (req, res) => {
-  console.log("getting board...");
-  const board = {};
-  board.site_id = req.token.site_id;
-  console.log(board);
-  res.json(message(200, "board incoming"));
-});
+app.use("/api", apiRoutes);
 
 // ERROR HANDLING
 // comes after routes so it can catch any errors they throw

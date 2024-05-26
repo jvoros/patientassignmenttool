@@ -1,7 +1,14 @@
 import express from "express";
-import { board } from "../index.js";
+import { createClient } from "@supabase/supabase-js";
 
+// EXPRESS
 const api = express.Router();
+
+// SUPABASE
+export const supabase = createClient(
+  "http://localhost:54321",
+  process.env.SUPABASE_API
+);
 
 // HELPERS
 export function responder(res) {
@@ -11,7 +18,19 @@ export function responder(res) {
   res.io.emit("new state", board.getState());
 }
 
-// MAIN API
+// NEW API
+
+// takes site info from token, then queries database to get data for site
+api.post("/getboard", async (req, res) => {
+  console.log("getting board...");
+  const board = {};
+  board.site_id = req.token.site_id;
+  console.log(board);
+  res.json(message("success", "board incoming"));
+});
+
+// OLD API
+
 api.post("/addShift", (req, res) => {
   const { doctor, options } = req.body;
   if (options.id === 1) {
