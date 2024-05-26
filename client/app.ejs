@@ -283,14 +283,6 @@ createApp({
 
   mounted() {
     this.checkLoginStatus();
-    const socket = io();
-    socket.on("connect", () => {
-      console.log("Socket connected");
-    });
-    socket.on("new state", (state) => {
-      console.log("New state received");
-      this.handleNewState(state);
-    });
   },
 }).mount("#app");
 </script>

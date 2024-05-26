@@ -13,19 +13,21 @@
       <img src="pat.svg" width="90" /><br /><br />
       <h1>Welcome to the Rotation.</h1>
       <form action="/login/password" method="post">
-        <select name="username">
-          <option value="nurse">Nurse</option>
-          <option value="doctor">Doctor</option>
+        <select name="site_id">
+          <% sites.forEach(site => { %>
+            <option value="<%= site.site_id %>"><%= site.name %></option>
+          <% }); %>
         </select>
         <input
           type="password"
-          placeholder="Enter Password"
+          placeholder="Enter Access Code"
           name="password"
           required
         />
 
         <button type="submit" class="contrast">Login</button>
       </form>
+
     </main>
   </body>
 </html>

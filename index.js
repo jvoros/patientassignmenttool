@@ -3,15 +3,12 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import { createServer } from "http";
-import { Server } from "socket.io";
 // https://stackoverflow.com/a/57527735
 // will catch async errors and pass to error middleware without try/catch blocks
 import "express-async-errors";
-import createBoardStore from "./server/controllers/board.js";
-import api from "./server/api.js";
+import { createClient } from "@supabase/supabase-js";
 
 const JWT_KEY = process.env.JWT_KEY;
-export const board = createBoardStore();
 
 // HELPERS
 // response helper
@@ -35,19 +32,11 @@ app.use(
   })
 );
 
-// WEBSOCKET
-const server = createServer(app);
-const io = new Server(server);
-io.on("connection", (socket) => {
-  console.log("SOCKET.IO: a user connected");
-  console.log("SOCKET.IO: emitting new state");
-  socket.emit("new state", board.getState());
-});
-// middleware that passes io object to routers, so io is available on res object
-app.use((_req, res, next) => {
-  res.io = io;
-  return next();
-});
+// SUPABASE
+const supabase = createClient(
+  "http://localhost:54321",
+  process.env.SUPABASE_API
+);
 
 // AUTH MIDDLEWARE
 const userTable = {
@@ -73,14 +62,19 @@ const authorization = (req, res, next) => {
 
 app.use(express.static("client/public"));
 
-app.get("/login", (req, res) => {
-  res.render("login");
+app.get("/login", async (_req, res) => {
+  const { data, error } = await supabase.from("sites").select("site_id, name");
+  res.render("login", { sites: data });
 });
 
-app.post("/login/password", (req, res) => {
-  const { username, password } = req.body;
-  if (password === userTable[username].pass) {
-    const user = { username };
+app.post("/login/password", async (req, res) => {
+  const { site_id, password } = req.body;
+  const { data, error } = await supabase
+    .from("sites")
+    .select("name, access_code")
+    .eq("site_id", site_id);
+  if (password === data[0].access_code) {
+    const user = { username: data[0].name };
     const token = jwt.sign(user, JWT_KEY);
 
     res.cookie("access_token", token, {
@@ -90,7 +84,6 @@ app.post("/login/password", (req, res) => {
     });
     res.status(200);
     res.redirect("/");
-    res.io.emit("new state", board.getState());
     return;
   } else {
     return res.redirect("/login");
@@ -113,16 +106,14 @@ app.post("/checklogin", (req, res) => {
 // ROUTES BEHIND AUTH
 app.use(authorization);
 
-app.get("/logout", (req, res) => {
+app.get("/logout", (_req, res) => {
   res.clearCookie("access_token");
   res.redirect("/login");
 });
 
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
   res.render("home");
 });
-
-app.use("/api", api);
 
 // ERROR HANDLING
 // comes after routes so it can catch any errors they throw
@@ -138,6 +129,6 @@ app.use(function (err, req, res, next) {
 
 // LAUNCH
 const port = process.env.PORT || 4000;
-server.listen(port, () => {
+createServer(app).listen(port, () => {
   console.log(`listening on ${port}`);
 });
