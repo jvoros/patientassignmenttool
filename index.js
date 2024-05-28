@@ -56,7 +56,10 @@ const authorization = (req, res, next) => {
 app.use(express.static("client/public"));
 
 app.get("/login", async (_req, res) => {
-  const { data, error } = await supabase.from("sites").select("site_id, name");
+  const { data, error } = await supabase
+    .from("sites")
+    .select("id, name")
+    .order("name");
   res.render("login", { sites: data });
 });
 
@@ -64,13 +67,13 @@ app.post("/login/password", async (req, res) => {
   const { site_id, password } = req.body;
   const { data, error } = await supabase
     .from("sites")
-    .select("name, site_id, access_code")
-    .eq("site_id", site_id);
+    .select("name, id, access_code")
+    .eq("id", site_id);
 
   if (password === data[0].access_code) {
     // successful login
     // add site info to token to accompany all future requests
-    const site_info = { site_name: data[0].name, site_id: data[0].site_id };
+    const site_info = { site_name: data[0].name, site_id: data[0].id };
     const token = jwt.sign(site_info, JWT_KEY);
 
     res.cookie("access_token", token, {
@@ -107,7 +110,7 @@ app.get("/logout", (_req, res) => {
   res.redirect("/login");
 });
 
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
   res.render("home");
 });
 

@@ -24,6 +24,16 @@ async function apiCall(url, payload, method = "POST") {
 createApp({
   data() {
     return {
+      // the board from server, this is initialization version
+      site: {
+        id: '',
+        name: '',
+        zones: [],
+        clinicians: [],
+        shift_details: []
+      },
+      board: { rotations: [], shifts: [], events: [] },
+      
       // flags for UI popovers
       ui: {
         showAddShiftPopover: false,
@@ -36,9 +46,9 @@ createApp({
       // variables for form control with v-model
       forms: {
         addShift: {
-          doctor: "",
+          clinician: "",
           shift: "",
-          rotationId: "",
+          zoneId: "",
         },
         assign: {
           shiftId: "",
@@ -52,53 +62,6 @@ createApp({
           { type: "bonus", icon: "./icons/bonus.svg", tip: "bonus" },
         ],
       },
-      // the board from server, this is initialization version
-      board: { site_name: 'rogers house', rotations: [], shifts: [], events: [] },
-      // just some helper constants
-      doctors: doctors, // linked in home.ejs
-      shiftDetails: shiftDetails, // linked in home.ejs
-
-      rooms: [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "10",
-        "11",
-        "12",
-        "13",
-        "14",
-        "15",
-        "16",
-        "17",
-        "18",
-        "19",
-        "20",
-        "21",
-        "22",
-        "23",
-        "24",
-        "25",
-        "27",
-        "28",
-        "29",
-        "30",
-        "T.A",
-        "T.B",
-        "T.C",
-        "H.A",
-        "H.B",
-        "H.C",
-        "H.D",
-        "H.E",
-        "H.F",
-        "Other",
-      ],
     };
   },
   methods: {
@@ -125,7 +88,12 @@ createApp({
     async getBoard() {
       const new_board = await apiCall("api/getboard");
       this.board = new_board.data;
-      console.log('new_board: ', new_board.data);
+    },
+
+    async getSiteDetails() {
+      const siteDetails = await apiCall("api/getsitedetails");
+      this.site = siteDetails.data;
+      console.log(siteDetails.data);
     },
 
     async checkLoginStatus() {
@@ -288,6 +256,7 @@ createApp({
   async mounted() {
     this.checkLoginStatus();
     this.getBoard();
+    this.getSiteDetails();
   },
 }).mount("#app");
 </script>

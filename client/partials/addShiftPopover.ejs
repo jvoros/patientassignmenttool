@@ -6,25 +6,25 @@
     <div class="popoverBlocker" @click="toggleAddShiftPopover"></div>
     <div class="popoverContent">
       <form class="newDoctorForm">
-        <select v-model="forms.addShift.doctor">
+        <select v-model="forms.addShift.clinician">
           <option disabled value="">Clinician:</option>
-          <option v-for="doctor in doctors" :value="doctor">
-            {{ doctor.last }}, {{ doctor.first }}
+          <option v-for="clinician in site.clinicians" :value="clinician">
+            {{ clinician.lname }}, {{ clinician.fname }}
           </option>
         </select>
         <select v-model="forms.addShift.shift">
           <option disabled value="">Shift:</option>
-          <option v-for="shift in shiftDetails" :value="shift">
+          <option v-for="shift in site.shift_types" :value="shift.id">
             {{ shift.name }}
           </option>
         </select>
         <div class="warn" v-if="forms.addShift.shift.id === 1">
           Adding 6 am shift will reset the whole board.
         </div>
-        <select v-model="forms.addShift.rotationId">
-          <option disabled value="">Rotation:</option>
-          <option v-for="rot in board.rotations" :value="rot.id">
-            {{ rot.name }}
+        <select v-model="forms.addShift.zoneId">
+          <option disabled value="">Zone:</option>
+          <option v-for="zone in site.zones" :value="zone.id">
+            {{ zone.name }}
           </option>
         </select>
         <button

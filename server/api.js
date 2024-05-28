@@ -11,11 +11,24 @@ export const supabase = createClient(
 );
 
 // HELPERS
-export function responder(res) {
-  // client browser needs a response to know transmission complete
-  res.status(200).json({ message: "success" });
-  // state payload sent to client by socket.io
-  res.io.emit("new state", board.getState());
+// export function responder(res) {
+//   // client browser needs a response to know transmission complete
+//   res.status(200).json({ message: "success" });
+//   // state payload sent to client by socket.io
+//   res.io.emit("new state", board.getState());
+// }
+
+function responder(res, data) {
+  res.status(200).json({ message: "success", data });
+}
+
+async function getSiteDetails(site_id, detail) {
+  const { data, error } = await supabase
+    .from("sites")
+    .select("*, sites!inner(site_id)")
+    .eq("sites.site_id", site_id);
+
+  return data;
 }
 
 // NEW API
@@ -28,7 +41,20 @@ api.post("/getboard", async (req, res) => {
   board.events = [];
   board.rotations = [];
   board.shifts = [];
-  res.json({ status: "success", message: "board incoming", data: board });
+  responder(res, board);
+});
+
+api.post("/getsitedetails", async (req, res) => {
+  const site_id = req.token.site_id;
+  const { data: siteInfo, error } = await supabase
+    .from("sites")
+    .select("id, name, zones(name, site_order), shift_types(*), clinicians(*)")
+    .eq("id", site_id)
+    .limit(1)
+    .single()
+    .order("site_order", { referencedTable: "zones" })
+    .order("lname", { referencedTable: "clinicians" });
+  responder(res, siteInfo);
 });
 
 // OLD API
