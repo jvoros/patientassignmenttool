@@ -61,12 +61,6 @@ nav a[role="button"] {
   margin-top: 5px;
 }
 
-#carepointlinks, #carepointlinks:focus {
-  border: 0;
-  background-color: transparent;
-  box-shadow: none;
-}
-
 .siteName {
   font-size: 150%;
 }
@@ -78,29 +72,6 @@ nav a[role="button"] {
 
 .siteName small {
   font-size: 70%;
-}
-
-.whatsnew {
-  color: var(--my-next-background);
-}
-
-.header-info {
-  display: flex;
-  font-size: 90%;
-  justify-content: space-around;
-  gap: calc(var(--pico-spacing)*3);
-  margin: 0 auto calc(var(--pico-spacing)*2) auto;
-  padding: var(--pico-spacing) 0 ;
-  border-radius: var(--pico-border-radius);
-}
-
-.header-info div {
-  flex-basis: 30%;
-  color: gray;
-}
-
-.header-info p {
-  color: gray;
 }
 
 main {
@@ -116,7 +87,7 @@ main {
   order: 3;
 }
 
-.mainRotation {
+.mainZone {
   flex-basis: 100%;
   order: 1;
 }
@@ -128,15 +99,15 @@ main {
 }
 
 .skipControls button {
-  font-size: 100%;
+  font-size: 80%;
 }
 
-.otherRotations {
+.otherZones {
   flex-basis: 100%;
   order: 2;
 }
 
-.otherRotations h4:not(:first-of-type) {
+.otherZones h4:not(:first-of-type) {
   margin-top: calc(var(--pico-spacing) * 3);
 }
 
@@ -144,11 +115,11 @@ main {
   main {
     flex-wrap: nowrap;
   }
-  .mainRotation {
+  .mainZone {
     order: 2;
     flex-basis: 38%;
   }
-  .otherRotations {
+  .otherZones {
     order: 3;
     flex-basis: 28%;
   }
@@ -268,7 +239,7 @@ main {
   color: var(--pico-color-zinc-500);
 }
 
-.shiftDoc {
+.shiftClinician {
   font-size: 150%;
   font-weight: 600;
 }
@@ -280,7 +251,7 @@ main {
   gap: 1em;
 }
 
-.nextMidlevel {
+.nextSupervisor {
   display: inline;
   padding: 2pt 4pt;
   border-radius: var(--pico-border-radius);
@@ -332,7 +303,6 @@ main {
 .popoverContent {
   position: absolute;
   z-index: 10;
-  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: right;
@@ -349,7 +319,7 @@ main {
   width: 100%;
 }
 
-.newDoctorForm {
+.newClinicianForm {
   width: 100%;
   display: flex;
   flex-direction: column;

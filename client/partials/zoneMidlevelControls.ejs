@@ -1,0 +1,10 @@
+<div class="skipControls" role="group">
+  <button class="outline"
+    @click="moveNext('midlevel', zone.id, -1)">
+    <%- include('../icons/arrow-l.svg') %>Supervisor Back
+  </button>
+  <button class="outline"
+    @click="moveNext('midlevel', zone.id, 1)">
+    Supervisor Skip<%- include('../icons/arrow-r.svg') %>
+  </button>
+</div>

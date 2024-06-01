@@ -1,0 +1,17 @@
+<h4>{{ zone.name }} Zone</h4>
+<hr />
+<!-- Blank -->
+<template v-if="getShiftsForZone(zone.id).length === 0">
+  <div  class="blank">No shifts in {{ zone.name }}</div>
+</template>
+<!-- Not Blank -->
+<template v-else>
+  <%- include('./shifts.ejs'); %>
+  <!-- Zone Controls -->
+  <template v-if="zone.rotate_pt">
+    <%- include('./zonePtControls.ejs'); %>
+  </template>
+  <template v-if="zone.rotate_midlevel">
+    <%- include('./zoneMidlevelControls.ejs'); %>
+  </template>
+</template>

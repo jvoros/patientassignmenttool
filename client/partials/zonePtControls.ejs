@@ -1,0 +1,15 @@
+<hr>
+<div class="skipControls" role="group">
+  <button
+    class="secondary outline"
+    @click="moveNext('patient', zone.id, -1)"
+  >
+    <%- include('../icons/arrow-l.svg') %>Rotation Back
+  </button>
+  <button
+    class="secondary outline"
+    @click="moveNext('patient', zone.id, 1)"
+  >
+    Rotation Skip<%- include('../icons/arrow-r.svg') %>
+  </button>
+</div>

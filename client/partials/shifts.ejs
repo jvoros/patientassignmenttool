@@ -1,28 +1,40 @@
-<template v-for="shift in findShiftsByRotation(rotation.id)">
-  <div class="shiftBox" :class="getShiftClasses(rotation, shift)">
-    <div v-if="isNext(rotation, shift)" class="shiftNextFlag">next in rotation</div>
-    <div v-if="shift.doctor.app && !isNext(rotation, shift)" class="shiftFtFlag">taking fast track patients</div>
+<template v-for="shift in getShiftsForZone(zone.id)">
+  <div class="shiftBox" 
+    :class="{ 
+      'shiftNext': isNext(zone, shift), 
+      'shiftApp': isMidlevelShift(shift) 
+    }"
+  >
+    <!-- Next Flag -->
+    <div v-if="isNext(zone, shift)" class="shiftNextFlag">
+      next patient
+    </div>
+    <!-- FT Flag -->
+    <div v-if="shift.clinician.clinician_type_id === 2 && !isNext(zone, shift)" 
+      class="shiftFtFlag">
+      next fast track patient
+    </div>
+    <!-- Shift Controls -->
     <%- include('./shiftControls.ejs'); %>
-
+    
     <div class="shiftContent">
       <div>
-        <div class="shiftDoc">
-          {{ shift.doctor.first }} {{ shift.doctor.last }}
+        <div class="shiftClinician">
+          {{ shift.clinician.fname }} {{ shift.clinician.lname }}
         </div>
       </div>
       <div class="shiftButtons">
-        <span v-if="isNextMidlevel(rotation, shift)" class="nextMidlevel"><%- include('../icons/people.svg'); %> Next APP</span>
+        <span v-if="isNextSupervisor(zone, shift)" class="nextSupervisor"><%- include('../icons/people.svg'); %> Next APP</span>
         <button v-if="shift.skip" class="outline secondary shiftSkip" data-tooltip="Click to cancel skip" @click="toggleSkip(shift.id)">Skips Next</button>
-        <template v-if="nurse && isNext(rotation, shift)">
+        <template v-if="isNext(zone, shift)">
           <%- include('./assignPopover.ejs'); %>
         </template>
         
       </div>
     </div>
     <ul class="shiftCounts">
-      <li v-for="(count, key) in shift.counts">
-        {{ key }} <span class="shiftCountNumber">{{ count }}</span>
-      </li>
+      <li>Patients: {{ shift.patients.length }}</li>
+      <li v-if="isDocShift(shift)">Supervised: {{ shift.supervised_patients.length }}</li>
     </ul>
   </div>
 </template>

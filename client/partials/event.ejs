@@ -3,16 +3,16 @@
     <div
       class="eventIcon"
       :class="[
-        event.type !== 'assign' ? 'eventIconBell' : '', 
-        event.patient?.type === 'ambo' ? 'eventIconAmbo' : '',
-        event.patient?.type === 'ft' ? 'eventIconFt' : '',
-        event.patient?.type === 'walkin' ? 'eventIconWalkin' : '',
-        event.patient?.type === 'bonus' ? 'eventIconBonus' : ''
+        event.event_type_id !== 'assign' ? 'eventIconBell' : '', 
+        event.event_type_id === 'ambo' ? 'eventIconAmbo' : '',
+        event.event_type_id === 'ft' ? 'eventIconFt' : '',
+        event.event_type_id === 'walkin' ? 'eventIconWalkin' : '',
+        event.event_type_id === 'bonus' ? 'eventIconBonus' : ''
       ]"
     ></div>
 
     <!-- non-assign event -->
-    <div v-if="event.type !=='assign'">
+    <div v-if="event.event_type_id !==1">
       <div class="eventTime">{{ event.time }}</div>
       <div>{{ event.message }}</div>
     </div>
@@ -22,10 +22,10 @@
       <div>
         <div class="eventTime">{{ event.time }}</div>
         <div class="eventAssignDoc">
-          {{ event.shift.doctor.first }} {{ event.shift.doctor.last }}
+          {{ event.shift.clinician.fname }} {{ event.shift.clinician.lname }}
         </div>
-        <div class="eventReassign" v-if="event.detail">
-        {{ event.detail}}
+        <div class="eventReassign" v-if="event.secondary">
+        {{ event.secondary}}
         </div>
         
       </div>
@@ -39,7 +39,7 @@
     </div>
   </div>
 
-  <div v-if="index === 0 && nurse">
+  <div v-if="index === 0">
     <button class="undo secondary outline" @click="undo">
       <%- include ('../icons/undo.svg') %> Undo
     </button>

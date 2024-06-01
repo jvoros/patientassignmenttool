@@ -33,28 +33,50 @@ async function getSiteDetails(site_id, detail) {
 
 // NEW API
 
-// takes site info from token, then queries database to get data for site
-api.post("/getboard", async (req, res) => {
-  const board = {};
-  board.site_id = req.token.site_id;
-  board.name = req.token.site_name;
-  board.events = [];
-  board.rotations = [];
-  board.shifts = [];
-  responder(res, board);
-});
+// takes site_id comes from token
 
 api.post("/getsitedetails", async (req, res) => {
-  const site_id = req.token.site_id;
   const { data: siteInfo, error } = await supabase
     .from("sites")
-    .select("id, name, zones(name, site_order), shift_types(*), clinicians(*)")
-    .eq("id", site_id)
+    .select("id, name, zones(*), shift_types(*), clinicians(*)")
+    .eq("id", req.token.site_id)
     .limit(1)
     .single()
     .order("site_order", { referencedTable: "zones" })
     .order("lname", { referencedTable: "clinicians" });
   responder(res, siteInfo);
+});
+
+api.post("/getshifts", async (req, res) => {
+  const { data: shifts, error } = await supabase
+    .from("shifts")
+    .select(
+      `*,
+      clinician:clinician_id(*, clinician_type:clinician_type_id(*)), 
+      details:shift_type_id(name, start, end),
+      patients:patients!shift_id(*),
+      supervised_patients:patients!supervisor_shift_id(*)`
+    )
+    .eq("site_id", req.token.site_id)
+    .order("zone_id", { ascending: true })
+    .order("zone_order", { ascending: true });
+  console.log(error);
+  responder(res, shifts);
+});
+
+api.post("/getevents", async (req, res) => {
+  const { data: events, error } = await supabase
+    .from("events")
+    .select(
+      `
+      *, 
+      shift:shift_id(*, clinician:clinician_id(*)), 
+      patient:patient_id(*)`
+    )
+    .eq("site_id", req.token.site_id)
+    .order("created_at", { ascending: false });
+  console.log(error);
+  responder(res, events);
 });
 
 // OLD API

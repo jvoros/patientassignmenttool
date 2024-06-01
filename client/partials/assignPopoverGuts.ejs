@@ -1,4 +1,4 @@
-<label>Patient type:</label>
+
 <ul class="assignType">
   <li v-for="ptType in forms.assignTypes">
     <input
@@ -20,5 +20,5 @@
 
 <select v-model="forms.assign.room">
   <option selected disabled value="">Room:</option>
-  <option v-for="room in rooms" :value="room">{{ room }}</option>
+  <option v-for="room in zone.rooms" :value="room">{{ room }}</option>
 </select>

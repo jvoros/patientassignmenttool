@@ -1,5 +1,6 @@
 <script type="module">
-import { createApp } from "vue";
+import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+;
 
 async function apiCall(url, payload, method = "POST") {
   try {
@@ -32,7 +33,12 @@ createApp({
         clinicians: [],
         shift_details: []
       },
-      board: { rotations: [], shifts: [], events: [] },
+      shifts: [],
+      events: [],
+      board: {
+        rotations: [],
+        events: []
+      },
       
       // flags for UI popovers
       ui: {
@@ -59,43 +65,36 @@ createApp({
           { type: "walkin", icon: "./icons/walkin.svg", tip: "walk in" },
           { type: "ambo", icon: "./icons/ambo.svg", tip: "ambo" },
           { type: "ft", icon: "./icons/ft.svg", tip: "fast track" },
-          { type: "bonus", icon: "./icons/bonus.svg", tip: "bonus" },
+          // { type: "bonus", icon: "./icons/bonus.svg", tip: "bonus" },
         ],
       },
     };
   },
   methods: {
     // HELPERS
-    findRotationByName(name) {
-      return this.board.rotations.filter((r) => r.name === name);
+    getShiftsForZone(zoneId) {
+      return this.shifts.filter(s=>s.zone_id===zoneId);
     },
 
-    findShiftsByRotation(rotationId) {
-      return this.board.shifts
-        .filter((s) => s.rotationId === rotationId)
-        .sort((a, b) => a.order - b.order);
-    },
+    // findRotationByName(name) {
+    //   return this.board.rotations.filter((r) => r.name === name);
+    // },
 
-    getShiftsSortedByDoc() {
-      return this.board.shifts.toSorted((a, b) => {
-        const nameA = a.doctor.last.toUpperCase();
-        const nameB = b.doctor.last.toUpperCase();
-        return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
-      });
-    },
+    // findShiftsByRotation(rotationId) {
+    //   return this.board.shifts
+    //     .filter((s) => s.rotationId === rotationId)
+    //     .sort((a, b) => a.order - b.order);
+    // },
+
+    // getShiftsSortedByDoc() {
+    //   return this.board.shifts.toSorted((a, b) => {
+    //     const nameA = a.doctor.last.toUpperCase();
+    //     const nameB = b.doctor.last.toUpperCase();
+    //     return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
+    //   });
+    // },
 
     // SERVER
-    async getBoard() {
-      const new_board = await apiCall("api/getboard");
-      this.board = new_board.data;
-    },
-
-    async getSiteDetails() {
-      const siteDetails = await apiCall("api/getsitedetails");
-      this.site = siteDetails.data;
-      console.log(siteDetails.data);
-    },
-
     async checkLoginStatus() {
       console.log("Checking login status");
       const res = await apiCall("checklogin");
@@ -108,9 +107,16 @@ createApp({
       }
     },
 
-    handleNewState(state) {
-      this.board = state;
+    // init board, function to get site, shifts, events
+    async getAppSection(section, apiurl) {
+      const { data, error } = await apiCall(apiurl);
+      this[section] = data;
+      console.log('### '+ section + ': ', data);
     },
+
+    // handleNewState(state) {
+    //   this.board = state;
+    // },
 
     // API Calls
     addShift() {
@@ -120,10 +126,6 @@ createApp({
         options: { ...f.shift, rotationId: f.rotationId },
       });
       this.toggleAddShiftPopover();
-    },
-
-    addShiftComplete() {
-      return Object.values(this.forms.addShift).every(Boolean);
     },
 
     moveShift(shiftId, offset) {
@@ -177,10 +179,6 @@ createApp({
       event.target.closest("details").removeAttribute("open");
     },
 
-    toggleWhatsNew() {
-      this.ui.showWhatsNew = !this.ui.showWhatsNew;
-    },
-
     uiTogglerByShift(flag, shiftId) {
       this.ui[flag] = !this.ui[flag] ? shiftId : false;
     },
@@ -195,6 +193,10 @@ createApp({
     toggleAddShiftPopover() {
       this.ui.showAddShiftPopover = !this.ui.showAddShiftPopover;
       this.formDataReset(this.forms.addShift);
+    },
+
+    addShiftComplete() {
+      return Object.values(this.forms.addShift).every(Boolean);
     },
 
     toggleAssign(shiftId) {
@@ -231,32 +233,42 @@ createApp({
       return eventId === this.ui.showReassignPopover;
     },
 
-    // SHIFT
-    isNext(rotation, shift) {
-      return rotation.cycle.patient && shift.id === rotation.next.patient;
+    // SHIFT STYLES HELPERS
+    isNext(zone, shift) {
+      return shift.id === zone.next_pt_shift_id;
     },
 
-    isNextMidlevel(rotation, shift) {
-      return rotation.cycle.midlevel && shift.id === rotation.next.midlevel;
-    },  
-
-    getShiftClasses(rotation, shift) {
-      const shiftType = {
-        Off: "shiftOff",
-        "Fast Track": "shiftFastTrack",
-        Main: "shiftMain",
-      };
-      const next = this.isNext(rotation, shift) ? "shiftNext" : "";
-      const midlevel = shift.doctor.app ? "shiftApp" : "";
-
-      return `${shiftType[rotation.name]} ${next} ${midlevel}`;
+    isNextSupervisor(zone, shift) {
+      return shift.id === zone.next_supervisor_shift_id;
     },
+
+    isDocShift(shift) {
+      return shift.clinician.clinician_type_id === 1;
+    },
+
+    isMidlevelShift(shift) {
+      return shift.clinician.clinician_type_id === 2;
+    },
+
+    // getShiftClasses(rotation, shift) {
+
+    //   // const shiftType = {
+    //   //   Off: "shiftOff",
+    //   //   "Fast Track": "shiftFastTrack",
+    //   //   Main: "shiftMain",
+    //   // };
+    //   // const next = this.isNext(rotation, shift) ? "shiftNext" : "";
+    //   // const midlevel = shift.doctor.app ? "shiftApp" : "";
+
+    //   // return `${shiftType[rotation.name]} ${next} ${midlevel}`;
+    // },
   },
 
   async mounted() {
     this.checkLoginStatus();
-    this.getBoard();
-    this.getSiteDetails();
+    this.getAppSection('site', 'api/getsitedetails')
+    this.getAppSection('shifts', 'api/getshifts')
+    this.getAppSection('events', 'api/getevents')
   },
 }).mount("#app");
 </script>

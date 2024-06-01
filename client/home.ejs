@@ -6,95 +6,40 @@
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="pico.colors.min.css" />
     <link rel="stylesheet" href="pico.min.css" />
-
     <link rel="stylesheet" href="styles.css" />
-    <script src="/socket.io/socket.io.js"></script>
-    <script type="importmap">
-      {
-        "imports": {
-          "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
-        }
-      }
-    </script>
   </head>
   <body>
     <div class="container" id="app" v-cloak>
       <%- include('./partials/nav.ejs'); %>
       <main>
+        <!-- TIMELINE -->
         <section class="timeline">
           <h4>Timeline</h4>
           <hr />
-          <div class="blank" v-if="board.events.length === 0">No events</div>
+          <div class="blank" v-if="events.length === 0">No events</div>
           <template v-else>
-            <template v-for="(event, index) in board.events">
+            <template v-for="(event, index) in events">
               <%- include('./partials/event.ejs'); %>
             </template>
           </template>
         </section>
-        <section class="mainRotation">
-          <h4>Main Rotation</h4>
-          <hr />   
-          <template v-for="rotation in findRotationByName('Main')">
-            <template v-if="rotation.shiftCount === 0"
-              ><%- include('./partials/blank.ejs'); %></template
-            >
-            <template v-else
-              ><%- include('./partials/shifts.ejs'); %>
 
-              <hr>
-              <div v-if="nurse" class="skipControls">
-                <button
-                  class="secondary outline"
-                  @click="moveNext('patient', rotation.id, -1)"
-                >
-                  <%- include('./icons/arrow-l.svg') %>Rotation Back
-                </button>
-                <button
-                  class="secondary outline"
-                  @click="moveNext('patient', rotation.id, 1)"
-                >
-                  Rotation Skip<%- include('./icons/arrow-r.svg') %>
-                </button>
-              </div>
-              <div v-if="nurse" class="skipControls">
-                <button class="secondary"
-                  @click="moveNext('midlevel', rotation.id, -1)">
-                  <%- include('./icons/arrow-l.svg') %>APP Staffing Back
-                </button>
-                <button class="secondary"
-                  @click="moveNext('midlevel', rotation.id, 1)">
-                  APP Staffing Skip<%- include('./icons/arrow-r.svg') %>
-                </button>
-              </div>
-            </template>
+        <!-- MAIN ZONE -->
+        <section class="mainZone">
+          <template v-for="zone in site.zones.filter(z=>z.site_order === 0)">
+            <%- include('./partials/zoneRoster.ejs'); %>
           </template>
         </section>
-        <section class="otherRotations">
-          <!-- <h4>Fast Track</h4>
-          <hr />
-          <template v-for="rotation in findRotationByName('Fast Track')">
-            <template v-if="rotation.shiftCount === 0"
-              ><%- include('./partials/blank.ejs'); %></template
-            >
-            <template v-else><%- include('./partials/shifts.ejs'); %></template>
-          </template> -->
-          <h4>Off Rotation</h4>
-          <hr />
-          <template v-for="rotation in findRotationByName('Off')">
-            <template v-if="rotation.shiftCount === 0"
-              ><%- include('./partials/blank.ejs'); %></template
-            >
-            <template v-else><%- include('./partials/shifts.ejs'); %></template>
+
+        <!-- OTHER ZONES -->
+        <section class="otherZones">
+          <template v-for="zone in site.zones.filter(z=>z.site_order > 0)">
+            <%- include('./partials/zoneRoster.ejs'); %>
           </template>
         </section>
+
       </main>
     </div>
-
-    <script src="./dummy.js"></script>
-    <script src="./dummy2.js"></script>
-    <script src="./doctors.js"></script>
-    <script src="./shiftDetails.js"></script>
     <%- include('./app.ejs'); %>
-
   </body>
 </html>
