@@ -52,8 +52,8 @@ createApp({
       // variables for form control with v-model
       forms: {
         addShift: {
-          clinician: "",
-          shift: "",
+          clinicianId: "",
+          shiftTypeId: "",
           zoneId: "",
         },
         assign: {
@@ -121,9 +121,11 @@ createApp({
     // API Calls
     addShift() {
       const f = this.forms.addShift;
-      apiCall("api/addShift", {
-        doctor: f.doctor,
-        options: { ...f.shift, rotationId: f.rotationId },
+      console.log(f);
+      apiCall("api/addshift", {
+        clinicianId: f.clinicianId,
+        shiftTypeId: f.shiftTypeId,
+        zoneId: f.zoneId
       });
       this.toggleAddShiftPopover();
     },

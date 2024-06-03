@@ -6,7 +6,7 @@ import { createServer } from "http";
 // https://stackoverflow.com/a/57527735
 // will catch async errors and pass to error middleware without try/catch blocks
 import "express-async-errors";
-import { supabase } from "./server/api.js";
+import { supabase } from "./server/db.js";
 import apiRoutes from "./server/api.js";
 
 const JWT_KEY = process.env.JWT_KEY;

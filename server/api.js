@@ -1,14 +1,7 @@
 import express from "express";
-import { createClient } from "@supabase/supabase-js";
-
+import db from "./db.js";
 // EXPRESS
 const api = express.Router();
-
-// SUPABASE
-export const supabase = createClient(
-  "http://localhost:54321",
-  process.env.SUPABASE_API
-);
 
 // HELPERS
 // export function responder(res) {
@@ -22,73 +15,113 @@ function responder(res, data) {
   res.status(200).json({ message: "success", data });
 }
 
-async function getSiteDetails(site_id, detail) {
-  const { data, error } = await supabase
-    .from("sites")
-    .select("*, sites!inner(site_id)")
-    .eq("sites.site_id", site_id);
-
-  return data;
-}
-
 // NEW API
 
+// SETUP SCRIPTS
 // takes site_id comes from token
-
 api.post("/getsitedetails", async (req, res) => {
-  const { data: siteInfo, error } = await supabase
-    .from("sites")
-    .select("id, name, zones(*), shift_types(*), clinicians(*)")
-    .eq("id", req.token.site_id)
-    .limit(1)
-    .single()
-    .order("site_order", { referencedTable: "zones" })
-    .order("lname", { referencedTable: "clinicians" });
+  const siteInfo = await db.getSiteDetails(req.token.site_id);
   responder(res, siteInfo);
 });
 
 api.post("/getshifts", async (req, res) => {
-  const { data: shifts, error } = await supabase
-    .from("shifts")
-    .select(
-      `*,
-      clinician:clinician_id(*, clinician_type:clinician_type_id(*)), 
-      details:shift_type_id(name, start, end),
-      patients:patients!shift_id(*),
-      supervised_patients:patients!supervisor_shift_id(*)`
-    )
-    .eq("site_id", req.token.site_id)
-    .order("zone_id", { ascending: true })
-    .order("zone_order", { ascending: true });
-  console.log(error);
+  const shifts = await db.getShifts(req.token.site_id);
   responder(res, shifts);
 });
 
 api.post("/getevents", async (req, res) => {
-  const { data: events, error } = await supabase
-    .from("events")
-    .select(
-      `
-      *, 
-      shift:shift_id(*, clinician:clinician_id(*)), 
-      patient:patient_id(*)`
-    )
-    .eq("site_id", req.token.site_id)
-    .order("created_at", { ascending: false });
-  console.log(error);
+  const events = await db.getEvents(req.token.site_id);
   responder(res, events);
+});
+
+// SHIFTS
+api.post("/addshift", async (req, res) => {
+  const { clinicianId, shiftTypeId, zoneId } = req.body;
+  console.log(data);
+
+  // get current next_shift
+  const { data: zoneData, error: zoneError } = await supabase
+    .from("zones")
+    .select("next_shift_id")
+    .eq("zone_id", zoneId)
+    .single();
+
+  if (zoneError) {
+    console.error("Error fetching next_shift_id:", zoneError);
+    return;
+  }
+
+  const nextShiftId = zoneData.next_shift_id;
+
+  // get order of next_shift
+  const { data: shiftData, error: shiftError } = await supabase
+    .from("shifts")
+    .select("order_in_zone")
+    .eq("shift_id", nextShiftId)
+    .single();
+
+  if (shiftError) {
+    console.error("Error fetching order_in_zone:", shiftError);
+    return;
+  }
+
+  const orderInZone = shiftData.order_in_zone;
+
+  //add shift with that order
+  const { data: newShift, error: newShiftError } = await supabase
+    .from("shifts")
+    .insert([
+      {
+        shift_type_id: shiftTypeId,
+        site_id: req.token.site_id,
+        zone_id: zoneId,
+        clinician_id: clinicianId,
+        order_in_zone: orderInZone,
+      },
+    ])
+    .single();
+
+  if (newShiftError) {
+    console.error("Error inserting new shift:", newShiftError);
+    return;
+  }
+
+  // update shift orders for zone
+  const { error: updateError } = await supabase
+    .from("shifts")
+    .update({ order_in_zone: supabase.raw("order_in_zone + 1") })
+    .eq("zone_id", zoneId)
+    .gte("order_in_zone", orderInZone)
+    .neq("shift_id", newShift.shift_id); // only update if not new shift
+
+  if (updateError) {
+    console.error("Error updating order_in_zone:", updateError);
+    return;
+  }
+
+  // update zone
+  const { error: zoneUpdateError } = await supabase
+    .from("zones")
+    .update({ next_shift_id: newShiftId })
+    .eq("zone_id", zoneId);
+
+  if (zoneUpdateError) throw zoneUpdateError;
+
+  console.log(
+    "New shift inserted, order updated, and zone.next_shift_id updated successfully"
+  );
 });
 
 // OLD API
 
-api.post("/addShift", (req, res) => {
-  const { doctor, options } = req.body;
-  if (options.id === 1) {
-    board.reset();
-  }
-  board.addNewShift(doctor, options);
-  responder(res);
-});
+// api.post("/addShift", (req, res) => {
+//   const { doctor, options } = req.body;
+//   if (options.id === 1) {
+//     board.reset();
+//   }
+//   board.addNewShift(doctor, options);
+//   responder(res);
+// });
 
 api.post("/moveShift", (req, res) => {
   const { shiftId, offset } = req.body;
