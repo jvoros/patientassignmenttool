@@ -1,5 +1,5 @@
 import express from "express";
-import db from "./db.js";
+import db from "./db/db.js";
 // EXPRESS
 const api = express.Router();
 
@@ -37,79 +37,14 @@ api.post("/getevents", async (req, res) => {
 // SHIFTS
 api.post("/addshift", async (req, res) => {
   const { clinicianId, shiftTypeId, zoneId } = req.body;
-  console.log(data);
-
-  // get current next_shift
-  const { data: zoneData, error: zoneError } = await supabase
-    .from("zones")
-    .select("next_shift_id")
-    .eq("zone_id", zoneId)
-    .single();
-
-  if (zoneError) {
-    console.error("Error fetching next_shift_id:", zoneError);
-    return;
-  }
-
-  const nextShiftId = zoneData.next_shift_id;
-
-  // get order of next_shift
-  const { data: shiftData, error: shiftError } = await supabase
-    .from("shifts")
-    .select("order_in_zone")
-    .eq("shift_id", nextShiftId)
-    .single();
-
-  if (shiftError) {
-    console.error("Error fetching order_in_zone:", shiftError);
-    return;
-  }
-
-  const orderInZone = shiftData.order_in_zone;
-
-  //add shift with that order
-  const { data: newShift, error: newShiftError } = await supabase
-    .from("shifts")
-    .insert([
-      {
-        shift_type_id: shiftTypeId,
-        site_id: req.token.site_id,
-        zone_id: zoneId,
-        clinician_id: clinicianId,
-        order_in_zone: orderInZone,
-      },
-    ])
-    .single();
-
-  if (newShiftError) {
-    console.error("Error inserting new shift:", newShiftError);
-    return;
-  }
-
-  // update shift orders for zone
-  const { error: updateError } = await supabase
-    .from("shifts")
-    .update({ order_in_zone: supabase.raw("order_in_zone + 1") })
-    .eq("zone_id", zoneId)
-    .gte("order_in_zone", orderInZone)
-    .neq("shift_id", newShift.shift_id); // only update if not new shift
-
-  if (updateError) {
-    console.error("Error updating order_in_zone:", updateError);
-    return;
-  }
-
-  // update zone
-  const { error: zoneUpdateError } = await supabase
-    .from("zones")
-    .update({ next_shift_id: newShiftId })
-    .eq("zone_id", zoneId);
-
-  if (zoneUpdateError) throw zoneUpdateError;
-
-  console.log(
-    "New shift inserted, order updated, and zone.next_shift_id updated successfully"
+  console.log("api addshift");
+  const query = await db.addShift(
+    clinicianId,
+    shiftTypeId,
+    zoneId,
+    req.token.site_id
   );
+  responder(res, query);
 });
 
 // OLD API
