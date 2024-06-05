@@ -25,6 +25,7 @@ async function apiCall(url, payload, method = "POST") {
 createApp({
   data() {
     return {
+      listening: false,
       // the board from server, this is initialization version
       site: {
         id: '',
@@ -35,10 +36,6 @@ createApp({
       },
       shifts: [],
       events: [],
-      board: {
-        rotations: [],
-        events: []
-      },
       
       // flags for UI popovers
       ui: {
@@ -98,25 +95,7 @@ createApp({
     async checkLoginStatus() {
       console.log("Checking login status");
       const res = await apiCall("checklogin");
-      if (res.status === "success" && res.payload) {
-        //this.user = { loggedIn: true, ...res.payload };
-        this.nurse = res.payload.username === "nurse" ? true : false;
-      }
-      if (res.status === "error") {
-        this.setError(res);
-      }
     },
-
-    // init board, function to get site, shifts, events
-    async getAppSection(section, apiurl) {
-      const { data, error } = await apiCall(apiurl);
-      this[section] = data;
-      console.log('### '+ section + ': ', data);
-    },
-
-    // handleNewState(state) {
-    //   this.board = state;
-    // },
 
     // API Calls
     addShift() {
@@ -268,9 +247,22 @@ createApp({
 
   async mounted() {
     this.checkLoginStatus();
-    this.getAppSection('site', 'api/getsitedetails')
-    this.getAppSection('shifts', 'api/getshifts')
-    this.getAppSection('events', 'api/getevents')
+
+    // open broadcast channel
+    if (!this.listening) {
+      const events = new EventSource('http://localhost:4000/events');
+      // handle broadcast
+      events.onmessage = (event) => {
+        console.log('## SSE broadcast');
+        const { siteInfo, shifts, events } = JSON.parse(event.data);
+        this.site = siteInfo;
+        this.shifts = shifts;
+        this.events = events;
+      };
+      this.listening = true;
+    }
+    // first call to set up board
+    apiCall('api/getboard');
   },
 }).mount("#app");
 </script>

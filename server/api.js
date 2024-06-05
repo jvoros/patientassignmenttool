@@ -1,5 +1,8 @@
 import express from "express";
 import db from "./db/db.js";
+
+import { broadcastUpdate } from "../index.js";
+
 // EXPRESS
 const api = express.Router();
 
@@ -11,28 +14,44 @@ const api = express.Router();
 //   res.io.emit("new state", board.getState());
 // }
 
-function responder(res, data) {
-  res.status(200).json({ message: "success", data });
+async function responder(req, res) {
+  res.status(200).json({ message: "success" });
+  broadcastUpdate(JSON.stringify(await getBoard(req.token.site_id)));
+}
+
+async function getBoard(site_id) {
+  const siteInfo = await db.getSiteDetails(site_id);
+  const shifts = await db.getShifts(site_id);
+  const events = await db.getEvents(site_id);
+  return {
+    siteInfo,
+    shifts,
+    events,
+  };
 }
 
 // NEW API
 
-// SETUP SCRIPTS
+// BOARD
 // takes site_id comes from token
-api.post("/getsitedetails", async (req, res) => {
-  const siteInfo = await db.getSiteDetails(req.token.site_id);
-  responder(res, siteInfo);
+api.post("/getboard", async (req, res) => {
+  responder(req, res);
 });
 
-api.post("/getshifts", async (req, res) => {
-  const shifts = await db.getShifts(req.token.site_id);
-  responder(res, shifts);
-});
+// api.post("/getsitedetails", async (req, res) => {
+//   const siteInfo = await db.getSiteDetails(req.token.site_id);
+//   responder(res, siteInfo);
+// });
 
-api.post("/getevents", async (req, res) => {
-  const events = await db.getEvents(req.token.site_id);
-  responder(res, events);
-});
+// api.post("/getshifts", async (req, res) => {
+//   const shifts = await db.getShifts(req.token.site_id);
+//   responder(res, shifts);
+// });
+
+// api.post("/getevents", async (req, res) => {
+//   const events = await db.getEvents(req.token.site_id);
+//   responder(res, events);
+// });
 
 // SHIFTS
 api.post("/addshift", async (req, res) => {
@@ -45,6 +64,10 @@ api.post("/addshift", async (req, res) => {
     req.token.site_id
   );
   responder(res, query);
+});
+
+api.post("/testevents", (_req, _res) => {
+  broadcastUpdate("testevents");
 });
 
 // OLD API

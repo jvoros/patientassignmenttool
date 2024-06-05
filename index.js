@@ -51,6 +51,37 @@ const authorization = (req, res, next) => {
   }
 };
 
+// SSE MIDDLEWARE
+let clients = [];
+
+export function broadcastUpdate(payload) {
+  clients.forEach((client) => client.response.write(`data: ${payload}\n\n`));
+}
+
+function eventsHandler(request, response, _next) {
+  const headers = {
+    "Content-Type": "text/event-stream",
+    Connection: "keep-alive",
+    "Cache-Control": "no-cache",
+  };
+  response.writeHead(200, headers);
+
+  const clientId = Date.now();
+  const newClient = {
+    id: clientId,
+    response,
+  };
+  clients.push(newClient);
+  console.log("New client: ", clientId);
+
+  response.write(`data: connected\n\n`);
+
+  request.on("close", () => {
+    console.log(`${clientId} Connection closed`);
+    clients = clients.filter((client) => client.id !== clientId);
+  });
+}
+
 // ROUTES OUTSIDE AUTH
 
 app.use(express.static("client/public"));
@@ -109,6 +140,9 @@ app.get("/logout", (_req, res) => {
   res.clearCookie("access_token");
   res.redirect("/login");
 });
+
+// start broadcast connection
+app.get("/events", eventsHandler);
 
 app.get("/", (_req, res) => {
   res.render("home");
