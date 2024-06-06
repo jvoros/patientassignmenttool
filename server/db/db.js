@@ -73,7 +73,10 @@ export default {
         .eq("id", zoneId)
         .single();
       if (zoneError) throw zoneError;
-      const zoneOrder = zoneData.shift.zone_order;
+      // get next shift order, else insert at 0
+      const zoneOrder = zoneData.shift?.zone_order
+        ? zoneData.shift.zone_order
+        : 0;
 
       //add shift with that order
       const { data: newShift, error: newShiftError } = await supabase

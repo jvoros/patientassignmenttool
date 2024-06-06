@@ -7,18 +7,6 @@ import { broadcastUpdate } from "../index.js";
 const api = express.Router();
 
 // HELPERS
-// export function responder(res) {
-//   // client browser needs a response to know transmission complete
-//   res.status(200).json({ message: "success" });
-//   // state payload sent to client by socket.io
-//   res.io.emit("new state", board.getState());
-// }
-
-async function responder(req, res) {
-  res.status(200).json({ message: "success" });
-  broadcastUpdate(JSON.stringify(await getBoard(req.token.site_id)));
-}
-
 async function getBoard(site_id) {
   const siteInfo = await db.getSiteDetails(site_id);
   const shifts = await db.getShifts(site_id);
@@ -30,12 +18,17 @@ async function getBoard(site_id) {
   };
 }
 
+async function broadcast(req, res) {
+  res.status(200).json({ message: "success" });
+  broadcastUpdate(JSON.stringify(await getBoard(req.token.site_id)));
+}
+
 // NEW API
 
 // BOARD
 // takes site_id comes from token
 api.post("/getboard", async (req, res) => {
-  responder(req, res);
+  broadcast(req, res);
 });
 
 // api.post("/getsitedetails", async (req, res) => {
@@ -56,18 +49,8 @@ api.post("/getboard", async (req, res) => {
 // SHIFTS
 api.post("/addshift", async (req, res) => {
   const { clinicianId, shiftTypeId, zoneId } = req.body;
-  console.log("api addshift");
-  const query = await db.addShift(
-    clinicianId,
-    shiftTypeId,
-    zoneId,
-    req.token.site_id
-  );
-  responder(res, query);
-});
-
-api.post("/testevents", (_req, _res) => {
-  broadcastUpdate("testevents");
+  await db.addShift(clinicianId, shiftTypeId, zoneId, req.token.site_id);
+  broadcast(req, res);
 });
 
 // OLD API
