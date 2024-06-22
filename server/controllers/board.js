@@ -224,8 +224,8 @@ function createBoardStore() {
 
     // if new total > bonus move pointer without pointer event
     // AND movePointer === true
-    const updatedShift = findShiftById(shiftId);
-    if (updatedShift.counts.total > shift.bonus && movePointer === true)
+    const updated_count = findShiftById(shiftId).counts.total;
+    if (updated_count > shift.bonus && movePointer === true)
       moveNext("patient", shift.rotationId, 1, true);
 
     // make event
