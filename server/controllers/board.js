@@ -213,6 +213,7 @@ function createBoardStore() {
   function assignPatient(shiftId, type, room, movePointer = true) {
     const newPatient = Patient.make(type, room);
     const shift = findShiftById(shiftId);
+
     const associatedDoctorShiftId = shift.doctor.app
       ? findRotationById(shift.rotationId).next.midlevel
       : null;

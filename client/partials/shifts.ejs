@@ -7,13 +7,11 @@
     <div class="shiftContent">
       <div>
         <div class="shiftDoc">
-          {{ shift.doctor.first }} {{ shift.doctor.last }}
+          {{ shift.doctor.first }}
         </div>
       </div>
       <div class="shiftButtons">
-        <span v-if="isNextMidlevel(rotation, shift)" class="nextMidlevel"><%- include('../icons/people.svg'); %> Next APP</span>
-        <button v-if="shift.skip" class="outline secondary shiftSkip" data-tooltip="Click to cancel skip" @click="toggleSkip(shift.id)">Skips Next</button>
-        <template v-if="nurse && isNext(rotation, shift)">
+     <template v-if="nurse && isNext(rotation, shift)">
           <%- include('./assignPopover.ejs'); %>
         </template>
         

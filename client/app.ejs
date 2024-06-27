@@ -151,6 +151,7 @@ createApp({
     },
 
     addShiftComplete() {
+      this.forms.addShift.shift = this.forms.addShift.doctor != '' ? this.shiftDetails[this.forms.addShift.doctor.shift] : '';
       return Object.values(this.forms.addShift).every(Boolean);
     },
 
