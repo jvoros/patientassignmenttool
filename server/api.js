@@ -1,3 +1,4 @@
+import fs from "fs";
 import express from "express";
 import { board } from "../index.js";
 
@@ -15,6 +16,21 @@ export function responder(res) {
 api.post("/addShift", (req, res) => {
   const { doctor, options } = req.body;
   if (options.id === 1) {
+    // before reset, log shift totals to shift_log.txt
+    const data = [];
+    const date = new Date();
+    board.getState().shifts.forEach((shift) => {
+      data.push(
+        `${date.toLocaleDateString("en-US")}, ${shift.doctor.first}, ${
+          shift.counts.total > 0 ? shift.counts.total : 0
+        }`
+      );
+    });
+    fs.appendFileSync("./server/shift_log.txt", "\n" + data.join("\n"));
+
+    // email shift totals and shift_log
+    // new code here...
+
     board.reset();
   }
   board.addNewShift(doctor, options);
