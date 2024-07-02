@@ -1,6 +1,2 @@
 
-7/1/2024, Delta, 0
-7/1/2024, Charlie, 2
-7/1/2024, Bravo Day, 3
-7/1/2024, Alpha Day, 2
-7/1/2024, Alpha Day, 1
+Reset Date, Shift Name, Total

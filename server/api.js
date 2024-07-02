@@ -1,6 +1,7 @@
 import fs from "fs";
 import express from "express";
 import { board } from "../index.js";
+import sendmail from "./mailer.js";
 
 const api = express.Router();
 
@@ -26,10 +27,26 @@ api.post("/addShift", (req, res) => {
         }`
       );
     });
-    fs.appendFileSync("./server/shift_log.txt", "\n" + data.join("\n"));
+    const message = "\n" + data.join("\n");
+    fs.appendFileSync("./server/shift_log.txt", message);
 
     // email shift totals and shift_log
-    // new code here...
+    const mailOptions = {
+      from: "jeremy.voros@carepointhc.com",
+      to: "jeremy.voros@carepointhc.com",
+      subject: "Patient Assignment Tools Log",
+      text: message,
+      attachments: [
+        {
+          filename: "shift_log.txt",
+          path: "./server/shift_log.txt",
+        },
+      ],
+    };
+    sendmail(mailOptions, (info) => {
+      console.log("Email sent successfully");
+      console.log("MESSAGE ID: ", info.messageId);
+    });
 
     board.reset();
   }
