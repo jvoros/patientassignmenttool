@@ -194,6 +194,10 @@ main {
   color: var(--my-ft-color);
 }
 
+.shiftFastTrack .shiftNextFlag {
+  display: none;
+}
+
 .shiftApp {
   border-color: var(--my-ft-border);
 }

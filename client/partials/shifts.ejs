@@ -11,7 +11,7 @@
         </div>
       </div>
       <div class="shiftButtons">
-     <template v-if="nurse && isNext(rotation, shift)">
+     <template v-if="isNext(rotation, shift)">
           <%- include('./assignPopover.ejs'); %>
         </template>
         
