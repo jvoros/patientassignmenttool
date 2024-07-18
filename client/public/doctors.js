@@ -1,3 +1,4 @@
+// shift value corresponds to array index of shift details in shiftDetails.js
 const doctors = [
   { first: "Alpha Day", last: "6 am", shift: 0 },
   { first: "Fast Track", last: "6 am", shift: 1 },
