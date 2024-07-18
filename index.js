@@ -78,9 +78,9 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login/password", (req, res) => {
-  const { username, password } = req.body;
-  if (password === userTable[username].pass) {
-    const user = { username };
+  const { password } = req.body;
+  if (password === userTable["nurse"].pass) {
+    const user = { username: "nurse" };
     const token = jwt.sign(user, JWT_KEY);
 
     res.cookie("access_token", token, {
