@@ -1,7 +1,7 @@
 // shift value corresponds to array index of shift details in shiftDetails.js
 const doctors = [
   { first: "Alpha Day", last: "6 am", shift: 0 },
-  { first: "Fast Track", last: "6 am", shift: 1 },
+  { first: "Fast Track", last: "6 am", shift: 1, app: true },
   { first: "Bravo Day", last: "8 am", shift: 2 },
   { first: "Charlie", last: "11 am", shift: 3 },
   { first: "Alpha Swing", last: "3 pm", shift: 4 },
