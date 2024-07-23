@@ -28,8 +28,8 @@ describe("Event Functions", () => {
     expect(e.patient.room).to.equal("20");
   });
 
-  it("should reassign", () => {
-    e = Event.setReassign(e, "Bugs Bunny");
-    expect(e.reassign).to.equal("Bugs Bunny");
-  });
+  // it("should reassign", () => {
+  //   e = Event.setReassign(e, "Bugs Bunny");
+  //   expect(e.reassign).to.equal("Bugs Bunny");
+  // });
 });

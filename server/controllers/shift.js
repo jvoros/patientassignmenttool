@@ -1,27 +1,16 @@
 import ShortUniqueId from "short-unique-id";
 const uid = new ShortUniqueId();
 
-function make(doctor, options) {
+function make(provider, options) {
   return {
     id: uid.rnd(),
-    doctor,
-    start: options.start,
-    end: options.end,
+    provider,
     name: options.name,
     bonus: options.bonus,
-    rotationId: options.rotationId,
-    order: options.order,
-    skip: false,
+    app: options.app,
     patients: [],
     counts: {},
   };
-}
-function setOrder(shift, order) {
-  return { ...shift, order };
-}
-
-function setRotation(shift, rotationId) {
-  return { ...shift, rotationId };
 }
 
 function addPatient(shift, pt) {
@@ -47,21 +36,8 @@ function updateCounts(shift) {
   return { ...shift, counts };
 }
 
-function turnComplete(shift) {
-  // if APP shift, toggle skip each time through
-  return toggleSkip(shift);
-}
-
-function toggleSkip(shift) {
-  return shift.doctor.app ? { ...shift, skip: !shift.skip } : shift;
-}
-
 export default {
   make,
   addPatient,
   removePatient,
-  setOrder,
-  setRotation,
-  turnComplete,
-  toggleSkip,
 };

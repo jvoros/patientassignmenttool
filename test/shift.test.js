@@ -41,21 +41,9 @@ describe("Shift Functions", () => {
   );
 
   it("should construct correctly", () => {
-    const x = [
-      "id",
-      "doctor",
-      "start",
-      "end",
-      "name",
-      "bonus",
-      "rotationId",
-      "order",
-      "skip",
-      "patients",
-      "counts",
-    ];
+    const x = ["id", "provider", "name", "bonus", "app", "patients", "counts"];
     expect(Object.keys(shift1)).to.deep.equal(x);
-    expect(shift1.doctor.last).to.equal("Voros");
+    expect(shift1.provider.last).to.equal("Voros");
   });
 
   it("should add patients", () => {
@@ -69,16 +57,6 @@ describe("Shift Functions", () => {
   it("should remove patients", () => {
     shift2 = Shift.removePatient(shift2, shift2.patients[0].id);
     expect(shift2.patients.length).to.equal(0);
-  });
-
-  it("should update order", () => {
-    shift1 = Shift.setOrder(shift1, 1);
-    expect(shift1.order).to.equal(1);
-  });
-
-  it("should update rotation", () => {
-    shift1 = Shift.setRotation(shift1, 2);
-    expect(shift1.rotationId).to.equal(2);
   });
 
   it("should count patient types", () => {

@@ -5,29 +5,31 @@ import Event from "./event.js";
 import Patient from "./patient.js";
 
 // export for use in history api
-export const EVENT_LIMIT = 25;
+export const EVENT_LIMIT = 50;
 
 const initialState = {
-  rotations: [
-    Rotation.make("Main", true, true),
-    Rotation.make("Fast Track", true),
-    Rotation.make("Off"),
-  ],
+  zones: {
+    // arrays of shift IDs, maintains order, shift can be in more than one zone
+    rotation: [],
+    fasttrack: [],
+    flex: [],
+    off: [],
+  },
   shifts: [],
   events: [],
+  next: {
+    // shift IDs for who gets next patient or next supervisor role
+    patient: null,
+    sup: null,
+  },
 };
 
 function createBoardStore() {
-  let state = initialState;
+  let state = structuredClone(initialState);
   let history = [];
 
   function reset() {
-    state.rotations.map((rot) => {
-      rot.next.patient = null;
-      rot.next.midlevel = null;
-    });
-    state.shifts = [];
-    state.events = [];
+    state = structuredClone(initialState);
     addEvent("reset", "Board reset", null);
     return;
   }
@@ -38,321 +40,257 @@ function createBoardStore() {
 
   // SHIFT Functions
 
-  function addNewShift(doctor, options) {
-    addShift(Shift.make(doctor, options));
-    return;
-  }
+  function addShift(provider, options) {
+    const shift = Shift.make(provider, options);
+    state.shifts.push(shift);
 
-  function addShift(newShift, noEvent = false) {
-    const rot = findRotationById(newShift.rotationId);
-
-    // adjust order of rotation shifts
-    const newOrder =
-      rot.cycle.patient && shiftCount(rot.id) > 0
-        ? findShiftById(rot.next.patient).order
-        : 0;
-    newShift.order = newOrder;
-
-    // add shift
-    state.shifts = [
-      newShift,
-      ...handleRotationOrder(newShift.rotationId, newOrder, "add"),
-    ];
-
-    // handle next[cycle] assignments
-    // new shift becomes next in rotation
-    modifyRotationById(
-      newShift.rotationId,
-      Rotation.setNext,
-      "patient",
-      newShift.id
-    );
-    // if no one on nextMidlevel, and new shift not midlevel, make next
-    if (!rot.next.midlevel && !newShift.doctor.app) {
-      modifyRotationById(
-        newShift.rotationId,
-        Rotation.setNext,
-        "midlevel",
-        newShift.id
-      );
-    }
-
-    // Event
-    if (noEvent) return;
-    const message = `${newShift.doctor.first} ${newShift.doctor.last} joined ${rot.name}`;
-    addEvent("join", message, newShift);
-    return;
-  }
-
-  // needs some work, doesn't handle case where midlevel is only one left on rotation
-  function moveShiftToRotation(moveShiftId, newRotationId) {
-    let moveShift = findShiftById(moveShiftId);
-    const startingRot = findRotationById(moveShift.rotationId);
-
-    // handle any active nextShift assignments
-    // need to do this before changing order because needs shift order to work
-    // if it is last shift in rotation
-    if (shiftCount(startingRot.id) === 1) {
-      startingRot.next.patient = null;
-      startingRot.next.midlevel = null;
+    if (shift.app) {
+      // add APP shift to flex
+      state.zones.flex.push(shift.id);
+      // if no APP on FT, add to FT
+      if (state.zones.fasttrack.length === 0)
+        state.zones.fasttrack.push(shift.id);
     } else {
-      // if was not last shift
-      ["patient", "midlevel"].forEach((cycle) => {
-        if (startingRot.next[cycle] === moveShift.id)
-          moveNext(cycle, startingRot.id, 1, true);
-      });
+      // add Doc shift
+      joinRotation(shift.id, "noevent");
     }
 
-    // filter out the moved shift
-    state.shifts = state.shifts.filter((s) => s.id !== moveShiftId);
-    // redo orders
-    state.shifts = handleRotationOrder(
-      moveShift.rotationId,
-      moveShift.order,
-      "remove"
-    );
-
-    // add shift back in to new rotation
-    moveShift = Shift.setRotation(moveShift, newRotationId);
-    addShift(moveShift, "noEvent");
-
-    // event
-    const message = [
-      moveShift.doctor.first,
-      moveShift.doctor.last,
-      "moved to",
-      findRotationById(newRotationId).name,
-    ].join(" ");
-    addEvent("move", message, moveShift);
-    return;
+    addZoneEvent(shift.id, "joined board");
+    return shift.id;
   }
 
-  function moveShift(shiftId, offset) {
+  // ROTATION Functions
+
+  function joinRotation(shiftId, noevent) {
     const shift = findShiftById(shiftId);
-    const rotationId = shift.rotationId;
-    const oldOrder = shift.order;
-    const newOrder = shift.order + offset;
-    //early return for moving beyond bounds of rotation
-    if (newOrder < 0 || newOrder >= shiftCount(rotationId)) return;
+    // if first shift on rotation
+    if (state.zones.rotation.length === 0) {
+      state.zones.rotation.push(shiftId);
+      state.next.sup = !shift.app ? shiftId : null;
+    } else {
+      // not first shift on rotation
+      const index = state.zones.rotation.findIndex(
+        (x) => x === state.next.patient
+      );
+      state.zones.rotation.splice(index, 0, shiftId);
+    }
+    // make the new shift next for patient assignment
+    state.next.patient = shiftId;
 
-    state.shifts = state.shifts.map((shift) =>
-      shift.id === shiftId
-        ? Shift.setOrder(shift, newOrder)
-        : shift.rotationId !== rotationId
-        ? shift
-        : shift.order === newOrder
-        ? Shift.setOrder(shift, oldOrder)
-        : shift
-    );
-    //event
-    const message = [
-      shift.doctor.first,
-      shift.doctor.last,
-      "changed position",
-    ].join(" ");
-    addEvent("order", message, shift);
+    if (noevent) return;
+    addZoneEvent(shiftId, "joined rotation");
     return;
   }
 
-  // CYCLE functions
-
-  function moveNext(cycle, rotationId, offset, noEvent = false) {
-    const rot = findRotationById(rotationId);
-    // make sure rotation is supposed to cycle
-    if (!rot.cycle[cycle]) return;
-    // make sure there is a next shift to move from
-    if (
-      !rot.next[cycle] ||
-      findShiftById(rot.next[cycle].rotationId !== rotationId)
-    ) {
-      rot.next[cycle] = findShiftByOrder(rotationId, 0).id;
+  function leaveRotation(shiftId) {
+    // more than one shift on rotation
+    if (state.zones.rotation.length >= 2) {
+      // move next assignments as needed
+      const [index, _nextIndex, nextShiftId] = findIndexAndNeighbor(shiftId, 1);
+      Object.entries(state.next).forEach((entry) => {
+        const [key, value] = entry;
+        if (value === shiftId) state.next[key] = nextShiftId;
+      });
+      // remove shift from rotation
+      state.zones.rotation.splice(index, 1);
       return;
     }
 
-    const startShift = findShiftById(rot.next[cycle]);
-    const nextShift = findNeighborShift(rotationId, startShift.order, offset);
+    // else last shift on rotation
+    state.zones.rotation = [];
+    state.next.patient = null;
+    state.next.sup = null;
+    return;
+  }
 
-    // fire turn complete for current shift if patient cycle
-    if (cycle === "patient") modifyShiftById(startShift.id, Shift.turnComplete);
+  function moveShiftInRotation(shiftId, offset) {
+    const [index, nextIndex, _nextShiftId] = findIndexAndNeighbor(
+      shiftId,
+      offset
+    );
+    // check bounds
+    if (nextIndex < 0 || nextIndex >= state.zones.rotation.length) return;
+    // move shift
+    // https://stackoverflow.com/questions/5306680/move-an-array-element-from-one-array-position-to-another
+    state.zones.rotation.splice(
+      nextIndex,
+      0,
+      state.zones.rotation.splice(index, 1)[0]
+    );
+    addZoneEvent(shiftId, "changed position");
+    return;
+  }
 
-    // set new next[cycle]Shift
-    modifyRotationById(rotationId, Rotation.setNext, cycle, nextShift.id);
+  function moveNext(whichNext, offset, noeventparam = false) {
+    let noEvent = noeventparam;
+    const shiftId = state.next[whichNext];
+    const [_index, _nextIndex, nextShiftId] = findIndexAndNeighbor(
+      shiftId,
+      offset
+    );
+    // set next to the next shift id
+    state.next[whichNext] = nextShiftId;
 
-    // check if new shift should be skipped
-    if (cycle === "patient" && nextShift.skip)
-      moveNext("patient", rotationId, offset, true);
-
-    if (cycle === "midlevel" && nextShift.doctor.app) {
-      // first check that there is a doc shift in rotation
-      // if so, can advance
-      moveNext("midlevel", rotationId, offset, true);
-
-      // otherwise set nextMidlevelShift to null
+    // if moving APP, needs to cycle again if next shift is APP
+    const nextShift = findShiftById(nextShiftId);
+    if (whichNext === "sup" && nextShift.app) {
+      noEvent = true;
+      moveNext(whichNext, offset, noeventparam);
     }
 
     // event
-    // flag to fire without event
     if (noEvent) return;
-    // event has different shift based on pointer direction
-    const eventShift = offset === 1 ? startShift : nextShift;
-    // event has different 'skip' and 'back' based on cycle
-    const skip = cycle === "midlevel" ? "APP Skipped" : "Skipped";
-    const back = cycle === "midlevel" ? "APP Back to" : "Back to";
     const message = [
-      offset === 1 ? skip : back,
-      eventShift.doctor.first,
-      eventShift.doctor.last,
+      nextShift.provider.first,
+      nextShift.provider.last,
+      whichNext === "sup" ? "set as next supervisor" : "set as up next",
     ].join(" ");
-    addEvent("pointer", message, eventShift);
+    addEvent("pointer", message);
     return;
   }
 
-  // PATIENT & MIDLEVEL functions
+  // ZONE Functions
 
-  function assignPatient(shiftId, type, room, movePointer = true) {
-    const newPatient = Patient.make(type, room);
+  function signOut(shiftId) {
+    // take off rotation with leaveRotation()
+    if (state.zones.rotation.findIndex(shiftId) >= 0) {
+      leaveRotation(shiftId);
+    }
+    // take off all zones
+    state.zones.forEach((zone) => {
+      state.zones[zone] = zone.filter((x) => x != shiftId);
+    });
+    // add to off zone
+    state.zones.off.push(shiftId);
+    addZoneEvent(shiftId, "signed out");
+  }
+
+  function appFlexOff(shiftId) {
+    leaveRotation(shiftId);
+    state.zones.flex.push(shiftId);
+    addZoneEvent(shiftId, "flexed off");
+    return;
+  }
+
+  function appFlexOn(shiftId) {
+    joinRotation(shiftId, "noevent");
+    state.zones.flex = state.zones.flex.filter((x) => x !== shiftId);
+    addZoneEvent(shiftId, "flexed on rotation");
+    return;
+  }
+
+  function joinFT(shiftId) {
+    state.zones.fasttrack.push(shiftId);
+    addZoneEvent(shiftId, "joined Fast Track");
+  }
+
+  function leaveFT(shiftId) {
+    state.zones.fasttrack = state.zones.fasttrack.filter((x) => x !== shiftId);
+    addZoneEvent(shiftId, "left Fast Track");
+  }
+
+  // ASSIGNMENTS
+
+  function assignPatient(shiftId, type, room, advanceRotation = true) {
+    const patient = Patient.make(type, room);
     const shift = findShiftById(shiftId);
+    const supShiftId = shift.app ? state.next.sup : null;
 
-    const associatedDoctorShiftId = shift.doctor.app
-      ? findRotationById(shift.rotationId).next.midlevel
-      : null;
-    modifyShiftById(shiftId, Shift.addPatient, newPatient);
-    // if midlevel also assign pt to doctor
-    if (shift.doctor.app) {
-      staffMidlevel(shift.rotationId, associatedDoctorShiftId);
+    // add patient
+    modifyShiftById(shiftId, Shift.addPatient, patient);
+
+    // add supervisor
+    if (shift.app) superviseApp(supShiftId);
+
+    // advance rotation?
+    //if > bonus and advanceRotation === true
+    const updated_count = findShiftById(shiftId).counts.total;
+    if (updated_count > shift.bonus && advanceRotation === true) {
+      moveNext("patient", 1, "noevent");
     }
 
-    // if new total > bonus move pointer without pointer event
-    // AND movePointer === true
-    const updated_count = findShiftById(shiftId).counts.total;
-    if (updated_count > shift.bonus && movePointer === true)
-      moveNext("patient", shift.rotationId, 1, true);
-
-    // make event
-    const message = [
-      room,
-      "assigned to",
-      shift.doctor.first,
-      shift.doctor.last,
-    ].join(" ");
-    const eventDetail = associatedDoctorShiftId
-      ? [
-          "with",
-          findShiftById(associatedDoctorShiftId).doctor.first,
-          findShiftById(associatedDoctorShiftId).doctor.last,
-        ].join(" ")
+    // event
+    const supShift = findShiftById(supShiftId);
+    const message = `${room} assigned to ${shift.provider.first} ${shift.provider.last}`;
+    const eventDetail = supShiftId
+      ? `with ${supShift.provider.first} ${supShift.provider.last}`
       : null;
-    addEvent("assign", message, shift, newPatient, eventDetail);
+    addEvent("assign", message, shift, patient, eventDetail);
     return;
+  }
+
+  function superviseApp(shiftId) {
+    modifyShiftById(shiftId, Shift.addPatient, Patient.make("app", 0));
+    moveNext("sup", 1, "noevent");
   }
 
   function reassignPatient(eventId, newShiftId) {
-    const event = findById(state.events, eventId);
+    // get the event
+    const event = state.events.find((x) => event.id === eventId);
+    // remove pt from first shift, add to second
     modifyShiftById(event.shift.id, Shift.removePatient, event.patient.id);
     modifyShiftById(newShiftId, Shift.addPatient, event.patient);
+    // events
     const newShift = findShiftById(newShiftId);
     // modify original event
     state.events = modifyById(
       state.events,
       eventId,
       Event.setDetail,
-      "reassigned to " + newShift.doctor.first + " " + newShift.doctor.last
+      "reassigned to " + newShift.provider.first + " " + newShift.provider.last
     );
     // make event
-    const message = [
-      event.patient.room,
-      "reassigned to",
-      newShift.doctor.first,
-      newShift.doctor.last,
-    ].join(" ");
+    const message = `${event.patient.room} reassigned to ${newShift.provider.first} ${newShift.provider.last}`;
     addEvent("assign", message, newShift, event.patient);
     return;
   }
 
-  function staffMidlevel(rotationId, shiftId) {
-    const shift = findShiftById(shiftId);
-    modifyShiftById(shiftId, Shift.addPatient, Patient.make("app", 0));
-    moveNext("midlevel", rotationId, 1, "noEvent");
-    // const message = [
-    //   shift.doctor.first,
-    //   shift.doctor.last,
-    //   "staffed with APP",
-    // ].join(" ");
-    // addEvent("staff", message, shift);
-  }
-
-  function toggleSkip(shiftId) {
-    const shift = findShiftById(shiftId);
-    modifyShiftById(shiftId, Shift.toggleSkip);
-    const message = [
-      shift.doctor.first,
-      shift.doctor.last,
-      "cancelled skip",
-    ].join(" ");
-    addEvent("pointer", message, shift);
+  function addApp(eventId, newShiftId) {
+    // get the event
+    const event = state.events.find((x) => event.id === eventId);
+    // remove pt from first shift, readd as app patient type
+    modifyShiftById(event.shift.id, Shift.removePatient, event.patient.id);
+    modifyShiftById(
+      newShiftId,
+      Shift.addPatient,
+      Patient.make("app", event.patient.room)
+    );
+    // event
+    const newShift = findShiftById(newShiftId);
+    state.events = modifyById(
+      state.events,
+      eventId,
+      Event.setDetail,
+      "with APP: " + newShift.provider.first + " " + newShift.provider.last
+    );
   }
 
   // HELPERS
-  // function to take rotation or shift arrays
-  // and modify just the specified shift, returns the full array
-  // Shift and Rotation functions return a new shift that replaces the old
-  // Don't need to pass shift or rotation to function, modifyById handles that as first arg
+
+  function findShiftById(shiftId) {
+    return state.shifts.find((shift) => shift.id === shiftId);
+  }
+
+  function findIndex(shiftId) {
+    return state.zones.rotation.findIndex((x) => x === shiftId);
+  }
+
+  function findIndexAndNeighbor(shiftId, offset) {
+    const index = findIndex(shiftId);
+    const len = state.zones.rotation.length;
+    const nextIndex = (index + offset + len) % len;
+    const nextShiftId = state.zones.rotation[nextIndex];
+    return [index, nextIndex, nextShiftId];
+  }
+
   function modifyById(arr, itemId, func, ...args) {
     return arr.map((item) => {
       return item.id === itemId ? func(item, ...args) : item;
     });
   }
 
-  function modifyRotationById(rotationId, func, ...args) {
-    state.rotations = modifyById(state.rotations, rotationId, func, ...args);
-  }
-
   function modifyShiftById(shiftId, func, ...args) {
     state.shifts = modifyById(state.shifts, shiftId, func, ...args);
-  }
-
-  // find shifts or rotations
-  function findById(arr, id) {
-    return arr.find((r) => r.id === id);
-  }
-
-  function findRotationById(id) {
-    return findById(state.rotations, id);
-  }
-
-  function findShiftById(id) {
-    return findById(state.shifts, id);
-  }
-
-  function findShiftByOrder(rotationId, order) {
-    return state.shifts.find(
-      (s) => s.rotationId === rotationId && s.order === order
-    );
-  }
-
-  function shiftCount(rotationId) {
-    return state.shifts.filter((s) => s.rotationId === rotationId).length;
-  }
-
-  function findNeighborShift(rotationId, order, offset) {
-    const rot = findRotationById(rotationId);
-    const startShift = findShiftByOrder(rotationId, order);
-    const newOrder =
-      (startShift.order + offset + shiftCount(rotationId)) %
-      shiftCount(rotationId);
-    return findShiftByOrder(rotationId, newOrder);
-  }
-
-  // takes all shifts, adjusts order just for shifts in a rotation
-  // cutoff can be pointer, or the order of shift being moved
-  // cutoff is where new shift will be added
-  function handleRotationOrder(rotationId, cutoff, operation = "add") {
-    const offset = operation === "add" ? 1 : -1;
-    return state.shifts.map((shift) => {
-      if (shift.rotationId !== rotationId) return shift;
-      if (shift.order < cutoff) return shift;
-      return Shift.setOrder(shift, shift.order + offset);
-    });
   }
 
   // HISTORY
@@ -367,6 +305,11 @@ function createBoardStore() {
       Event.make(type, message, shift, patient, detail),
       ...state.events.slice(0, EVENT_LIMIT),
     ];
+  }
+
+  function addZoneEvent(shiftId, msg) {
+    const shift = findShiftById(shiftId);
+    addEvent("join", `${shift.provider.first} ${shift.provider.last} ${msg}.`);
   }
 
   function saveHistory() {
@@ -384,14 +327,18 @@ function createBoardStore() {
   return {
     getState,
     reset: withHistory(reset),
-    addNewShift: withHistory(addNewShift),
-    moveShiftToRotation: withHistory(moveShiftToRotation),
+    addShift: withHistory(addShift),
+    moveShiftInRotation: withHistory(moveShiftInRotation),
     moveNext: withHistory(moveNext),
-    moveShift: withHistory(moveShift),
+    signOut: withHistory(signOut),
+    appFlexOff: withHistory(appFlexOff),
+    appFlexOn: withHistory(appFlexOn),
+    joinFT: withHistory(joinFT),
+    leaveFT: withHistory(leaveFT),
     assignPatient: withHistory(assignPatient),
     reassignPatient: withHistory(reassignPatient),
-    staffMidlevel: withHistory(staffMidlevel),
-    toggleSkip: withHistory(toggleSkip),
+    addApp: withHistory(addApp),
+    findShiftById,
     undo,
   };
 }
