@@ -22,7 +22,7 @@
       <div>
         <div class="eventTime">{{ event.time }}</div>
         <div class="eventAssignDoc">
-          {{ event.shift.doctor.first }}
+          {{ event.shift.provider.first }} {{ event.shift.provider.last }}
         </div>
         <div class="eventReassign" v-if="event.detail">
         {{ event.detail}}

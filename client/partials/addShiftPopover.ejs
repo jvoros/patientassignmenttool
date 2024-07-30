@@ -1,27 +1,28 @@
 <div class="popover" id="addDoctorPopover">
   <button class="secondary" @click="toggleAddShiftPopover">
-    <%- include('../icons/doctor.svg'); %>Add Team
+    <%- include('../icons/doctor.svg'); %>Add Clinician
   </button>
   <div class="popoverWrapper" v-if="ui.showAddShiftPopover">
     <div class="popoverBlocker" @click="toggleAddShiftPopover"></div>
     <div class="popoverContent">
       <form class="newDoctorForm">
 
-        <select v-model="forms.addShift.doctor">
-          <option disabled value="">Team:</option>
-          <option v-for="doctor in doctors" :value="doctor">
-            {{ doctor.first }} - {{ doctor.last }}
+        <select v-model="forms.addShift.provider">
+          <option disabled value="">Clinician:</option>
+          <option v-for="provider in providers" :value="provider">
+            {{ provider.last }}, {{ provider.first }}
+          </option>
+        </select>
+
+        <select v-model="forms.addShift.shift">
+          <option disabled value="">Shift:</option>
+          <option v-for="shift in shiftDetails" :value="shift">
+            {{ shift.name }}
           </option>
         </select>
         <div class="warn" v-if="forms.addShift.shift.id === 1">
-          Adding Alpha Day - 6 am Team will reset the whole board.
+          Adding 6 am shift will reset the whole board.
         </div>
-        <select v-model="forms.addShift.rotationId">
-          <option disabled value="">Rotation:</option>
-          <option v-for="rot in board.rotations" :value="rot.id">
-            {{ rot.name }}
-          </option>
-        </select>
         <button
           class="secondary"
           type="submit"

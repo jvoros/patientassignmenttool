@@ -15,16 +15,16 @@ export function responder(res) {
 
 // MAIN API
 api.post("/addShift", (req, res) => {
-  const { doctor, options } = req.body;
+  const { provider, options } = req.body;
   if (options.id === 1) {
     // before reset, log shift totals to shift_log.txt
     const data = [];
     const date = new Date();
     board.getState().shifts.forEach((shift) => {
       data.push(
-        `${date.toLocaleDateString("en-US")}, ${shift.doctor.first}, ${
-          shift.counts.total > 0 ? shift.counts.total : 0
-        }`
+        `${date.toLocaleDateString("en-US")}, ${shift.doctor.last}, ${
+          shift.doctor.last
+        }, ${shift.counts.total > 0 ? shift.counts.total : 0}`
       );
     });
     const message = "\n" + data.join("\n");
@@ -50,13 +50,49 @@ api.post("/addShift", (req, res) => {
 
     board.reset();
   }
-  board.addNewShift(doctor, options);
+  board.addShift(provider, options);
   responder(res);
 });
 
 api.post("/moveShift", (req, res) => {
   const { shiftId, offset } = req.body;
-  board.moveShift(shiftId, offset);
+  board.moveShiftInRotation(shiftId, offset);
+  responder(res);
+});
+
+api.post("/signOut", (req, res) => {
+  const shiftId = req.body.shiftId;
+  board.signOut(shiftId);
+  responder(res);
+});
+
+api.post("/signOn", (req, res) => {
+  const shiftId = req.body.shiftId;
+  board.joinRotation(shiftId);
+  responder(res);
+});
+
+api.post("/appFlexOn", (req, res) => {
+  const shiftId = req.body.shiftId;
+  board.appFlexOn(shiftId);
+  responder(res);
+});
+
+api.post("/appFlexOff", (req, res) => {
+  const shiftId = req.body.shiftId;
+  board.appFlexOff(shiftId);
+  responder(res);
+});
+
+api.post("/joinFT", (req, res) => {
+  const shiftId = req.body.shiftId;
+  board.jointFT(shiftId);
+  responder(res);
+});
+
+api.post("/leaveFT", (req, res) => {
+  const shiftId = req.body.shiftId;
+  board.leaveFT(shiftId);
   responder(res);
 });
 
@@ -67,9 +103,9 @@ api.post("/moveShiftToRotation", (req, res) => {
 });
 
 api.post("/moveNext", (req, res) => {
-  const { cycle, rotationId, offset } = req.body;
-  console.log("moveNext args: ", cycle, rotationId, offset);
-  board.moveNext(cycle, rotationId, offset);
+  const { cycle, offset } = req.body;
+  console.log("moveNext args: ", cycle, offset);
+  board.moveNext(cycle, offset);
   responder(res);
 });
 

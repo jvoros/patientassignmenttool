@@ -188,23 +188,12 @@ main {
   color: #525f7a;
 }
 
-.shiftFastTrack {
+.shiftFasttrack  .shiftBox {
   background-color: var(--my-ft-background);
   border-color: var(--my-ft-border);
   color: var(--my-ft-color);
 }
 
-.shiftFastTrack .shiftNextFlag {
-  display: none;
-}
-
-.shiftApp {
-  border-color: var(--my-ft-border);
-}
-
-.shiftNext.shiftApp {
-  border-color: var(--my-next-background);
-}
 
 .shiftFtFlag {
   background-color: var(--my-ft-border);
@@ -216,11 +205,7 @@ main {
   padding: 1px 0;
 }
 
-.shiftOff.shiftApp {
-  border-color: var(--my-light-gray);
-}
-
-.shiftOff .shiftFtFlag {
+.shiftFlex .assignButton, .shiftOff .assignButton {
   display: none;
 }
 

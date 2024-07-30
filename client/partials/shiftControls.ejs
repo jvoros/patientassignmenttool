@@ -1,5 +1,5 @@
 <div class="shiftControls">
-  <div v-if="nurse" role="group" class="shiftControlsPositionGroup">
+  <div role="group" class="shiftControlsPositionGroup">
     <button
       class="secondary outline shiftControlButton"
       @click="moveShift(shift.id, -1)"
@@ -38,8 +38,15 @@
     {{ shift.name }}
   </div>
   <div></div>
-  <div v-if="nurse" class="shiftControlsRight">
-    <%- include('./movePopover.ejs'); %> <%- include('./assignPopoverMini.ejs');
+  <div class="shiftControlsRight">
+    <button
+    class="secondary outline shiftControlButton"
+    @click="signOut(shift.id)"
+    data-tooltip="Sign Off"
+  >
+    Off
+  </button>
+     <%- include('./assignPopoverMini.ejs');
     %>
   </div>
 

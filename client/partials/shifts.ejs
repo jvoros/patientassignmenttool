@@ -1,20 +1,20 @@
-<template v-for="shift in findShiftsByRotation(rotation.id)">
-  <div class="shiftBox" :class="getShiftClasses(rotation, shift)">
-    <div v-if="isNext(rotation, shift)" class="shiftNextFlag">next in rotation</div>
-    <div v-if="shift.doctor.app && !isNext(rotation, shift)" class="shiftFtFlag">taking fast track patients</div>
+
+  <div class="shiftBox" :class="{shiftNext : isNext(shift.id)}">
+    <div v-if="isNext(shift.id)" class="shiftNextFlag">next in rotation</div>
     <%- include('./shiftControls.ejs'); %>
 
     <div class="shiftContent">
       <div>
         <div class="shiftDoc">
-          {{ shift.doctor.first }}
+          {{ shift.provider.first }} {{ shift.provider.last }}
         </div>
       </div>
       <div class="shiftButtons">
-     <template v-if="isNext(rotation, shift)">
-          <%- include('./assignPopover.ejs'); %>
+        <template v-if="showAssignButton(shift.id)">
+          <div class="assignButton">
+            <%- include('./assignPopover.ejs'); %>
+          </div>
         </template>
-        
       </div>
     </div>
     <ul class="shiftCounts">
@@ -23,4 +23,4 @@
       </li>
     </ul>
   </div>
-</template>
+

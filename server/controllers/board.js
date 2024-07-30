@@ -153,12 +153,13 @@ function createBoardStore() {
 
   function signOut(shiftId) {
     // take off rotation with leaveRotation()
-    if (state.zones.rotation.findIndex(shiftId) >= 0) {
+    if (state.zones.rotation.includes(shiftId)) {
       leaveRotation(shiftId);
     }
     // take off all zones
-    state.zones.forEach((zone) => {
-      state.zones[zone] = zone.filter((x) => x != shiftId);
+    Object.keys(state.zones).forEach((zone) => {
+      const filterOut = state.zones[zone].filter((x) => x != shiftId);
+      state.zones[zone] = filterOut;
     });
     // add to off zone
     state.zones.off.push(shiftId);

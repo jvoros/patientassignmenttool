@@ -38,9 +38,8 @@ createApp({
       // variables for form control with v-model
       forms: {
         addShift: {
-          doctor: "",
+          provider: "",
           shift: "",
-          rotationId: "",
         },
         assign: {
           shiftId: "",
@@ -55,9 +54,9 @@ createApp({
         ],
       },
       // the board from server, this is initialization version
-      board: { rotations: [], shifts: [], events: [] },
+      board: { zones: { rotation: [], fasttrack: [], flex: [], off: []}, shifts: [], events: [], next: {} },
       // just some helper constants
-      doctors: doctors, // linked in home.ejs
+      providers: providers, // linked in home.ejs
       shiftDetails: shiftDetails, // linked in home.ejs
 
       rooms: [
@@ -105,8 +104,12 @@ createApp({
   },
   methods: {
     // HELPERS
-    findRotationByName(name) {
-      return this.board.rotations.filter((r) => r.name === name);
+    findShiftById(shiftId) {
+      return this.board.shifts.find((shift) => shift.id === shiftId);
+    },
+
+    findShiftsFromIds(ids) {
+      return ids.map(id=>this.findShiftById(id));
     },
 
     findShiftsByRotation(rotationId) {
@@ -144,14 +147,13 @@ createApp({
     addShift() {
       const f = this.forms.addShift;
       apiCall("api/addShift", {
-        doctor: f.doctor,
-        options: { ...f.shift, rotationId: f.rotationId },
+        provider: f.provider,
+        options: { ...f.shift },
       });
       this.toggleAddShiftPopover();
     },
 
     addShiftComplete() {
-      this.forms.addShift.shift = this.forms.addShift.doctor != '' ? this.shiftDetails[this.forms.addShift.doctor.shift] : '';
       return Object.values(this.forms.addShift).every(Boolean);
     },
 
@@ -159,13 +161,21 @@ createApp({
       apiCall("api/moveShift", { shiftId, offset });
     },
 
-    moveShiftToRotation(rotationId, shiftId) {
-      apiCall("api/moveShiftToRotation", { rotationId, shiftId });
-      this.toggleMovePopover(shiftId);
+    // moveShiftToRotation(rotationId, shiftId) {
+    //   apiCall("api/moveShiftToRotation", { rotationId, shiftId });
+    //   this.toggleMovePopover(shiftId);
+    // },
+
+    signOut(shiftId) {
+      apiCall("api/signOut", {shiftId });
     },
 
-    moveNext(cycle, rotationId, offset) {
-      apiCall("api/moveNext", { cycle, rotationId, offset });
+    signOn(shiftId) {
+      apiCall("api/signOn", {shiftId });
+    },
+
+    moveNext(cycle, offset) {
+      apiCall("api/moveNext", { cycle, offset });
     },
 
     assignPatient(shiftId) {
@@ -261,22 +271,26 @@ createApp({
     },
 
     // SHIFT
-    isNext(rotation, shift) {
-      return rotation.cycle.patient && shift.id === rotation.next.patient;
+    isNext(shiftId) {
+      return this.board.next.patient === shiftId;
     },
 
-    isNextMidlevel(rotation, shift) {
-      return rotation.cycle.midlevel && shift.id === rotation.next.midlevel;
+    showAssignButton(shiftId) {
+      return this.board.zones.fasttrack.includes(shiftId) || this.isNext(shiftId);
+    },
+
+    isNextMidlevel(shiftId) {
+      return this.board.next.sup === shiftId;
     },  
 
-    getShiftClasses(rotation, shift) {
+    getShiftClasses(shift) {
       const shiftType = {
         Off: "shiftOff",
         "Fast Track": "shiftFastTrack",
         Main: "shiftMain",
       };
-      const next = this.isNext(rotation, shift) ? "shiftNext" : "";
-      const midlevel = shift.doctor.app ? "shiftApp" : "";
+      const next = this.isNext(shift.id) ? "shiftNext" : "";
+      const midlevel = shift.provider.app ? "shiftApp" : "";
 
       return `${shiftType[rotation.name]} ${next} ${midlevel}`;
     },

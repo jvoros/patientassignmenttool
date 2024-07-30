@@ -35,24 +35,26 @@
         <section class="mainRotation">
           <h4>Main Rotation</h4>
           <hr />   
-          <template v-for="rotation in findRotationByName('Main')">
-            <template v-if="rotation.shiftCount === 0"
-              ><%- include('./partials/blank.ejs'); %></template
-            >
-            <template v-else
-              ><%- include('./partials/shifts.ejs'); %>
-
+          <template v-if="board.zones.rotation.length > 0">
+            <template v-for="shift in findShiftsFromIds(board.zones.rotation)">
+              <%- include('./partials/shifts.ejs'); %>
+            </template>
+          </template>
+          <template v-else>
+            <%- include('./partials/blank.ejs'); %>
+          </template>
+          
               <hr>
               <div v-if="nurse" class="skipControls">
                 <button
                   class="secondary outline"
-                  @click="moveNext('patient', rotation.id, -1)"
+                  @click="moveNext('patient', -1)"
                 >
                   <%- include('./icons/arrow-l.svg') %>Rotation Back
                 </button>
                 <button
                   class="secondary outline"
-                  @click="moveNext('patient', rotation.id, 1)"
+                  @click="moveNext('patient', 1)"
                 >
                   Rotation Skip<%- include('./icons/arrow-r.svg') %>
                 </button>
@@ -60,30 +62,50 @@
             </template>
           </template>
         </section>
+
         <section class="otherRotations">
           <h4>Fast Track</h4>
           <hr />
-          <template v-for="rotation in findRotationByName('Fast Track')">
-            <template v-if="rotation.shiftCount === 0"
-              ><%- include('./partials/blank.ejs'); %></template
-            >
-            <template v-else><%- include('./partials/shifts.ejs'); %></template>
+          <template v-if="board.zones.fasttrack.length > 0">
+            <template v-for="shift in findShiftsFromIds(board.zones.fasttrack)">
+              <div class="shiftFasttrack">
+                <%- include('./partials/shifts.ejs'); %>
+              </div>
+            </template>
           </template>
+          <template v-else>
+            <%- include('./partials/blank.ejs'); %>
+          </template>
+
+          <h4>Flex</h4>
+          <hr />
+          <template v-if="board.zones.flex.length > 0">
+            <template v-for="shift in findShiftsFromIds(board.zones.flex )">
+              <div class="shiftFlex">
+                <%- include('./partials/shifts.ejs'); %>
+              </div>
+            </template>
+          </template>
+          <template v-else>
+            <%- include('./partials/blank.ejs'); %>
+          </template>
+
           <h4>Off Rotation</h4>
           <hr />
-          <template v-for="rotation in findRotationByName('Off')">
-            <template v-if="rotation.shiftCount === 0"
-              ><%- include('./partials/blank.ejs'); %></template
-            >
-            <template v-else><%- include('./partials/shifts.ejs'); %></template>
+          <template v-if="board.zones.off.length > 0">
+            <template v-for="shift in findShiftsFromIds(board.zones.off)">
+              <%- include('./partials/shifts.ejs'); %>
+            </template>
+          </template>
+          <template v-else>
+            <%- include('./partials/blank.ejs'); %>
           </template>
         </section>
+
       </main>
     </div>
 
-    <script src="./dummy.js"></script>
-    <script src="./dummy2.js"></script>
-    <script src="./doctors.js"></script>
+    <script src="./providers.js"></script>
     <script src="./shiftDetails.js"></script>
     <%- include('./app.ejs'); %>
 
