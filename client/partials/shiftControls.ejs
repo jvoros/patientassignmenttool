@@ -1,5 +1,6 @@
 <div class="shiftControls">
   <div role="group" class="shiftControlsPositionGroup">
+    <template v-if="shift.zone ==='rotation'">
     <button
       class="secondary outline shiftControlButton"
       @click="moveShift(shift.id, -1)"
@@ -32,6 +33,7 @@
         ></path>
       </svg>
     </button>
+  </template>
   </div>
   <div></div>
   <div class="shiftName">
@@ -40,14 +42,24 @@
   <div></div>
   <div class="shiftControlsRight">
     <button
+    v-if="shift.zone ==='rotation' || shift.zone==='flex'"
     class="secondary outline shiftControlButton"
     @click="signOut(shift.id)"
     data-tooltip="Sign Off"
   >
     Off
   </button>
-     <%- include('./assignPopoverMini.ejs');
-    %>
+  <button
+    v-if="shift.zone ==='off'"
+    class="secondary outline shiftControlButton"
+    @click="signOn(shift.id)"
+    data-tooltip="Back On"
+  >
+    On
+  </button>
+     <template v-if="shift.zone ==='rotation'">
+      <%- include('./assignPopoverMini.ejs');%>
+     </template>
   </div>
 
 </div>

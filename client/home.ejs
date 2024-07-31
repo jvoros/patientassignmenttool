@@ -36,7 +36,7 @@
           <h4>Main Rotation</h4>
           <hr />   
           <template v-if="board.zones.rotation.length > 0">
-            <template v-for="shift in findShiftsFromIds(board.zones.rotation)">
+            <template v-for="shift in findShiftsForZone('rotation')">
               <%- include('./partials/shifts.ejs'); %>
             </template>
           </template>
@@ -67,10 +67,8 @@
           <h4>Fast Track</h4>
           <hr />
           <template v-if="board.zones.fasttrack.length > 0">
-            <template v-for="shift in findShiftsFromIds(board.zones.fasttrack)">
-              <div class="shiftFasttrack">
-                <%- include('./partials/shifts.ejs'); %>
-              </div>
+            <template v-for="shift in findShiftsForZone('fasttrack')">
+              <%- include('./partials/shifts.ejs'); %>
             </template>
           </template>
           <template v-else>
@@ -80,10 +78,8 @@
           <h4>Flex</h4>
           <hr />
           <template v-if="board.zones.flex.length > 0">
-            <template v-for="shift in findShiftsFromIds(board.zones.flex )">
-              <div class="shiftFlex">
-                <%- include('./partials/shifts.ejs'); %>
-              </div>
+            <template v-for="shift in findShiftsForZone('flex')">
+              <%- include('./partials/shifts.ejs'); %>
             </template>
           </template>
           <template v-else>
@@ -93,7 +89,7 @@
           <h4>Off Rotation</h4>
           <hr />
           <template v-if="board.zones.off.length > 0">
-            <template v-for="shift in findShiftsFromIds(board.zones.off)">
+            <template v-for="shift in findShiftsForZone('off')">
               <%- include('./partials/shifts.ejs'); %>
             </template>
           </template>

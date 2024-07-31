@@ -1,7 +1,8 @@
 
-  <div class="shiftBox" :class="{shiftNext : isNext(shift.id)}">
-    <div v-if="isNext(shift.id)" class="shiftNextFlag">next in rotation</div>
-    <%- include('./shiftControls.ejs'); %>
+  <div class="shiftBox" :class="getShiftClasses(shift)">
+    <div v-if="shift.zone === 'rotation' && isNext(shift.id)" class="shiftNextFlag">next in rotation</div>
+    
+    <div v-if="shift.zone !== 'fasttrack'"><%- include('./shiftControls.ejs'); %></div>
 
     <div class="shiftContent">
       <div>
@@ -10,7 +11,7 @@
         </div>
       </div>
       <div class="shiftButtons">
-        <template v-if="showAssignButton(shift.id)">
+        <template v-if="showAssignButton(shift)">
           <div class="assignButton">
             <%- include('./assignPopover.ejs'); %>
           </div>

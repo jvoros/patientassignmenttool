@@ -68,7 +68,7 @@ api.post("/signOut", (req, res) => {
 
 api.post("/signOn", (req, res) => {
   const shiftId = req.body.shiftId;
-  board.joinRotation(shiftId);
+  board.rejoinRotation(shiftId);
   responder(res);
 });
 

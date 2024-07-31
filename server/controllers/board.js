@@ -45,11 +45,7 @@ function createBoardStore() {
     state.shifts.push(shift);
 
     if (shift.app) {
-      // add APP shift to flex
-      state.zones.flex.push(shift.id);
-      // if no APP on FT, add to FT
-      if (state.zones.fasttrack.length === 0)
-        state.zones.fasttrack.push(shift.id);
+      addAppShift(shift.id);
     } else {
       // add Doc shift
       joinRotation(shift.id, "noevent");
@@ -57,6 +53,13 @@ function createBoardStore() {
 
     addZoneEvent(shift.id, "joined board");
     return shift.id;
+  }
+
+  function addAppShift(shiftId) {
+    // add APP shift to flex
+    state.zones.flex.push(shiftId);
+    // if no APP on FT, add to FT
+    if (state.zones.fasttrack.length === 0) state.zones.fasttrack.push(shiftId);
   }
 
   // ROTATION Functions
@@ -166,8 +169,19 @@ function createBoardStore() {
     addZoneEvent(shiftId, "signed out");
   }
 
+  function rejoinRotation(shiftId) {
+    const shift = findShiftById(shiftId);
+    const filterOut = state.zones.off.filter((x) => x !== shiftId);
+    state.zones.off = filterOut;
+    if (shift.app) {
+      addAppShift(shiftId);
+    } else {
+      joinRotation(shiftId);
+    }
+  }
+
   function appFlexOff(shiftId) {
-    leaveRotation(shiftId);
+    leaveRotation(shiftId, "noevent");
     state.zones.flex.push(shiftId);
     addZoneEvent(shiftId, "flexed off");
     return;
@@ -332,6 +346,7 @@ function createBoardStore() {
     moveShiftInRotation: withHistory(moveShiftInRotation),
     moveNext: withHistory(moveNext),
     signOut: withHistory(signOut),
+    rejoinRotation: withHistory(rejoinRotation),
     appFlexOff: withHistory(appFlexOff),
     appFlexOn: withHistory(appFlexOn),
     joinFT: withHistory(joinFT),

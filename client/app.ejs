@@ -108,8 +108,8 @@ createApp({
       return this.board.shifts.find((shift) => shift.id === shiftId);
     },
 
-    findShiftsFromIds(ids) {
-      return ids.map(id=>this.findShiftById(id));
+    findShiftsForZone(zoneName) {
+      return this.board.zones[zoneName].map(id=>{return {...this.findShiftById(id), zone: zoneName}});
     },
 
     findShiftsByRotation(rotationId) {
@@ -167,11 +167,19 @@ createApp({
     // },
 
     signOut(shiftId) {
-      apiCall("api/signOut", {shiftId });
+      apiCall("api/signOut", { shiftId });
     },
 
     signOn(shiftId) {
-      apiCall("api/signOn", {shiftId });
+      apiCall("api/signOn", { shiftId });
+    },
+
+    appFlexOn(shiftId) {
+      apiCall("api/appFlexOn", { shiftId });
+    },
+
+    appFlexOff(shiftId) {
+      apiCall("api/appFlexOff", { shiftId });
     },
 
     moveNext(cycle, offset) {
@@ -275,8 +283,8 @@ createApp({
       return this.board.next.patient === shiftId;
     },
 
-    showAssignButton(shiftId) {
-      return this.board.zones.fasttrack.includes(shiftId) || this.isNext(shiftId);
+    showAssignButton(shift) {
+      return  shift.zone === 'fasttrack' || this.isNext(shift.id);
     },
 
     isNextMidlevel(shiftId) {
@@ -285,14 +293,14 @@ createApp({
 
     getShiftClasses(shift) {
       const shiftType = {
-        Off: "shiftOff",
-        "Fast Track": "shiftFastTrack",
-        Main: "shiftMain",
+        off: "shiftOff",
+        fasttrack: "shiftFasttrack",
+        rotation: "shiftMain",
+        flex: "shiftFlex"
       };
       const next = this.isNext(shift.id) ? "shiftNext" : "";
-      const midlevel = shift.provider.app ? "shiftApp" : "";
 
-      return `${shiftType[rotation.name]} ${next} ${midlevel}`;
+      return `${shiftType[shift.zone]} ${next}`;
     },
   },
 

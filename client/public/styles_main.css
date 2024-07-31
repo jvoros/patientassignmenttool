@@ -183,12 +183,12 @@ main {
   padding: 1px 0;
 }
 
-.shiftOff {
+.shiftOff, .shiftFlex {
   background-color: var(--my-light-gray);
   color: #525f7a;
 }
 
-.shiftFasttrack  .shiftBox {
+.shiftFasttrack {
   background-color: var(--my-ft-background);
   border-color: var(--my-ft-border);
   color: var(--my-ft-color);
@@ -203,15 +203,6 @@ main {
   font-size: 75%;
   text-align: center;
   padding: 1px 0;
-}
-
-.shiftFlex .assignButton, .shiftOff .assignButton {
-  display: none;
-}
-
-.shiftSkip {
-  font-size: 90%;
-  text-align: center;
 }
 
 .shiftControls {
