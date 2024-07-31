@@ -182,6 +182,14 @@ createApp({
       apiCall("api/appFlexOff", { shiftId });
     },
 
+    joinFT(shiftId) {
+      apiCall("api/joinFT", { shiftId });
+    },
+
+    leaveFT(shiftId) {
+      apiCall("api/leaveFT", { shiftId });
+    },
+
     moveNext(cycle, offset) {
       apiCall("api/moveNext", { cycle, offset });
     },
@@ -281,6 +289,10 @@ createApp({
     // SHIFT
     isNext(shiftId) {
       return this.board.next.patient === shiftId;
+    },
+
+    isFT(shiftId) {
+      return this.board.zones.fasttrack.includes(shiftId);
     },
 
     showAssignButton(shift) {

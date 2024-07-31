@@ -9,6 +9,12 @@
         <div class="shiftDoc">
           {{ shift.provider.first }} {{ shift.provider.last }}
         </div>
+        <div v-if="shift.app && shift.zone!=='off'" role="group" class="shiftControlsApp">
+          <button v-if="shift.zone==='rotation'" class="secondary outline" @click="appFlexOff(shift.id)">Flex Off</button>
+          <button v-if="shift.zone==='flex'" class="secondary outline" @click="appFlexOn(shift.id)">Flex On</button>
+          <button v-if="!isFT(shift.id)" v-if="shift.zone!=='fasttrack'" class="secondary outline" @click="joinFT(shift.id)">Join FT</button>
+          <button v-if="isFT(shift.id) && shift.zone==='fasttrack'" class="secondary outline" @click="leaveFT(shift.id)">Leave FT</button>
+        </div>
       </div>
       <div class="shiftButtons">
         <template v-if="showAssignButton(shift)">

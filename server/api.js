@@ -86,7 +86,7 @@ api.post("/appFlexOff", (req, res) => {
 
 api.post("/joinFT", (req, res) => {
   const shiftId = req.body.shiftId;
-  board.jointFT(shiftId);
+  board.joinFT(shiftId);
   responder(res);
 });
 
