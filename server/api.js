@@ -22,9 +22,9 @@ api.post("/addShift", (req, res) => {
     const date = new Date();
     board.getState().shifts.forEach((shift) => {
       data.push(
-        `${date.toLocaleDateString("en-US")}, ${shift.doctor.last}, ${
-          shift.doctor.last
-        }, ${shift.counts.total > 0 ? shift.counts.total : 0}`
+        `${date.toLocaleDateString("en-US")}, ${shift.name}, ${
+          shift.provider.last
+        }, ${shift.provider.first}, ${shift.counts.total}, ${shift.counts.app}`
       );
     });
     const message = "\n" + data.join("\n");

@@ -111,8 +111,8 @@ createApp({
 
     getShiftsSortedByDoc() {
       return this.board.shifts.toSorted((a, b) => {
-        const nameA = a.doctor.last.toUpperCase();
-        const nameB = b.doctor.last.toUpperCase();
+        const nameA = a.provider.last.toUpperCase();
+        const nameB = b.provider.last.toUpperCase();
         return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
       });
     },
@@ -198,6 +198,7 @@ createApp({
 
     assignPatientFasttrack(shiftId) {
       this.forms.assign.shiftId = shiftId;
+      this.forms.assign.type = 'ft';
       apiCall("api/assignPatient", {...this.forms.assign, movePointer: false });
       this.toggleAssign(shiftId);
     },

@@ -1,7 +1,7 @@
 ## To Dos
-- [ ] supervisor assign is stopping on APPs
+
 - [ ] event reassign not working
-- [ ] FT needs its own assign popover
+
 
 - [ ] help link
 - [ ] filter shifts/docs

@@ -243,12 +243,16 @@ function createBoardStore() {
 
   function reassignPatient(eventId, newShiftId) {
     // get the event
-    const event = state.events.find((x) => event.id === eventId);
+    const event = state.events.find((e) => e.id === eventId);
     // remove pt from first shift, add to second
     modifyShiftById(event.shift.id, Shift.removePatient, event.patient.id);
+    const newShift = findShiftById(newShiftId);
+    // if new shift is app, add an app patient to original doc
+    if (newShift.app) {
+      modifyShiftById(event.shift.id, Shift.addPatient, Patient.make("app", 0));
+    }
     modifyShiftById(newShiftId, Shift.addPatient, event.patient);
     // events
-    const newShift = findShiftById(newShiftId);
     // modify original event
     state.events = modifyById(
       state.events,
@@ -257,8 +261,10 @@ function createBoardStore() {
       "reassigned to " + newShift.provider.first + " " + newShift.provider.last
     );
     // make event
-    const message = `${event.patient.room} reassigned to ${newShift.provider.first} ${newShift.provider.last}`;
-    addEvent("assign", message, newShift, event.patient);
+    const detail = newShift.app
+      ? `with ${event.shift.provider.first} ${event.shift.provider.last}`
+      : "";
+    addEvent("assign", "", newShift, event.patient, detail);
     return;
   }
 

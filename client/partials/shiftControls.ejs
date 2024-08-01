@@ -41,6 +41,9 @@
   </div>
   <div></div>
   <div class="shiftControlsRight">
+    <template v-if="shift.zone ==='rotation'">
+      <%- include('./assignPopoverMini.ejs');%>
+     </template>
     <button
     v-if="shift.zone ==='rotation' || shift.zone==='flex'"
     class="secondary outline shiftControlButton"
@@ -57,9 +60,7 @@
   >
     On
   </button>
-     <template v-if="shift.zone ==='rotation'">
-      <%- include('./assignPopoverMini.ejs');%>
-     </template>
+     
   </div>
 
 </div>

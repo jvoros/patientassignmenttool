@@ -1,8 +1,2 @@
 
-Reset Date, Shift Name, Total
-
-
-
-
-
-
+Reset Date, Shift Name, Last, First, Total, APP
