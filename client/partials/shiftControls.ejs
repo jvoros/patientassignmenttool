@@ -47,7 +47,7 @@
     @click="signOut(shift.id)"
     data-tooltip="Sign Off"
   >
-    Off
+  <%- include('../icons/logout.svg'); %>
   </button>
   <button
     v-if="shift.zone ==='off'"

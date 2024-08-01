@@ -24,8 +24,6 @@ async function apiCall(url, payload, method = "POST") {
 createApp({
   data() {
     return {
-      // if nurse, show controls, otherwise no controls
-      nurse: false,
       // flags for UI popovers
       ui: {
         showAddShiftPopover: false,
@@ -33,7 +31,6 @@ createApp({
         showAssignMini: false,
         showMovePopover: false,
         showReassignPopover: false,
-        showWhatsNew: false,
       },
       // variables for form control with v-model
       forms: {
@@ -112,18 +109,17 @@ createApp({
       return this.board.zones[zoneName].map(id=>{return {...this.findShiftById(id), zone: zoneName}});
     },
 
-    findShiftsByRotation(rotationId) {
-      return this.board.shifts
-        .filter((s) => s.rotationId === rotationId)
-        .sort((a, b) => a.order - b.order);
-    },
-
     getShiftsSortedByDoc() {
       return this.board.shifts.toSorted((a, b) => {
         const nameA = a.doctor.last.toUpperCase();
         const nameB = b.doctor.last.toUpperCase();
         return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
       });
+    },
+
+    numberOfDocsOnRotation() {
+      return this.board.zones.rotation.filter((id) => this.findShiftById(id).app !== true)
+      .length;
     },
 
     // SERVER
@@ -161,12 +157,12 @@ createApp({
       apiCall("api/moveShift", { shiftId, offset });
     },
 
-    // moveShiftToRotation(rotationId, shiftId) {
-    //   apiCall("api/moveShiftToRotation", { rotationId, shiftId });
-    //   this.toggleMovePopover(shiftId);
-    // },
-
     signOut(shiftId) {
+      const shift = this.findShiftById(shiftId);
+      if (!shift.app && this.numberOfDocsOnRotation() < 2) {
+        alert('There must be at least one doctor on rotation');
+        return;
+      }
       apiCall("api/signOut", { shiftId });
     },
 
@@ -219,10 +215,6 @@ createApp({
       apiCall("api/staffMidlevel", { rotationId, shiftId});
     },
 
-    toggleSkip(shiftId) {
-      apiCall("api/toggleSkip", {shiftId});
-    },  
-
     undo() {
       apiCall("api/undo");
     },
@@ -230,10 +222,6 @@ createApp({
     // POPOVERS & UI
     closeDropdown(event) {
       event.target.closest("details").removeAttribute("open");
-    },
-
-    toggleWhatsNew() {
-      this.ui.showWhatsNew = !this.ui.showWhatsNew;
     },
 
     uiTogglerByShift(flag, shiftId) {

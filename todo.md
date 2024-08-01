@@ -1,9 +1,11 @@
 ## To Dos
+- [ ] supervisor assign is stopping on APPs
+- [ ] event reassign not working
+- [ ] FT needs its own assign popover
 
 - [ ] help link
 - [ ] filter shifts/docs
 - [ ] delete shifts
-- [ ] blank filler for rotations
 - [ ] better narrow views for DeWeerd
 - [ ] Quick Reference
   - hospital protocols

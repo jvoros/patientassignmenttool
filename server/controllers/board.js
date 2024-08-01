@@ -69,7 +69,6 @@ function createBoardStore() {
     // if first shift on rotation
     if (state.zones.rotation.length === 0) {
       state.zones.rotation.push(shiftId);
-      state.next.sup = !shift.app ? shiftId : null;
     } else {
       // not first shift on rotation
       const index = state.zones.rotation.findIndex(
@@ -79,6 +78,8 @@ function createBoardStore() {
     }
     // make the new shift next for patient assignment
     state.next.patient = shiftId;
+    // make next sup if none set and not APP shift
+    if (!state.next.sup && !shift.app) state.next.sup = shiftId;
 
     if (noevent) return;
     addZoneEvent(shiftId, "joined rotation");
@@ -86,16 +87,17 @@ function createBoardStore() {
   }
 
   function leaveRotation(shiftId) {
+    const shift = findShiftById(shiftId);
+    // if last doctor can't leave
+    if (numberOfDocsOnRotation() < 2 && !shift.app) return;
+
     // more than one shift on rotation
     if (state.zones.rotation.length >= 2) {
       // move next assignments as needed
-      const [index, _nextIndex, nextShiftId] = findIndexAndNeighbor(shiftId, 1);
-      Object.entries(state.next).forEach((entry) => {
-        const [key, value] = entry;
-        if (value === shiftId) state.next[key] = nextShiftId;
-      });
+      if (state.next.patient === shiftId) moveNext("patient", 1);
+      if (state.next.sup === shiftId) moveNext("sup", 1);
       // remove shift from rotation
-      state.zones.rotation.splice(index, 1);
+      state.zones.rotation.splice(findIndex(shiftId), 1);
       return;
     }
 
@@ -296,6 +298,11 @@ function createBoardStore() {
     const nextIndex = (index + offset + len) % len;
     const nextShiftId = state.zones.rotation[nextIndex];
     return [index, nextIndex, nextShiftId];
+  }
+
+  function numberOfDocsOnRotation() {
+    return state.zones.rotation.filter((id) => findShiftById(id).app !== true)
+      .length;
   }
 
   function modifyById(arr, itemId, func, ...args) {

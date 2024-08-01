@@ -194,7 +194,6 @@ main {
   color: var(--my-ft-color);
 }
 
-
 .shiftFtFlag {
   background-color: var(--my-ft-border);
   color: white;
@@ -237,7 +236,6 @@ main {
   padding: calc(var(--pico-spacing-half) / 3) var(--pico-spacing-half);
 }
 
-
 .miniAssignButton {
   position: relative;
   top: 1px;
@@ -266,8 +264,8 @@ main {
 .shiftButtons {
   display: flex;
   justify-content: right;
-  align-items: center;
-  gap: 1em;
+  flex-direction: column;
+  gap: var(--pico-spacing-half);
 }
 
 .nextMidlevel {
@@ -276,6 +274,7 @@ main {
   border-radius: var(--pico-border-radius);
   font-size: 70%;
   color: white;
+  text-align: center;
   text-transform: uppercase;
   background-color: var(--pico-color-azure-500);
 }
@@ -293,7 +292,6 @@ main {
 .shiftCounts li {
   margin-bottom: 0;
   display: inline;
-  text-transform: capitalize;
   color: var(--pico-muted-color);
 }
 
