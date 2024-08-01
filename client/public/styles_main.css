@@ -140,6 +140,12 @@ main {
   margin-top: calc(var(--pico-spacing) * 3);
 }
 
+.instruction {
+  color: var(--pico-muted-color);
+  font-size: 90%;
+  text-align: center;
+}
+
 @media (min-width: 1024px) {
   main {
     flex-wrap: nowrap;
@@ -194,6 +200,11 @@ main {
   color: var(--my-ft-color);
 }
 
+.assignButtonFasttrack {
+  border-color: var(--my-ft-border);
+  background-color: var(--my-ft-border);
+}
+
 .shiftFtFlag {
   background-color: var(--my-ft-border);
   color: white;
@@ -232,8 +243,15 @@ main {
 }
 
 .shiftControlsApp button {
-  font-size: 80%;
+  font-size: 60%;
   padding: calc(var(--pico-spacing-half) / 3) var(--pico-spacing-half);
+  padding: 2pt 4pt;
+  border-radius: var(--pico-border-radius);
+  font-weight: normal;
+  /* color: white; */
+  text-align: center;
+  text-transform: uppercase;
+  /* background-color: var(--pico-color-azure-500); */
 }
 
 .miniAssignButton {
@@ -269,14 +287,19 @@ main {
 }
 
 .nextMidlevel {
-  display: inline;
+  display: flex;
+  align-items: start;
+}
+
+.nextMidlevelFlag {
   padding: 2pt 4pt;
   border-radius: var(--pico-border-radius);
-  font-size: 70%;
-  color: white;
+  font-size: 40%;
+  font-weight: normal;
+  color: var(--pico-color-azure-500);
   text-align: center;
   text-transform: uppercase;
-  background-color: var(--pico-color-azure-500);
+  border: 1px solid var(--pico-color-azure-500);
 }
 
 .shiftCounts {

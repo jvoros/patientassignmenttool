@@ -196,6 +196,12 @@ createApp({
       this.toggleAssign(shiftId);
     },
 
+    assignPatientFasttrack(shiftId) {
+      this.forms.assign.shiftId = shiftId;
+      apiCall("api/assignPatient", {...this.forms.assign, movePointer: false });
+      this.toggleAssign(shiftId);
+    },
+
     assignPatientMini(shiftId) {
       this.forms.assign.shiftId = shiftId;
       apiCall("api/assignPatient", {...this.forms.assign, movePointer: false });

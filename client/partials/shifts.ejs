@@ -7,23 +7,28 @@
     <div class="shiftContent">
       <div>
         <div class="shiftDoc">
-          {{ shift.provider.first }} {{ shift.provider.last }}
+          <div>{{ shift.provider.first }} {{ shift.provider.last }}</div>
+          <div v-if="board.next.sup === shift.id" class="nextMidlevel"><span class="nextMidlevelFlag"><%- include('../icons/people.svg'); %> Supervisor</span></div>
         </div>
         <div v-if="shift.app && shift.zone!=='off'" role="group" class="shiftControlsApp">
-          <button v-if="shift.zone==='rotation'" class="secondary outline" @click="appFlexOff(shift.id)">Flex Off</button>
-          <button v-if="shift.zone==='flex'" class="secondary outline" @click="appFlexOn(shift.id)">Flex On</button>
-          <button v-if="!isFT(shift.id)" v-if="shift.zone!=='fasttrack'" class="secondary outline" @click="joinFT(shift.id)">Join FT</button>
-          <button v-if="isFT(shift.id) && shift.zone==='fasttrack'" class="secondary outline" @click="leaveFT(shift.id)">Leave FT</button>
+          <button v-if="shift.zone==='rotation'" class="" @click="appFlexOff(shift.id)">Flex Off</button>
+          <button v-if="shift.zone==='flex'" class="" @click="appFlexOn(shift.id)">Flex On</button>
+          <button v-if="!isFT(shift.id)" v-if="shift.zone!=='fasttrack'" class="" @click="joinFT(shift.id)">Join FT</button>
+          <button v-if="isFT(shift.id) && shift.zone==='fasttrack'" class="" @click="leaveFT(shift.id)">Leave FT</button>
         </div>
       </div>
       <div class="shiftButtons">
-        <template v-if="showAssignButton(shift)">
+        <template v-if="isNext(shift.id) && shift.zone === 'rotation'">
           <div class="assignButton">
             <%- include('./assignPopover.ejs'); %>
           </div>
         </template>
-        <span v-if="board.next.sup === shift.id" class="nextMidlevel"><%- include('../icons/people.svg'); %> Supervisor</span>
-      </div>
+        <template v-if="shift.zone === 'fasttrack'">
+          <div class="assignButton">
+            <%- include('./assignPopoverFasttrack.ejs'); %>
+          </div>
+        </template>
+        </div>
     </div>
     <ul class="shiftCounts">
       <li v-if="shift.counts.total > 0">Patients: {{ shift.counts.total }}</li>

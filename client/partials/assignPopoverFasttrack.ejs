@@ -1,0 +1,21 @@
+<div class="popover">
+  <button
+    @click="toggleAssign(shift.id+shift.zone)"
+    class="assignButtonFasttrack"
+  >
+    <%- include('../icons/walkin.svg'); %> Assign
+  </button>
+  <div class="popoverWrapper" v-if="assignPopoverOpen(shift.id+shift.zone)">
+    <div class="popoverBlocker" @click="toggleAssign(shift.id+shift.zone)"></div>
+    <div class="popoverContent">
+      <%- include('./assignPopoverGuts.ejs'); %>
+      <button
+        class="secondary"
+        @click="assignPatientFasttrack(shift.id)"
+        :disabled="!assignPatientComplete()"
+      >
+        Assign
+      </button>
+    </div>
+  </div>
+</div>

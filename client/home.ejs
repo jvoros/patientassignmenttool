@@ -32,6 +32,7 @@
             </template>
           </template>
         </section>
+
         <section class="mainRotation">
           <h4>Rotation</h4>
           <hr />   
@@ -44,29 +45,43 @@
             <%- include('./partials/blank.ejs'); %>
           </template>
           
-              <hr>
-              <div v-if="nurse" class="skipControls">
-                <button
-                  class="secondary outline"
-                  @click="moveNext('patient', -1)"
-                >
-                  <%- include('./icons/arrow-l.svg') %>Rotation Back
-                </button>
-                <button
-                  class="secondary outline"
-                  @click="moveNext('patient', 1)"
-                >
-                  Rotation Skip<%- include('./icons/arrow-r.svg') %>
-                </button>
-              </div>
-            </template>
-          </template>
+          <hr>
+          <div class="skipControls">
+            <button
+              class="secondary outline"
+              @click="moveNext('patient', -1)"
+            >
+              <%- include('./icons/arrow-l.svg') %>Rotation Back
+            </button>
+            <button
+              class="secondary outline"
+              @click="moveNext('patient', 1)"
+            >
+              Rotation Skip<%- include('./icons/arrow-r.svg') %>
+            </button>
+          </div>
+          <hr>
+          <div class="skipControls">
+            <button
+              class="secondary outline"
+              @click="moveNext('sup', -1)"
+            >
+              <%- include('./icons/arrow-l.svg') %>Supervisor Back
+            </button>
+            <button
+              class="secondary outline"
+              @click="moveNext('sup', 1)"
+            >
+              Supervisor Skip<%- include('./icons/arrow-r.svg') %>
+            </button>
+          </div>
         </section>
 
         <section class="otherRotations">
           <h4>Fast Track</h4>
           <hr />
           <template v-if="board.zones.fasttrack.length > 0">
+            <p class="instruction">Accepts all ESI Level 4, 5 patients.</p>
             <template v-for="shift in findShiftsForZone('fasttrack')">
               <%- include('./partials/shifts.ejs'); %>
             </template>
