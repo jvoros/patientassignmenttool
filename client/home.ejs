@@ -37,6 +37,7 @@
           <h4>Rotation</h4>
           <hr />   
           <template v-if="board.zones.rotation.length > 0">
+            <p class="instruction">Stroke, Trauma or Critical patients should be given to a doctor.</p>
             <template v-for="shift in findShiftsForZone('rotation')">
               <%- include('./partials/shifts.ejs'); %>
             </template>

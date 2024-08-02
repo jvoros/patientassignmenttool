@@ -26,6 +26,7 @@ createApp({
     return {
       // flags for UI popovers
       ui: {
+        theme: 'light',
         showAddShiftPopover: false,
         showAssignPopover: false,
         showAssignMini: false,
@@ -227,6 +228,13 @@ createApp({
     },
 
     // POPOVERS & UI
+
+    themeToggle() {
+      const currentTheme = document.documentElement.attributes.getNamedItem('data-theme').value;
+      this.ui.theme = currentTheme === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', this.ui.theme);
+    },
+
     closeDropdown(event) {
       event.target.closest("details").removeAttribute("open");
     },

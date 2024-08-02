@@ -1,7 +1,6 @@
 ## To Dos
 
-- [ ] event reassign not working
-
+- [ ] dark mode
 
 - [ ] help link
 - [ ] filter shifts/docs
@@ -14,9 +13,6 @@
   - link to bicycle health
   - link to DOPL
   - link to emails
-- [ ] Roster Add for Joe
-- [ ] Patients in their own array like shifts?
-  - then could have arrival graphs, etc.
 - [ ] Database?
 - [ ] switch to server events rather than websocket
 - [ ] more robust tests
