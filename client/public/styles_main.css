@@ -51,12 +51,12 @@ button.contrast:hover, button.contrast:focus {
   background-color: var(--pico-contrast-background);
 }
 
-
-/* MAIN COLORS */
+/* MAIN */
 body {
   background-color: var(--my-background);
   color: var(--pico-color);
   min-height: 100vh;
+  padding: var(--pico-spacing) calc(var(--pico-spacing)*2);
 }
 
 .warn {
@@ -72,7 +72,7 @@ body {
   text-align: center;
 }
 
-/* MAIN LAYOUT */
+/* NAV HEADER */
 nav {
   padding-top: var(--pico-spacing);
 }
@@ -127,24 +127,65 @@ nav a[role="button"] {
   color: gray;
 }
 
-main {
-  display: flex;
-  flex-flow: row wrap;
-  gap: 2em;
-  justify-content: space-between;
-  width: 100%;
-}
+/* GRID */
 
-.timeline {
-  flex-basis: 100%;
-  order: 3;
+main {
+  margin-top: 2em;
+  display: grid;
+  grid-template-rows: auto, auto, auto;
+  grid-template-areas: 
+    "rotation"
+    "other"
+    "timeline";
 }
 
 .mainRotation {
-  flex-basis: 100%;
-  order: 1;
+  grid-area: rotation;
+}
+.otherRotations {
+  grid-area: other;
+}
+.timeline {
+  grid-area: timeline;
 }
 
+@media (min-width: 768px) {
+  body {
+    font-size: 80%;
+  }
+
+  main {
+    max-width: 700px;
+    margin: 0 auto;
+    grid-template-columns: 3fr 4fr;
+    grid-template-rows: auto, auto, auto;
+    grid-template-areas: 
+      "timeline rotation"
+      "timeline other"
+      "timeline .";
+  }
+}
+
+@media (min-width: 1280px) {
+  body {
+    font-size: 100%;
+  }
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    grid-template-columns: 3fr 4fr 3fr;
+    grid-template-areas: "timeline rotation other";
+    grid-column-gap: 3em;
+  }
+}
+
+@media (min-width: 1536px) {
+  main {
+    max-width: 1450px;
+  }
+}
+
+/* STYLES */
 .skipControls {
   display: flex;
   justify-content: space-between;
@@ -155,13 +196,8 @@ main {
   font-size: 100%;
 }
 
-.otherRotations {
-  flex-basis: 100%;
-  order: 2;
-}
-
-.otherRotations h4:not(:first-of-type) {
-  margin-top: calc(var(--pico-spacing) * 3);
+.otherRotations h4 {
+  margin-top: calc(var(--pico-spacing) * 4);
 }
 
 .instruction {
@@ -170,23 +206,6 @@ main {
   text-align: center;
 }
 
-@media (min-width: 1024px) {
-  main {
-    flex-wrap: nowrap;
-  }
-  .mainRotation {
-    order: 2;
-    flex-basis: 38%;
-  }
-  .otherRotations {
-    order: 3;
-    flex-basis: 28%;
-  }
-  .timeline {
-    order: 1;
-    flex-basis: 28%;
-  }
-}
 
 /* SHIFT BOX */
 .shiftBox {

@@ -18,23 +18,12 @@
     </script>
   </head>
   <body>
-    <div class="container" id="app" v-cloak>
+    <div id="app" v-cloak>
       <%- include('./partials/nav.ejs'); %>
       <main>
-        
-        <section class="timeline">
-          <h4>Timeline</h4>
-          <hr />
-          <div class="blank" v-if="board.events.length === 0">No events</div>
-          <template v-else>
-            <template v-for="(event, index) in board.events">
-              <%- include('./partials/event.ejs'); %>
-            </template>
-          </template>
-        </section>
-
+          <!-- ROTATION  -->
         <section class="mainRotation">
-          <h4>Rotation</h4>
+          <h2>Rotation</h2>
           <hr />   
           <template v-if="board.zones.rotation.length > 0">
             <p class="instruction">Stroke, Trauma or Critical patients should be given to a doctor.</p>
@@ -77,8 +66,9 @@
           </div>
         </section>
 
+        <!-- OTHER ZONES  -->
         <section class="otherRotations">
-          <h4>Fast Track</h4>
+          <h2>Fast Track</h2>
           <hr />
           <template v-if="board.zones.fasttrack.length > 0">
             <p class="instruction">Accepts all ESI Level 4, 5 patients.</p>
@@ -90,7 +80,7 @@
             <%- include('./partials/blank.ejs'); %>
           </template>
 
-          <h4>Flex</h4>
+          <h4>Flex Zone</h4>
           <hr />
           <template v-if="board.zones.flex.length > 0">
             <template v-for="shift in findShiftsForZone('flex')">
@@ -101,7 +91,7 @@
             <%- include('./partials/blank.ejs'); %>
           </template>
 
-          <h4>Off Rotation</h4>
+          <h4>Off the Board</h4>
           <hr />
           <template v-if="board.zones.off.length > 0">
             <template v-for="shift in findShiftsForZone('off')">
@@ -113,9 +103,20 @@
           </template>
         </section>
 
+        <!-- TIMELINE  -->
+        <section class="timeline">
+          <h2>Timeline</h2>
+          <hr />
+          <div class="blank" v-if="board.events.length === 0">No events</div>
+          <template v-else>
+            <template v-for="(event, index) in board.events">
+              <%- include('./partials/event.ejs'); %>
+            </template>
+          </template>
+        </section>
+
       </main>
     </div>
-
     <script src="./providers.js"></script>
     <script src="./shiftDetails.js"></script>
     <%- include('./app.ejs'); %>
