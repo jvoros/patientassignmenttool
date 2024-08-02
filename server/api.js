@@ -104,7 +104,6 @@ api.post("/moveShiftToRotation", (req, res) => {
 
 api.post("/moveNext", (req, res) => {
   const { cycle, offset } = req.body;
-  console.log("moveNext args: ", cycle, offset);
   board.moveNext(cycle, offset);
   responder(res);
 });

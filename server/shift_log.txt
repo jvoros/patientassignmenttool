@@ -1,2 +1,6 @@
 
 Reset Date, Shift Name, Last, First, Total, APP
+
+8/1/2024, 8am - 5pm, Blake, Kelly, 2, 2
+8/1/2024, 11am - 8pm, Carmack, Brian, 3, 1
+8/1/2024, 6am - 3pm APP, Lempit, Hilary, 3, undefined
