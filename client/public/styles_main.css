@@ -27,7 +27,7 @@
 
 html[data-theme='dark'] {
   --my-background: black;
-  --my-light-gray: var(--pico-color-grey-700);
+  --my-light-gray: var(--pico-color-slate-800);
   --my-next-background: var(--pico-color-amber-300);
   --my-next-shift-background: var(--pico-background-color);
   --my-blank-background: var(--pico-color-grey-700);
