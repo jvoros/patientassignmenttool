@@ -330,10 +330,11 @@ main {
   border-radius: var(--pico-border-radius);
   font-size: 40%;
   font-weight: normal;
-  color: var(--pico-color-azure-500);
+  background-color: var(--my-next-background);
+  color: white;
   text-align: center;
   text-transform: uppercase;
-  border: 1px solid var(--pico-color-azure-500);
+  border: 1px solid var(--my-next-background);
 }
 
 .shiftCounts {
