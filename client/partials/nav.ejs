@@ -14,7 +14,7 @@
       </a>
     </li>
     <li>
-      <button class="secondary outline" @click="themeToggle()">
+      <button class="secondary outline" data-tooltip="Dark Mode" @click="themeToggle()">
         <span v-if="ui.theme==='light'"><%- include('../icons/moon.svg'); %></span>
         <span v-if="ui.theme==='dark'"><%- include('../icons/sun.svg'); %></span>
       </button>
