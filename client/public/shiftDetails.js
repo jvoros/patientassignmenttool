@@ -22,8 +22,8 @@ const shiftDetails = [
     bonus: 2,
   },
   {
-    name: "3pm - 11pm APP",
-    bonus: 2,
+    name: "3pm - Midnight APP",
+    bonus: 0,
     app: true,
   },
   {
