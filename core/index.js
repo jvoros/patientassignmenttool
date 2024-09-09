@@ -16,34 +16,11 @@ board.moveShift(shiftId, offset);
 board.assignPatient(patient);
 board.reassignPatient(patientId, newShiftId);
 
-// with supabase
-const getBlankBoard = () => ({
-  state: {
-    main: [], // array of shift IDs
-    ft: [], // array of shift IDs
-    flex: [], // array of shift IDs
-    off: [], // array of shift IDs
-    nextPatient: "", // shift ID
-    nextSupervisor: "", // shift ID
-    events: [], // array of event IDs,
-    patients: [],
-  },
-  store: {
-    shifts: [],
-    events: [],
-    patients: [],
-  },
-});
+/*
+MORE THINKING
 
-// v2
-const getEmptyState = () => {
-  return {
-    main: [], // array of shift IDs
-    flex: [], // array of shift IDs
-    off: [], // array of shift IDs
-    events: [], // array of event IDs, limit to 30
-    ft: "", // shift ID
-    next: "", // shift ID
-    super: "", // shift ID
-  };
-};
+Each event can hold: current state and pointer to last event. These don't need to be returned to client
+No need to return "store" to client. Each shift knows its patients. 
+
+Board object sent to client can be deeply nested
+*/

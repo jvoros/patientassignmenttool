@@ -2,35 +2,24 @@ import Patient from "./patient-functions.js";
 import Shift from "./shift-functions.js";
 import Rotation from "./rotation-functions.js";
 
-export const getBlankBoard = () => ({
-  state: {
+const getEmptyState = () => {
+  return {
     main: [], // array of shift IDs
-    ft: [], // array of shift IDs
     flex: [], // array of shift IDs
     off: [], // array of shift IDs
-    nextPatient: "", // shift ID
-    nextSupervisor: "", // shift ID
-    events: [], // array of event IDs,
-    patients: [],
-  },
-  store: {
-    shifts: [],
-    events: [],
-    patients: [],
-  },
-});
+    events: [], // array of event IDs, limit to 30
+    ft: "", // shift ID
+    next: "", // shift ID
+    super: "", // shift ID
+  };
+};
 
 const createBoard = () => {
-  let board = getBlankBoard();
+  let board = {};
 
   const get = () => board;
 
-  const reset = () => {
-    const lastState = board.state;
-    board = getBlankBoard();
-    board = addEvent("board", "Board reset", lastState);
-    return board;
-  };
+  const reset = () => {};
 
   const undo = () => {};
 

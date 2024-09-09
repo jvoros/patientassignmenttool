@@ -8,34 +8,23 @@ const supabase = createClient(
   process.env.SUPABASE_LOCAL
 );
 
-// STATE
-export const getState = async () => {
+// BOARD
+const getLastState = async () => {
   const { data, error } = await supabase
-    .from("state")
-    .select()
-    .eq("id", 1)
+    .from("events")
+    .select("state")
+    .order("created_at", { ascending: false })
     .limit(1)
     .single();
-  return data.current;
+  return data.state;
 };
-
-export const updateState = async (newState) => {
-  const { data, error } = await supabase
-    .from("state")
-    .update({ current: newState })
-    .eq("id", 1)
-    .select();
-  return { data: data[0].current, error };
-};
-
-// STORE
-const PT_QUERY = `
+const ptQuery = `
   id, room, patient_type,
   shift:shift_id(id, provider:providers(id, lname, fname)),
   supervisor:supervisor_id(id, provider:providers(id, lname, fname))
   `;
 
-const SHIFT_QUERY = `
+const shiftsQuery = `
   id,
   provider:providers(id, lname, fname, role),
   info:shift_details(id, name, bonus, shift_type),
@@ -43,56 +32,49 @@ const SHIFT_QUERY = `
   supervisor:patients!supervisor_id(id)
   `;
 
-const EVENT_QUERY = `
-    id, message, detail, event_type,
+const eventsQuery = `
+    id, message, detail, event_type, previous_event,
     shift:shift_id(id, provider:providers(id, lname, fname)),
-    patient:patients(${PT_QUERY})
+    patient:patients(${ptQuery})
     `;
 
-const getShifts = (includeIds) =>
-  supabase.from("shifts").select(SHIFT_QUERY).in("id", includeIds);
+const getRecords = (table, query, ids) =>
+  supabase.from(table).select(query).in("id", ids);
 
-const getPatients = (includeIds) =>
-  supabase.from("patients").select(PT_QUERY).in("id", includeIds);
+const hydrateIds = (ids, records) =>
+  ids.map((id) => records.find((record) => record.id === id));
 
-const getEvents = (includeIds) =>
-  supabase.from("events").select(EVENT_QUERY).in("id", includeIds);
-
-export const getStore = async (state) => {
+export const getBoardFromState = async (state) => {
   const stateShifts = [...state.main, ...state.flex, ...state.off];
   // https://stackoverflow.com/questions/35612428/call-async-await-functions-in-parallel
   const response = await Promise.all([
-    getShifts(stateShifts),
-    getPatients(state.patients),
-    getEvents(state.events),
+    getRecords("shifts", shiftsQuery, stateShifts),
+    getRecords("events", eventsQuery, state.events),
   ]);
+  const shifts = response[0].data;
+  const events = response[1].data;
+
   return {
-    shifts: response[0].data,
-    patients: response[1].data,
-    events: response[2].data,
+    main: hydrateIds(state.main, shifts),
+    flex: hydrateIds(state.flex, shifts),
+    off: hydrateIds(state.off, shifts),
+    events: hydrateIds(state.events, events),
+    next: state.next,
+    super: state.super,
+    ft: state.ft,
   };
 };
 
-export const updateStateAndGetBoard = async (newState) => {
-  const { data, error } = await updateState(newState);
-  if (error) {
-    return error;
-  }
-  const store = await getStore(newState);
-
-  return { state: data, store };
+const initialState = {
+  main: [1, 3],
+  flex: [2, 4],
+  off: [],
+  events: [1],
+  ft: 2,
+  next: 1,
+  super: 1,
 };
 
-const state = await getState();
-const newState = { ...state, nextPatient: "" };
+const lastState = await getLastState();
 
-logObject("updateStateAndGetBoard", await updateStateAndGetBoard(newState));
-
-/*
-MORE THINKING
-
-Each event can hold: current state and pointer to last event. These don't need to be returned to client
-No need to return "store" to client. Each shift knows its patients. 
-
-Board object sent to client can be deeply nested
-*/
+logObject("getBoardFromState", await getBoardFromState(lastState));

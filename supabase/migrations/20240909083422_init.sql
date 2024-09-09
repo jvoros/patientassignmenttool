@@ -149,10 +149,6 @@ alter table "public"."events" add constraint "events_patient_id_fkey" FOREIGN KE
 
 alter table "public"."events" validate constraint "events_patient_id_fkey";
 
-alter table "public"."events" add constraint "events_previous_event_fkey" FOREIGN KEY (previous_event) REFERENCES events(id) not valid;
-
-alter table "public"."events" validate constraint "events_previous_event_fkey";
-
 alter table "public"."events" add constraint "events_shift_id_fkey" FOREIGN KEY (shift_id) REFERENCES shifts(id) not valid;
 
 alter table "public"."events" validate constraint "events_shift_id_fkey";

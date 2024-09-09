@@ -26,9 +26,9 @@ values
 ('reassignPatient');
 
 insert into
-public.state (id, current)
+public.events(previous_event, message, event_type, state)
 values
-(1, '{"main":[],"flex":[],"off":[],"events":[],"ft":"","next":"","super":""}');
+(0, 'Board reset.', 'board','{"main":[1, 3],"flex":[2, 4],"off":[],"events":[1],"ft":2,"next":1,"super":1}');
 
 insert into
 public.shift_details (name, start_time, end_time, bonus, shift_type)
@@ -51,3 +51,11 @@ values
 ('Stiles', 'Adam', 'physician'),
 ('Cheever', 'Shelley', 'app'),
 ('Lempit', 'Hilary', 'app');
+
+insert into
+public.shifts (info_id, provider_id)
+values
+(1, 1),
+(2, 4),
+(3, 3),
+(6, 5)
