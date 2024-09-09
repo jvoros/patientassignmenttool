@@ -26,11 +26,6 @@ values
 ('reassignPatient');
 
 insert into
-public.events(previous_event, message, event_type, state)
-values
-(0, 'Board reset.', 'board','{"main":[1, 3],"flex":[2, 4],"off":[],"events":[1],"ft":2,"next":1,"super":1}');
-
-insert into
 public.shift_details (name, start_time, end_time, bonus, shift_type)
 values
 ('6a - 3p', '06:00:00', '15:00:00', 2, 'physician'),
@@ -58,4 +53,17 @@ values
 (1, 1),
 (2, 4),
 (3, 3),
-(6, 5)
+(6, 5);
+
+insert into
+public.patients (room, shift_id, supervisor_id, patient_type)
+values
+('1', 1, null,'walk in'),
+('Tr A', 2, 1, 'fast track');
+
+insert into
+public.events(created_at, previous_event, message, detail, event_type, shift_id, patient_id, state)
+values
+('2024-09-09 08:58:00', 0, 'Board reset.', null, 'board', null, null, '{"main":[1, 3],"flex":[2, 4],"off":[],"events":[1],"ft":2,"next":1,"super":1}'),
+('2024-09-09 08:58:10', 1, 'assigned to', null, 'addPatient', 1, 1, '{"main":[1, 3],"flex":[2, 4],"off":[],"events":[2, 1],"ft":2,"next":1,"super":1}'),
+('2024-09-09 08:58:20', 2, 'assigned to', 'supervised by', 'addPatient', 2, 2, '{"main":[1, 3],"flex":[2, 4],"off":[],"events":[3, 2, 1],"ft":2,"next":1,"super":2}');
