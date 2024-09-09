@@ -1,185 +1,157 @@
 import Rotation from "./rotation-functions.js";
 import Event from "./event-functions.js";
-import { newId, findShiftById } from "./helper-functions.js";
-
-// BASE SHIFT
-const makeShift = (provider, schedule) => ({
-  id: newId(),
-  provider,
-  name: schedule.name,
-  bonus: schedule.bonus,
-  type: schedule.type, // app, physician, resident, pit
-  patients: [], //array of pt IDs
-  counts: {},
-});
-
-const addPatient = (shift, pt) => {
-  shift.patients = [pt, ...shift.patients];
-  updateCounts(shift);
-};
-
-const removePatient = (shift, ptId) => {
-  shift.patients = shift.patients.filter((p) => p.id !== ptId);
-  updateCounts(shift);
-};
-
-const updateCounts = (shift) => {
-  shift.counts = shift.patients.reduce(
-    (result, pt) => {
-      result.total++;
-      result[pt.type] = (result[pt.type] || 0) + 1;
-      return result;
-    },
-    { total: 0 }
-  );
-};
 
 // BIG BOYS IN API
-const addShift = (board, provider, schedule) => {
-  let newBoard = structuredClone(board);
-  const newShift = makeShift(provider, schedule);
-  newBoard.shifts.unshift(newShift);
-  logOnToAppropriateZone(newBoard, newShift);
-  return newBoardWithEvent(newBoard, newShift.id, "joined rotation");
-};
-
-const flexOn = (board, shiftId) => {
-  const newBoard = structuredClone(board);
-  joinMain(newBoard, shiftId, false);
-  removeFromZone("flex")(newBoard, shiftId);
-  return newBoardWithEvent(newBoard, shiftId, "flexed on rotation");
-};
-
-const flexOff = (board, shiftId) => {
-  const newBoard = structuredClone(board);
-  leaveMain(newBoard, shiftId);
-  addToZone("flex")(newBoard, shiftId);
-  return newBoardWithEvent(newBoard, shiftId, "flexed off rotation");
-};
-
-const joinFT = (board, shiftId) => {
-  const newBoard = structuredClone(board);
-  addToZone("ft")(newBoard, shiftId);
-  return newBoardWithEvent(newBoard, shiftId, "joined fast track");
-};
-
-const leaveFT = (board, shiftId) => {
-  const newBoard = structuredClone(board);
-  removeFromZone("ft")(board, shiftId);
-  return newBoardWithEvent(newBoard, shiftId, "left fast track");
-};
-
-const signOut = (board, shiftId) => {
-  const newBoard = structuredClone(board);
-  if (board.main.includes(shiftId)) {
-    leaveMain(newBoard, shiftId);
-  }
-  leaveAppZones(newBoard, shiftId);
-  addToZone("off")(newBoard, shiftId);
-  return newBoardWithEvent(newBoard, shiftId, "signed out");
-};
-
-const rejoin = (board, shiftId) => {
-  const newBoard = structuredClone(board);
-  if (isDoctor(board, shiftId)) {
-    joinMain(newBoard, shiftId);
-  } else {
-    joinAppZones(newBoard, shiftId);
-  }
-  removeFromZone("off")(newBoard, shiftId);
-  return newBoardWithEvent(newBoard, shiftId, "rejoined board");
-};
-
-// INTERNAL
-// Not pure functions - modify board in place
-
-// MAIN ZONE
-const logOnToAppropriateZone = (board, shiftId) =>
-  isDoctor(board, shiftId)
-    ? joinMain(board, shiftId)
-    : joinAppZones(board, shiftId);
-
-const joinMain = (board, shiftId) => {
-  if (!isZoneEmpty("main")(board)) {
-    const insertIndex = board.main.indexOf(board.nextPatient);
-    board.main.splice(insertIndex, 0, shiftId);
-  } else {
-    addToZone("main")(board, shiftId);
-  }
-  handleNextsOnJoin(newBoard, shiftId);
-};
-
-const leaveMain = (board, shiftId) => {
-  if (isLastDoctorOnMain(board, shiftId)) {
-    return;
-  }
-  handleNextsOnLeave(board, shiftId);
-  removeFromZone("main")(board, shiftId);
-};
-
-const handleNextsOnJoin = (board, shiftId) => {
-  board.nextPatient = shiftId;
-  if (!board.nextSupervisor && isDoctor(board, shiftId)) {
-    board.nextSupervisor = shiftId;
-  }
-};
-
-const handleNextsOnLeave = (board, shiftId) => {
-  if (isNextPatient(board, shiftId)) {
-    board.nextPatient = Rotation.getNextPatient(board);
-  }
-  if (isNextSupervisor(board, shiftId)) {
-    board.nextSupervisor = Rotation.getNextSupervisor(board);
-  }
-};
-
-// APP ZONES
-const joinAppZones = (board, shiftId) => {
-  addToZone("flex")(board, shiftId);
-  if (isZoneEmpty("ft")(board)) {
-    addToZone("ft")(board, shiftId);
-  }
-};
-
-const leaveAppZones = (board, shiftId) => {
-  ["flex", "ft"].forEach((zone) => {
-    removeFromZone(zone)(board, shiftId);
+const addShift = async (board, provider, schedule) => {
+  const newShift = await db.addShift(provider.id, schedule.id);
+  const newBoard = joinBoard(board, newShift);
+  return await Event.addEvent(newBoard, "board", "joined the board.", {
+    shiftId: newShift.id,
   });
 };
 
+const flexOn = async (board, shiftId) => {
+  const onMain = addToMain(board, shiftId);
+  const offFlex = removeFromZone("flex")(onMain, shiftId);
+  return await Event.addEvent(offFlex, "board", "flexed on rotation.", {
+    shiftId,
+  });
+};
+
+const flexOff = async (board, shiftId) => {
+  const offMain = leaveMain(board, shiftId);
+  const onFlex = addToZone("flex")(offMain, shiftId);
+  return await Event.addEvent(onFlex, "board", "flexed off rotation", {
+    shiftId,
+  });
+};
+
+const joinFt = (board, shiftId) => {
+  const newBoard = setNextFt(board, shiftId);
+  return Event.addEvent(newBoard, "board", "joined Fast Track", {
+    shiftId,
+  });
+};
+
+const leaveFt = (board, shiftId) => {
+  if (!isNextFt(board, shiftId)) return board;
+  const newBoard = setNextFt(board, null);
+  return Event.addEvent(newBoard, "board", "left fast track", { shiftId });
+};
+
+const signOut = (board, shiftId) => {
+  const leftApp = leaveAppZones(board, shiftId);
+  const leftMain = leaveMain(leftApp, shiftId);
+  const addOff = addToZone("off")(leftMain, shiftId);
+  return Event.addEvent(addOff, "board", "signed out.", { shiftId });
+};
+
+const rejoin = (board, shift) => {
+  const takeOff = removeFromZone("off")(board, shift.id);
+  const onBoard = joinBoard(takeOff, shift);
+  return Event.addEvent(onBoard, "board", "rejoined board", {
+    shiftId: shift.id,
+  });
+};
+
+// INTERNAL
+// ZONES
+const joinBoard = (board, shift) => {
+  return isDoctor(shift.provider)
+    ? addDoctorToMain(board, shift.id)
+    : addToAppZones(board, shift.id);
+};
+
+const addToMain = (board, shiftId) => {
+  // set as next
+  const newNext = setNextProvider(board, shiftId);
+  // add at start, if empty, or as up next
+  if (isZoneEmpty("main")(board)) {
+    return addToZone("main")(newNext, shiftId);
+  }
+  const insertIndex = board.main.indexOf(board.next);
+  return { ...board, main: board.main.toSpliced(insertIndex, 0, shiftId) };
+};
+
+const addDoctorToMain = (board, shiftId) => {
+  // add as super only if empty
+  const boardWithSuper = board.nextSupervisor
+    ? board
+    : setNextSupervisor(board, shiftId);
+  return addToMain(boardWithSuper, shiftId);
+};
+
+const addToAppZones = (board, shiftId) => {
+  const newBoard = addToZone("flex")(board, shiftId);
+  return isZoneEmpty("ft")(board) ? { ...board, ft: shiftId } : newBoard;
+};
+
+const leaveMain = (board, shift) => {
+  // error checks before changes
+  if (isLastDoctorOnMain(board, shift) || !board.main.includes(shift.id)) {
+    return board;
+  }
+  const newBoard = removeFromZone("main")(board, shift.id);
+  return handleNextsOnLeave(board, shift.id);
+};
+
+const leaveAppZones = (board, shiftId) => {
+  const newBoard = removeFromZone("flex")(board, shiftId);
+  return shiftId === board.ft ? { ...newBoard, ft: null } : newBoard;
+};
+
+const handleNextsOnLeave = (board, shiftId) => {
+  const nexts = ["nextProvider", "nextSupervisor"];
+  const newBoard = { ...board };
+  nexts.forEach((next) => {
+    if (board[next] === shiftId) {
+      newBoard[next] = Rotation.getNext(board, next);
+    }
+  });
+  return newBoard;
+};
+
 // HELPERS
-const newBoardWithEvent = (board, shiftId, msg) =>
-  Event.newShiftEvent(board, shiftId, msg);
+const isDoctor = (provider) => provider.role === "physician";
 
-const isDoctor = (board, shiftId) =>
-  findShiftById(board, shiftId).type === "physician";
-
-const isLastDoctorOnMain = (board, shiftId) =>
-  board.main.length < 2 && isDoctor(board, shiftId);
-
-const isNextPatient = (board, shiftId) => board.nextPatient === shiftId;
-
-const isNextSupervisor = (board, shiftId) => board.nextSupervisor === shiftId;
+const isLastDoctorOnMain = (board, shift) =>
+  board.main.length < 2 && isDoctor(shift.provider);
 
 const isZoneEmpty = (zone) => (board) => board[zone].length === 0;
 
-const addToZone = (zone) => (board, shiftId) => {
-  board[zone] = [...board[zone], shiftId];
-};
+const addToZone = (zone) => (board, shiftId) => ({
+  ...board,
+  [zone]: [...board[zone], shiftId],
+});
 
-const removeFromZone = (zone) => (board, shiftId) => {
-  board[zone] = board[zone].filter((id) => id !== shiftId);
-};
+const removeFromZone = (zone) => (board, shiftId) => ({
+  ...board,
+  [zone]: board[zone].filter((id) => id !== shiftId),
+});
+
+// NEXTS
+const isNext = (whichNext, board, shiftId) => board[whichNext] === shiftId;
+const isNextFt = (board, shiftId) => isNext("nextFt", board, shiftId);
+
+const setNext = (whichNext, board, shiftId) => ({
+  ...board,
+  [whichNext]: shiftId,
+});
+
+const setNextProvider = (board, shiftId) =>
+  setNext("nextProvider", board, shiftId);
+
+const setNextSupervisor = (board, shiftId) =>
+  setNext("nextSupervisor", board, shiftId);
+
+const setNextFt = (board, shiftId) => setNext("nextFt", board, shiftId);
 
 export default {
-  makeShift,
-  addPatient,
-  removePatient,
   addShift,
   flexOn,
   flexOff,
-  joinFT,
-  leaveFT,
+  joinFt,
+  leaveFt,
   signOut,
   rejoin,
 };

@@ -5,26 +5,17 @@ import {
   findShiftById,
 } from "./helper-functions.js";
 
-const makeEvent = (type, message, options = {}) => {
-  return {
-    id: newId(),
-    time: shortTimestamp(),
-    type,
-    message,
-    shiftId: options?.shiftId,
-    patientId: options?.patientId,
-    detail: options?.detail,
+const addEvent = async (board, type, message, options) => {
+  // add event to db
+  const eventId = await db.newEvent(type, message, options);
+  // add event to board
+  const newBoard = {
+    ...board,
+    events: [newEvent, ...board.events.slice(0, EVENT_LIMIT)],
   };
-};
-
-const setDetail = (event, detailMessage) => {
-  return { ...event, detail: detailMessage };
-};
-
-const addEvent = (board, type, message, options) => {
-  const newBoard = structuredClone(board);
-  const newEvent = makeEvent(type, message, options);
-  newBoard.events = [newEvent, ...board.events.slice(0, EVENT_LIMIT)];
+  // update event with state
+  const updatedEventId = await db.updateEvent(eventId, newBoard);
+  // return new board
   return newBoard;
 };
 

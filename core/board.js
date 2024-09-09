@@ -8,14 +8,14 @@ const getEmptyState = () => {
     flex: [], // array of shift IDs
     off: [], // array of shift IDs
     events: [], // array of event IDs, limit to 30
-    ft: "", // shift ID
-    next: "", // shift ID
-    super: "", // shift ID
+    nextFt: "", // shift ID
+    nextProvider: "", // shift ID
+    nextSupervisor: "", // shift ID
   };
 };
 
 const createBoard = () => {
-  let board = {};
+  let board = getEmptyState();
 
   const get = () => board;
 
