@@ -23,7 +23,7 @@ const store = {
   nextSupervisor: "shiftId",
 };
 
-const getEmptyBoard = () => {
+export const getEmptyBoard = () => {
   return {
     state: {
       main: [], // array of shift IDs
@@ -43,17 +43,31 @@ const createStore = () => {
 
   const get = () => board;
 
+  const reset = async () => {
+    const newState = getEmptyBoard().state;
+    const newStateWithEvent = Event.addToState(newState, "reset");
+    const newStore = await db.getStoreFromState(newStateWithEvent);
+    board = { state: newStateWithEvent, store: newStore };
+  };
+
+  // error checking here
+  // should catch any error from whole program
   const withRehydrate =
     (fn) =>
     async (...args) => {
-      const newState = await fn(board, ...args);
-      const newStore = await db.getStoreFromState(newState);
-      board = { state: newState, store: newStore };
+      try {
+        const newState = await fn(board, ...args);
+        const newStore = await db.getStoreFromState(newState);
+        board = { state: newState, store: newStore };
+      } catch (error) {
+        console.error("Error during state rehydration:", error);
+        throw error;
+      }
     };
 
   return {
     get,
-    reset: withRehydrate(Event.reset),
+    reset,
     undo: withRehydrate(Event.undo),
     addShift: withRehydrate(Shift.addShift),
     flexOn: withRehydrate(Shift.flexOn),

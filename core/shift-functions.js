@@ -5,7 +5,7 @@ import Event from "./event-functions.js";
 const addShift = async (board, provider, schedule) => {
   const newShift = await db.addShift(provider.id, schedule.id);
   const newState = joinBoard(board.state, newShift);
-  const newStateWithEvent = await Event.addToState(newState, "join", {
+  const newStateWithEvent = await Event.addToState(newState, "addShift", {
     shiftId: newShift.id,
   });
   return newStateWithEvent;

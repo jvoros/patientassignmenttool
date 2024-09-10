@@ -8,17 +8,7 @@ const supabase = createClient(
   process.env.SUPABASE_LOCAL
 );
 
-// BOARD
-const getLastState = async () => {
-  const { data, error } = await supabase
-    .from("events")
-    .select("state")
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .single();
-  return data.state;
-};
-
+// QUERIES
 const providersQuery = `providers(id, lname, fname, role)`;
 
 const ptQuery = `
@@ -40,6 +30,17 @@ const eventsQuery = `
     shift:shift_id(id, provider:${providersQuery}),
     patient:patients(${ptQuery})
     `;
+
+// BOARD
+const getLastState = async () => {
+  const { data, error } = await supabase
+    .from("events")
+    .select("state")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();
+  return data.state;
+};
 
 const getRecords = (table, query, ids) =>
   supabase.from(table).select(query).in("id", ids);

@@ -22,8 +22,8 @@ public.event_types (event_type)
 values
 ('board'),
 ('addShift'),
-('addPatient'),
-('reassignPatient'),
+('assignPatient'),
+('reassign'),
 ('flexOn'),
 ('flexOff'),
 ('joinFt'),

@@ -1,7 +1,7 @@
 // functional api base
 board.get();
 board.reset();
-board.undo();
+board.undoEvent(event);
 board.addShift(provider, schedule);
 board.flexOn(shiftId);
 board.flexOff(shiftId);
