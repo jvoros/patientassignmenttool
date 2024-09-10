@@ -10,4 +10,8 @@ const addToState = async (state, type, options) => {
   return newState;
 };
 
-export default { EVENT_LIMIT, addToState };
+const undo = async (board) => {};
+
+const reset = async (board) => {};
+
+export default { EVENT_LIMIT, addToState, undo, reset };

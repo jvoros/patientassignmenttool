@@ -18,15 +18,18 @@ const getLastState = async () => {
     .single();
   return data.state;
 };
+
+const providersQuery = `providers(id, lname, fname, role)`;
+
 const ptQuery = `
   id, room, patient_type,
-  shift:shift_id(id, provider:providers(id, lname, fname)),
-  supervisor:supervisor_id(id, provider:providers(id, lname, fname))
+  shift:shift_id(id, provider:${providersQuery}),
+  supervisorShift:supervisor_id(id, provider:${providersQuery})
   `;
 
 const shiftsQuery = `
   id,
-  provider:providers(id, lname, fname, role),
+  provider:${providersQuery},
   info:shift_details(id, name, bonus, shift_type),
   patients!shift_id(id),
   supervisor:patients!supervisor_id(id)
@@ -34,7 +37,7 @@ const shiftsQuery = `
 
 const eventsQuery = `
     id, message, detail, event_type, previous_event,
-    shift:shift_id(id, provider:providers(id, lname, fname)),
+    shift:shift_id(id, provider:${providersQuery}),
     patient:patients(${ptQuery})
     `;
 
@@ -44,7 +47,7 @@ const getRecords = (table, query, ids) =>
 const hydrateIds = (ids, records) =>
   ids.map((id) => records.find((record) => record.id === id));
 
-export const getBoardFromState = async (state) => {
+export const getStoreFromState = async (state) => {
   const stateShifts = [...state.main, ...state.flex, ...state.off];
   // https://stackoverflow.com/questions/35612428/call-async-await-functions-in-parallel
   const response = await Promise.all([
@@ -77,4 +80,4 @@ const initialState = {
 
 const lastState = await getLastState();
 
-logObject("getBoardFromState", await getBoardFromState(lastState));
+logObject("getStoreFromState", await getStoreFromState(lastState));

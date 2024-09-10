@@ -1,5 +1,7 @@
 import Shift from "./shift-functions.js";
 import Rotation from "./rotation-functions.js";
+import Patient from "./patient-functions.js";
+import Event from "./event-functions.js";
 
 /*
 Shift Objects
@@ -41,23 +43,29 @@ const createStore = () => {
 
   const get = () => board;
 
-  const reset = () => {};
-
-  const undo = () => {};
+  const withRehydrate =
+    (fn) =>
+    async (...args) => {
+      const newState = await fn(board, ...args);
+      const newStore = await db.getStoreFromState(newState);
+      board = { state: newState, store: newStore };
+    };
 
   return {
     get,
-    reset,
-    undo,
-    addShift: Shift.addShift,
-    flexOn: Shift.flexOn,
-    flexOff: Shift.flexOff,
-    joinFt: Shift.joinFt,
-    leaveFt: Shift.leaveFt,
-    signOut: Shift.signOut,
-    rejoin: Shift.rejoin,
-    moveNext: Rotation.moveNext,
-    moveShiftInRotation: Rotation.moveShiftInRotation,
+    reset: withRehydrate(Event.reset),
+    undo: withRehydrate(Event.undo),
+    addShift: withRehydrate(Shift.addShift),
+    flexOn: withRehydrate(Shift.flexOn),
+    flexOff: withRehydrate(Shift.flexOff),
+    joinFt: withRehydrate(Shift.joinFt),
+    leaveFt: withRehydrate(Shift.leaveFt),
+    signOut: withRehydrate(Shift.signOut),
+    rejoin: withRehydrate(Shift.rejoin),
+    moveNext: withRehydrate(Rotation.moveNext),
+    moveShiftInRotation: withRehydrate(Rotation.moveShiftInRotation),
+    assignPatient: withRehydrate(Patient.assignPatient),
+    reassignPatient: withRehydrate(Patient.reassignPatient),
   };
 };
 

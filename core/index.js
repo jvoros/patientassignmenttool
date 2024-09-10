@@ -9,12 +9,18 @@ board.joinFt(shiftId);
 board.leaveFt(shiftId);
 board.signOut(shiftId);
 board.rejoin(shiftId);
-board.moveNextPatient(offset);
-board.moveNextSupervisor(offset);
+board.moveNext(whichNext, offset);
 board.moveShift(shiftId, offset);
+board.assignPatient(shift, type, room, advance);
+board.reassignPatient(event, newShift);
 
-board.assignPatient(patient);
-board.reassignPatient(patientId, newShiftId);
+/*
+API functions all:
+- take board as first argument.
+- return a new state with new event
+
+use the new state to re-hydrate board.store
+*/
 
 /*
 MORE THINKING
@@ -37,7 +43,7 @@ supervisor [ids]
 }
 */
 
-const boardDeepNest = {
+const store = {
   main: [{}, {}, {}], // array of shift objects
   flex: [], //same
   off: [], //same

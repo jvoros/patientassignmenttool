@@ -1,7 +1,7 @@
 import Rotation from "./rotation-functions.js";
 import Event from "./event-functions.js";
 
-// BIG BOYS IN API
+// API
 const addShift = async (board, provider, schedule) => {
   const newShift = await db.addShift(provider.id, schedule.id);
   const newState = joinBoard(board.state, newShift);
@@ -64,7 +64,7 @@ const rejoin = (board, shift) => {
 };
 
 // INTERNAL
-// ZONES
+// Zones
 const joinBoard = (state, shift) => {
   return isDoctor(shift.provider)
     ? addDoctorToMain(state, shift.id)
@@ -126,7 +126,7 @@ const handleNextsOnLeave = (board, shiftId) => {
   return newState;
 };
 
-// HELPERS
+// Helpers
 const isDoctor = (provider) => provider.role === "physician";
 
 const isLastDoctorOnMain = (state, shift) =>
@@ -144,7 +144,7 @@ const removeFromZone = (zone) => (state, shiftId) => ({
   [zone]: state[zone].filter((id) => id !== shiftId),
 });
 
-// NEXTS
+// Nexts
 const isNext = (whichNext, state, shiftId) => state[whichNext] === shiftId;
 const isNextFt = (state, shiftId) => isNext("nextFt", state, shiftId);
 

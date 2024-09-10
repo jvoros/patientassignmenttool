@@ -1,5 +1,6 @@
 import Event from "./event-functions.js";
 
+// API
 const getNextShiftId = (board, whichNext, offset = 1) => {
   const nextShift = getNeighborShift(board, whichNext, offset);
   // if nextSupervisor and nextShift is app -> recycle
