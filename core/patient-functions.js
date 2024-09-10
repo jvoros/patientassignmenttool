@@ -21,7 +21,7 @@ const reassignPatient = async (board, event, newShift) => {
     event.shift.provider,
     newShift.provider
   );
-  const updatedPt = await db.updatePatientProvider(
+  const updatedPt = await db.updatePatient(
     event.patient.id,
     newShift.id,
     newSupervisorId

@@ -1,10 +1,8 @@
-import { getEmptyBoard } from "./board.js";
-
 const EVENT_LIMIT = 50;
 
 // API
 const addToState = async (state, type, options) => {
-  const eventId = await db.newEvent(type, options);
+  const eventId = await db.addEvent(type, options);
   const newState = {
     ...state,
     events: [newEvent, ...state.events.slice(0, EVENT_LIMIT)],

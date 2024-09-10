@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
+import { getAllShifts, logObject } from "./helper-functions.js";
 import "dotenv/config";
-import { logObject } from "./helper-functions.js";
 
 // Create a single supabase client for interacting with your database
 const supabase = createClient(
@@ -49,8 +49,7 @@ const hydrateIds = (ids, records) =>
   ids.map((id) => records.find((record) => record.id === id));
 
 export const getStoreFromState = async (state) => {
-  const stateShifts = [...state.main, ...state.flex, ...state.off];
-  // https://stackoverflow.com/questions/35612428/call-async-await-functions-in-parallel
+  const stateShifts = getAllShifts(state);
   const response = await Promise.all([
     getRecords("shifts", shiftsQuery, stateShifts),
     getRecords("events", eventsQuery, state.events),
@@ -68,6 +67,20 @@ export const getStoreFromState = async (state) => {
     ft: state.ft,
   };
 };
+
+// Shift db calls
+const addShift = () => {};
+const deleteShift = () => {};
+
+// Patient db calls
+const addPatient = () => {};
+const updatePatient = () => {};
+const deletePatient = () => {};
+
+// Event db calls
+const addEvent = () => {};
+const updateEvent = () => {};
+const deleteEvent = () => {};
 
 const initialState = {
   main: [1, 3],
