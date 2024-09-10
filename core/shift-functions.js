@@ -2,8 +2,8 @@ import Rotation from "./rotation-functions.js";
 import Event from "./event-functions.js";
 
 // API
-const addShift = async (board, provider, schedule) => {
-  const newShift = await db.addShift(provider.id, schedule.id);
+const addShift = async (board, providerId, scheduleId) => {
+  const newShift = await db.addShift(providerId, scheduleId);
   const newState = joinBoard(board.state, newShift);
   const newStateWithEvent = await Event.addToState(newState, "addShift", {
     shiftId: newShift.id,

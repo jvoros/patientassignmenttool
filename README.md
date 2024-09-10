@@ -1,12 +1,74 @@
-# Patient Assignment Tool v0.2
+# Patient Assignment Tool v0.8
 
 ## Intro
 
-This is a ground up rewrite of the first version. Key things: manages state just on the server, no database, seemed unnecessary.
+This is a rewrite to use Supabase for database backend. It also handles state on the server.
+
+JavaScript is easy for changing and managing the order of things. But it doesn't persist anything. Managing order in the database is difficult. 
+
+This also allows for a small state object that can be kept with the Events, so the board can revert to prior states.
 
 ## Backend
 
-`index.js` is the entry point for an Express.js server.
+`core` folder holds the guts of the application, managing state and database.
+
+## API
+
+### Board Functions
+Aside from `board.get`, all the other methods return a `state` object. There is higher-order function wrapper that uses the `state` object to build a new `board` that is returned by `board.get()`.
+
+The higher-order function in `board.js` passes in `board` as the first argument to each method.
+
+#### &rarr; `board.get()`
+
+**Returns**
+
+> Returns the **board object**. `board.state` is small, only tracking IDs and order. `board.store` holds deeply nested objects returned from the database. Lots of records are repeated, e.g. `provider` is on each `shift` object but also in each `event` object. This makes render on the client end easy.
+
+```javascript
+{
+  state: {
+    main: [], // array of shift IDs
+    flex: [], // array of shift IDs
+    off: [], // array of shift IDs
+    events: [], // array of event IDs, limit to 30
+    nextFt: "", // shift ID
+    nextProvider: "", // shift ID
+    nextSupervisor: "", // shift ID
+  },
+  store: {
+    main: [{}, {}, {}], // array of shift objects
+    flex: [], //same
+    off: [], //same
+    events: [{}], // array of event objects
+    nextFt: "shiftId",
+    nextProvider: "shiftId",
+    nextSupervisor: "shiftId",
+  }
+}
+```
+
+#### &rarr; `board.reset()`
+
+> Resets the board and adds a reset event. This event can be undone as it keeps track of the last event, which is hold the state from before the reset.
+
+#### &rarr; `board.undoEvent(event)`
+
+**Parameters**
+
+> `event` object from `board.store`.
+
+#### &rarr; `board.addShift(providerId, scheduleId)`
+#### &rarr; board.flexOn(shiftId);
+#### &rarr; board.flexOff(shiftId);
+#### &rarr; board.joinFt(shiftId);
+#### &rarr; board.leaveFt(shiftId);
+#### &rarr; board.signOut(shiftId);
+#### &rarr; board.rejoin(shiftId);
+#### &rarr; board.moveNext(whichNext, offset);
+#### &rarr; board.moveShift(shiftId, offset);
+#### &rarr; board.assignPatient(shift, type, room, advance);
+#### &rarr; board.reassignPatient(event, newShift);
 
 ### Authentication
 
