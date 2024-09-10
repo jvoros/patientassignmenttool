@@ -1,32 +1,13 @@
-import {
-  EVENT_LIMIT,
-  newId,
-  shortTimestamp,
-  findShiftById,
-} from "./helper-functions.js";
+const EVENT_LIMIT = 50;
 
-const addEvent = async (board, type, message, options) => {
-  // add event to db
-  const eventId = await db.newEvent(type, message, options);
-  // add event to board
-  const newBoard = {
-    ...board,
-    events: [newEvent, ...board.events.slice(0, EVENT_LIMIT)],
+const addToState = async (state, type, options) => {
+  const eventId = await db.newEvent(type, options);
+  const newState = {
+    ...state,
+    events: [newEvent, ...state.events.slice(0, EVENT_LIMIT)],
   };
-  // update event with state
-  const updatedEventId = await db.updateEvent(eventId, newBoard);
-  // return new board
-  return newBoard;
+  const updatedEventId = await db.updateEvent(eventId, newState);
+  return newState;
 };
 
-const addShiftEvent = (board, shiftId, msg) => {
-  const shift = findShiftById(board, shiftId);
-  return addEvent(
-    board,
-    "board",
-    `${shift.provider.first} ${shift.provider.last} ${msg}.`,
-    { shiftId: shift.id }
-  );
-};
-
-export default { makeEvent, setDetail, addEvent, addShiftEvent };
+export default { EVENT_LIMIT, addToState };

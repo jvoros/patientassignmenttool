@@ -1,67 +1,54 @@
 import Event from "./event-functions.js";
-import { findShiftById, findIndexAndNeighbor } from "./helper-functions.js";
 
-const getNext = (board, whichNext, offset = 1) => {
-  const nextShift = getNextShift(board, whichNext, offset);
+const getNextShiftId = (board, whichNext, offset = 1) => {
+  const nextShift = getNeighborShift(board, whichNext, offset);
+  // if nextSupervisor and nextShift is app -> recycle
   return whichNext === "nextSupervisor" && nextShift.type === "app"
     ? getNext(board, whichNext, offset)
     : nextShift.id;
 };
 
-const moveNext = (board, whichNext, offset, event = true) => {
-  let newBoard = structuredClone(board);
-  const nextShift = getNext(newBoard, whichNext, offset);
-  newBoard[whichNext] = nextShift.id;
-  if (event) {
-    const isSup = whichNext === "nextSupervisor";
-    const msg = isSup ? "set as next supervisor" : "set as up next";
-    const fullMsg = `${nextShift.provider.first} ${nextShift.provider.last} ${msg}`;
-    newBoard = Event.addShiftEvent(newBoard, nextShift.id, fullMsg);
-  }
-  return newBoard;
+const moveNext = async (board, whichNext, offset) => {
+  const nextShift = getNeighborShift(board, whichNext, offset);
+  const newState = { ...board.state, [whichNext]: nextShift.id };
+  const newStateWithEvent = await Event.addToState(
+    newState,
+    `move-${whichNext}`,
+    {
+      shiftId: nextShift.id,
+    }
+  );
+  return newStateWithEvent;
 };
 
 const moveShiftInRotation = (board, shiftId, offset) => {
-  let newBoard = structuredClone(board);
-  const rotation = newBoard.main;
-  const { index, nextIndex, nextShiftId } = findIndexAndNeighbor(
+  const newState = { ...board.state };
+  const rotation = newState.main;
+  const { index, nextIndex, nextShift } = findIndexAndNeighbor(
     board,
     shiftId,
     offset
   );
   rotation.splice(nextIndex, 0, rotation.splice(index, 1)[0]);
-  newBoard = Event.addShiftEvent(board, shiftId, "changed position");
-  return newBoard;
+  const newStateWithEvent = Event.addToState(newState, "adjustRotation", {
+    shiftId,
+  });
+  return newStateWithEvent;
 };
 
 // HELPERS
-const getNextShift = (board, whichNext, offset) => {
-  const nextShiftId = findIndexAndNeighbor(
-    board,
-    board[whichNext],
-    offset
-  ).nextShiftId;
-  return findShiftById(board, nextShiftId);
+const getNeighborShift = (board, whichNext, offset) =>
+  findIndexAndNeighbor(board, board[whichNext], offset).nextShift;
+
+export const findIndexAndNeighbor = (board, shiftId, offset) => {
+  const rotation = board.main;
+  const index = rotation.indexOf(shiftId);
+  const nextIndex = (index + offset + rotation.length) % rotation.length;
+  return { index, nextIndex, nextShift: rotation[nextIndex] };
 };
 
-// CONVENIENCE
-const getNextPatient = (board) => getNext(board, "nextPatient");
-
-const getNextSupervisor = (board) => getNext(board, "nextSupervisor");
-
-const moveNextPatient = (board, offset) =>
-  moveNext(board, "nextPatient", offset);
-
-const moveNextSupervisor = (board, offset) =>
-  moveNext(board, "nextSupervisor", offset);
-
-const moveShift = (board, shiftId, offset) =>
-  moveShiftInRotation(board, shiftId, offset);
-
 export default {
-  getNextPatient,
-  getNextSupervisor,
-  moveNextPatient,
-  moveNextSupervisor,
-  moveShift,
+  getNextShiftId,
+  moveNext,
+  moveShiftInRotation,
 };

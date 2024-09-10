@@ -4,147 +4,162 @@ import Event from "./event-functions.js";
 // BIG BOYS IN API
 const addShift = async (board, provider, schedule) => {
   const newShift = await db.addShift(provider.id, schedule.id);
-  const newBoard = joinBoard(board, newShift);
-  return await Event.addEvent(newBoard, "board", "joined the board.", {
+  const newState = joinBoard(board.state, newShift);
+  const newStateWithEvent = await Event.addToState(newState, "join", {
     shiftId: newShift.id,
   });
+  return newStateWithEvent;
 };
 
 const flexOn = async (board, shiftId) => {
-  const onMain = addToMain(board, shiftId);
+  const onMain = addToMain(board.state, shiftId);
   const offFlex = removeFromZone("flex")(onMain, shiftId);
-  return await Event.addEvent(offFlex, "board", "flexed on rotation.", {
+  const newStateWithEvent = await Event.addToState(offFlex, "flexOn", {
     shiftId,
   });
+  return newStateWithEvent;
 };
 
 const flexOff = async (board, shiftId) => {
   const offMain = leaveMain(board, shiftId);
   const onFlex = addToZone("flex")(offMain, shiftId);
-  return await Event.addEvent(onFlex, "board", "flexed off rotation", {
+  const newStateWithEvent = await Event.addToState(onFlex, "flexOff", {
     shiftId,
   });
+  return newStateWithEvent;
 };
 
 const joinFt = (board, shiftId) => {
-  const newBoard = setNextFt(board, shiftId);
-  return Event.addEvent(newBoard, "board", "joined Fast Track", {
+  const newState = setNextFt(board.state, shiftId);
+  const newStateWithEvent = Event.addToState(newState, "joinFt", {
     shiftId,
   });
+  return newStateWithEvent;
 };
 
 const leaveFt = (board, shiftId) => {
-  if (!isNextFt(board, shiftId)) return board;
-  const newBoard = setNextFt(board, null);
-  return Event.addEvent(newBoard, "board", "left fast track", { shiftId });
+  if (!isNextFt(board.state, shiftId)) return state;
+  const newState = setNextFt(board.state, null);
+  const newStateWithEvent = Event.addToState(newState, "leaveFt", {
+    shiftId,
+  });
+  return newStateWithEvent;
 };
 
 const signOut = (board, shiftId) => {
-  const leftApp = leaveAppZones(board, shiftId);
-  const leftMain = leaveMain(leftApp, shiftId);
-  const addOff = addToZone("off")(leftMain, shiftId);
-  return Event.addEvent(addOff, "board", "signed out.", { shiftId });
+  const leftMain = leaveMain(board, shiftId);
+  const leftApp = leaveAppZones(leftMain, shiftId);
+  const addOff = addToZone("off")(leftApp, shiftId);
+  const newStateWithEvent = Event.addToState(addOff, "signOut", { shiftId });
+  return newStateWithEvent;
 };
 
 const rejoin = (board, shift) => {
-  const takeOff = removeFromZone("off")(board, shift.id);
+  const takeOff = removeFromZone("off")(board.state, shift.id);
   const onBoard = joinBoard(takeOff, shift);
-  return Event.addEvent(onBoard, "board", "rejoined board", {
+  const newStateWithEvent = Event.addToState(onBoard, "rejoin", {
     shiftId: shift.id,
   });
+  return newStateWithEvent;
 };
 
 // INTERNAL
 // ZONES
-const joinBoard = (board, shift) => {
+const joinBoard = (state, shift) => {
   return isDoctor(shift.provider)
-    ? addDoctorToMain(board, shift.id)
-    : addToAppZones(board, shift.id);
+    ? addDoctorToMain(state, shift.id)
+    : addToAppZones(state, shift.id);
 };
 
-const addToMain = (board, shiftId) => {
+const addToMain = (state, shiftId) => {
   // set as next
-  const newNext = setNextProvider(board, shiftId);
+  const newNext = setNextProvider(state, shiftId);
   // add at start, if empty, or as up next
-  if (isZoneEmpty("main")(board)) {
+  if (isZoneEmpty("main")(state)) {
     return addToZone("main")(newNext, shiftId);
   }
-  const insertIndex = board.main.indexOf(board.next);
-  return { ...board, main: board.main.toSpliced(insertIndex, 0, shiftId) };
+  const insertIndex = state.main.indexOf(state.next);
+  return { ...state, main: state.main.toSpliced(insertIndex, 0, shiftId) };
 };
 
-const addDoctorToMain = (board, shiftId) => {
+const addDoctorToMain = (state, shiftId) => {
   // add as super only if empty
-  const boardWithSuper = board.nextSupervisor
-    ? board
-    : setNextSupervisor(board, shiftId);
-  return addToMain(boardWithSuper, shiftId);
+  const stateWithSuper = state.nextSupervisor
+    ? state
+    : setNextSupervisor(state, shiftId);
+  return addToMain(stateWithSuper, shiftId);
 };
 
-const addToAppZones = (board, shiftId) => {
-  const newBoard = addToZone("flex")(board, shiftId);
-  return isZoneEmpty("ft")(board) ? { ...board, ft: shiftId } : newBoard;
+const addToAppZones = (state, shiftId) => {
+  const newState = addToZone("flex")(state, shiftId);
+  return isZoneEmpty("ft")(state) ? { ...state, ft: shiftId } : newState;
 };
 
 const leaveMain = (board, shift) => {
+  // takes in board, returns new state
+  // needs board to get next
   // error checks before changes
-  if (isLastDoctorOnMain(board, shift) || !board.main.includes(shift.id)) {
-    return board;
+  if (
+    isLastDoctorOnMain(board.state, shift) ||
+    !board.state.main.includes(shift.id)
+  ) {
+    return board.state;
   }
-  const newBoard = removeFromZone("main")(board, shift.id);
-  return handleNextsOnLeave(board, shift.id);
+  const offNexts = handleNextsOnLeave(board, shift.id);
+  const offMain = removeFromZone("main")(offNexts, shift.id);
+  return offMain;
 };
 
-const leaveAppZones = (board, shiftId) => {
-  const newBoard = removeFromZone("flex")(board, shiftId);
-  return shiftId === board.ft ? { ...newBoard, ft: null } : newBoard;
+const leaveAppZones = (state, shiftId) => {
+  const newState = removeFromZone("flex")(state, shiftId);
+  return shiftId === state.ft ? { ...newState, ft: null } : newState;
 };
 
 const handleNextsOnLeave = (board, shiftId) => {
   const nexts = ["nextProvider", "nextSupervisor"];
-  const newBoard = { ...board };
+  const newState = { ...board.state };
   nexts.forEach((next) => {
-    if (board[next] === shiftId) {
-      newBoard[next] = Rotation.getNext(board, next);
+    if (newState[next] === shiftId) {
+      newState[next] = Rotation.getNextShiftId(board, next);
     }
   });
-  return newBoard;
+  return newState;
 };
 
 // HELPERS
 const isDoctor = (provider) => provider.role === "physician";
 
-const isLastDoctorOnMain = (board, shift) =>
-  board.main.length < 2 && isDoctor(shift.provider);
+const isLastDoctorOnMain = (state, shift) =>
+  state.main.length < 2 && isDoctor(shift.provider);
 
-const isZoneEmpty = (zone) => (board) => board[zone].length === 0;
+const isZoneEmpty = (zone) => (state) => state[zone].length === 0;
 
-const addToZone = (zone) => (board, shiftId) => ({
-  ...board,
-  [zone]: [...board[zone], shiftId],
+const addToZone = (zone) => (state, shiftId) => ({
+  ...state,
+  [zone]: [...state[zone], shiftId],
 });
 
-const removeFromZone = (zone) => (board, shiftId) => ({
-  ...board,
-  [zone]: board[zone].filter((id) => id !== shiftId),
+const removeFromZone = (zone) => (state, shiftId) => ({
+  ...state,
+  [zone]: state[zone].filter((id) => id !== shiftId),
 });
 
 // NEXTS
-const isNext = (whichNext, board, shiftId) => board[whichNext] === shiftId;
-const isNextFt = (board, shiftId) => isNext("nextFt", board, shiftId);
+const isNext = (whichNext, state, shiftId) => state[whichNext] === shiftId;
+const isNextFt = (state, shiftId) => isNext("nextFt", state, shiftId);
 
-const setNext = (whichNext, board, shiftId) => ({
-  ...board,
+const setNext = (whichNext, state, shiftId) => ({
+  ...state,
   [whichNext]: shiftId,
 });
 
-const setNextProvider = (board, shiftId) =>
-  setNext("nextProvider", board, shiftId);
+const setNextProvider = (state, shiftId) =>
+  setNext("nextProvider", state, shiftId);
 
-const setNextSupervisor = (board, shiftId) =>
-  setNext("nextSupervisor", board, shiftId);
+const setNextSupervisor = (state, shiftId) =>
+  setNext("nextSupervisor", state, shiftId);
 
-const setNextFt = (board, shiftId) => setNext("nextFt", board, shiftId);
+const setNextFt = (state, shiftId) => setNext("nextFt", state, shiftId);
 
 export default {
   addShift,

@@ -23,7 +23,13 @@ values
 ('board'),
 ('addShift'),
 ('addPatient'),
-('reassignPatient');
+('reassignPatient'),
+('flexOn'),
+('flexOff'),
+('joinFt'),
+('leaveFt'),
+('signOut'),
+('rejoin');
 
 insert into
 public.shift_details (name, start_time, end_time, bonus, shift_type)

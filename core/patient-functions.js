@@ -2,15 +2,6 @@ import Shift from "./shift-functions.js";
 import Rotation from "./rotation-functions.js";
 import { newId, shortTimestamp, findShiftById } from "./helper-functions.js";
 
-function makePatient(type, room) {
-  return {
-    id: newId(),
-    time: shortTimestamp(),
-    type: type,
-    room: room,
-  };
-}
-
 const assignPatient = (board, shiftId, type, room, advanceRotation = true) => {
   const newBoard = structuredClone(board);
   const patient = Patient.make(type, room);
