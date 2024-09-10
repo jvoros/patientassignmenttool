@@ -38,7 +38,7 @@ const joinFt = (board, shiftId) => {
 };
 
 const leaveFt = (board, shiftId) => {
-  if (!isNextFt(board.state, shiftId)) return state;
+  if (!isNextFt(board.state, shiftId)) return board.state;
   const newState = setNextFt(board.state, null);
   const newStateWithEvent = Event.addToState(newState, "leaveFt", {
     shiftId,
@@ -75,11 +75,12 @@ const addToMain = (state, shiftId) => {
   // set as next
   const newNext = setNextProvider(state, shiftId);
   // add at start, if empty, or as up next
-  if (isZoneEmpty("main")(state)) {
-    return addToZone("main")(newNext, shiftId);
-  }
-  const insertIndex = state.main.indexOf(state.next);
-  return { ...state, main: state.main.toSpliced(insertIndex, 0, shiftId) };
+  const insertIndex = !state.next ? 0 : state.main.indexOf(state.next);
+  const newState = {
+    ...state,
+    main: state.main.toSpliced(insertIndex, 0, shiftId),
+  };
+  return newState;
 };
 
 const addDoctorToMain = (state, shiftId) => {
@@ -87,17 +88,19 @@ const addDoctorToMain = (state, shiftId) => {
   const stateWithSuper = state.nextSupervisor
     ? state
     : setNextSupervisor(state, shiftId);
-  return addToMain(stateWithSuper, shiftId);
+  const newState = addToMain(stateWithSuper, shiftId);
+  return newState;
 };
 
 const addToAppZones = (state, shiftId) => {
-  const newState = addToZone("flex")(state, shiftId);
-  return isZoneEmpty("ft")(state) ? { ...state, ft: shiftId } : newState;
+  const stateWithFlex = addToZone("flex")(state, shiftId);
+  const newState = !state.nextFt
+    ? setNextFt(stateWithFlex, shiftId)
+    : stateWithFlex;
+  return newState;
 };
 
 const leaveMain = (board, shift) => {
-  // takes in board, returns new state
-  // needs board to get next
   // error checks before changes
   if (
     isLastDoctorOnMain(board.state, shift) ||
@@ -106,22 +109,26 @@ const leaveMain = (board, shift) => {
     return board.state;
   }
   const offNexts = handleNextsOnLeave(board, shift.id);
-  const offMain = removeFromZone("main")(offNexts, shift.id);
-  return offMain;
+  const newState = removeFromZone("main")(offNexts, shift.id);
+  return newState;
 };
 
 const leaveAppZones = (state, shiftId) => {
-  const newState = removeFromZone("flex")(state, shiftId);
-  return shiftId === state.ft ? { ...newState, ft: null } : newState;
+  const offFlex = removeFromZone("flex")(state, shiftId);
+  const newState = isNextFt(offFlex, shiftId)
+    ? { ...offFlex, nextFt: null }
+    : offFlex;
+  return newState;
 };
 
 const handleNextsOnLeave = (board, shiftId) => {
   const nexts = ["nextProvider", "nextSupervisor"];
   const newState = { ...board.state };
   nexts.forEach((next) => {
-    if (newState[next] === shiftId) {
-      newState[next] = Rotation.getNextShiftId(board, next);
-    }
+    newState[next] =
+      newState[next] === shiftId
+        ? Rotation.getNextShiftId(board, next)
+        : newState[next];
   });
   return newState;
 };
@@ -131,8 +138,6 @@ const isDoctor = (provider) => provider.role === "physician";
 
 const isLastDoctorOnMain = (state, shift) =>
   state.main.length < 2 && isDoctor(shift.provider);
-
-const isZoneEmpty = (zone) => (state) => state[zone].length === 0;
 
 const addToZone = (zone) => (state, shiftId) => ({
   ...state,
@@ -145,8 +150,7 @@ const removeFromZone = (zone) => (state, shiftId) => ({
 });
 
 // Nexts
-const isNext = (whichNext, state, shiftId) => state[whichNext] === shiftId;
-const isNextFt = (state, shiftId) => isNext("nextFt", state, shiftId);
+const isNextFt = (state, shiftId) => state.nextFt === shiftId;
 
 const setNext = (whichNext, state, shiftId) => ({
   ...state,
