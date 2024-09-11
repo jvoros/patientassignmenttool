@@ -5,10 +5,8 @@ const EVENT_LIMIT = 30;
 // API
 const addToState = async (state, type, options) => {
   const eventId = await db.addEvent(type, options);
-  const newState = {
-    ...state,
-    events: [eventId, ...state.events.slice(0, EVENT_LIMIT - 1)],
-  };
+  const newState = structuredClone(state);
+  newState.events = [eventId, ...state.events.slice(0, EVENT_LIMIT - 1)];
   const updatedEventId = await db.updateEvent(eventId, newState);
   return newState;
 };

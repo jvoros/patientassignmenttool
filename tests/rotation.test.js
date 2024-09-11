@@ -6,7 +6,13 @@ describe("# Rotation Module", () => {
   // mocks
   const eventSpy = vi
     .spyOn(Event, "addToState")
-    .mockImplementation((state) => state);
+    .mockResolvedValue("event added to state");
+  // utility to get first param sent to Event.addState, then clear it so can check again later
+  const getStateParam = () => {
+    const state = eventSpy.mock.calls[0][0];
+    eventSpy.mockClear();
+    return state;
+  };
 
   const board = {
     state: {
@@ -44,9 +50,34 @@ describe("# Rotation Module", () => {
     });
   });
   describe("moveNext", () => {
-    it("should move next");
+    it("should move nextProvider forward and back", () => {
+      const newState = Rotation.moveNext(board, "nextProvider");
+      expect(getStateParam().nextProvider).toBe(2);
+      const backState = Rotation.moveNext(board, "nextProvider", -1);
+      expect(getStateParam().nextProvider).toBe(4);
+    });
+
+    it("should move nextSupervisor forward", () => {
+      const newState = Rotation.moveNext(board, "nextSupervisor");
+      expect(getStateParam().nextSupervisor).toBe(2);
+    });
+
+    it("should move nextSupervisor backward", () => {
+      const newBoard = structuredClone(board);
+      newBoard.state.nextSupervisor = 2;
+      const backState = Rotation.moveNext(newBoard, "nextSupervisor", -1);
+      expect(getStateParam().nextSupervisor).toBe(3);
+    });
   });
   describe("moveShiftInRotation", () => {
-    it("should move shift in rotation");
+    it("should move shift forward in rotation", () => {
+      const newState = Rotation.moveShiftInRotation(board, 4);
+      expect(getStateParam().main[0]).toBe(4);
+    });
+    it("should move shift backward in rotation", () => {
+      console.log(board);
+      const newState = Rotation.moveShiftInRotation(board, 1, -1);
+      expect(getStateParam().main[3]).toBe(1);
+    });
   });
 });

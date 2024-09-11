@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "viteststart",
+    "test": "vitest",
     "dev": "nodemon index.js",
     "start": "NODE_ENV=production node index.js"
   },

@@ -76,10 +76,8 @@ const addToMain = (state, shiftId) => {
   const newNext = setNextProvider(state, shiftId);
   // add at start, if empty, or as up next
   const insertIndex = !state.next ? 0 : state.main.indexOf(state.next);
-  const newState = {
-    ...state,
-    main: state.main.toSpliced(insertIndex, 0, shiftId),
-  };
+  const newState = structuredClone(state);
+  newState.main = state.main.toSpliced(insertIndex, 0, shiftId);
   return newState;
 };
 
@@ -139,23 +137,26 @@ const isDoctor = (provider) => provider.role === "physician";
 const isLastDoctorOnMain = (state, shift) =>
   state.main.length < 2 && isDoctor(shift.provider);
 
-const addToZone = (zone) => (state, shiftId) => ({
-  ...state,
-  [zone]: [...state[zone], shiftId],
-});
+const addToZone = (zone) => (state, shiftId) => {
+  const newState = structuredClone(state);
+  newState[zone].push(shiftId);
+  return newState;
+};
 
-const removeFromZone = (zone) => (state, shiftId) => ({
-  ...state,
-  [zone]: state[zone].filter((id) => id !== shiftId),
-});
+const removeFromZone = (zone) => (state, shiftId) => {
+  const newState = structuredClone(state);
+  newState[zone] = state[zone].filter((id) => id !== shiftId);
+  return newState;
+};
 
 // Nexts
 const isNextFt = (state, shiftId) => state.nextFt === shiftId;
 
-const setNext = (whichNext, state, shiftId) => ({
-  ...state,
-  [whichNext]: shiftId,
-});
+const setNext = (whichNext, state, shiftId) => {
+  const newState = structuredClone(state);
+  newState[whichNext] = shiftId;
+  return newState;
+};
 
 const setNextProvider = (state, shiftId) =>
   setNext("nextProvider", state, shiftId);

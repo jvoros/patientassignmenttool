@@ -2,28 +2,29 @@ import Event from "./event.js";
 
 // API
 const getNextShiftId = (board, whichNext, offset = 1) => {
+  const directionMultiplier = offset < 1 ? -1 : 1; // will keep recursion going correct direction
   const neighborShift = getNeighborShift(board, whichNext, offset);
   const nextShiftId = shouldRecurseForNextSupervisor(whichNext, neighborShift)
-    ? getNextShiftId(board, whichNext, offset + 1)
+    ? getNextShiftId(board, whichNext, offset + 1 * directionMultiplier)
     : neighborShift.id;
   return nextShiftId;
 };
 
-const moveNext = async (board, whichNext, offset) => {
-  const nextShift = getNeighborShift(board, whichNext, offset);
-  const newState = { ...board.state, [whichNext]: nextShift.id };
+const moveNext = async (board, whichNext, offset = 1) => {
+  const nextShiftId = getNextShiftId(board, whichNext, offset);
+  const newState = { ...board.state, [whichNext]: nextShiftId };
   const newStateWithEvent = await Event.addToState(
     newState,
     `move-${whichNext}`,
     {
-      shiftId: nextShift.id,
+      shiftId: nextShiftId,
     }
   );
   return newStateWithEvent;
 };
 
-const moveShiftInRotation = (board, shiftId, offset) => {
-  const newState = { ...board.state };
+const moveShiftInRotation = (board, shiftId, offset = 1) => {
+  const newState = structuredClone(board.state);
   const rotation = newState.main;
   const { index, nextIndex, nextShift } = findIndexAndNeighbor(
     board,
