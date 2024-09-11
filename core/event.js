@@ -1,19 +1,22 @@
-const EVENT_LIMIT = 50;
+import db from "./db.js";
+
+const EVENT_LIMIT = 30;
 
 // API
 const addToState = async (state, type, options) => {
   const eventId = await db.addEvent(type, options);
   const newState = {
     ...state,
-    events: [newEvent, ...state.events.slice(0, EVENT_LIMIT)],
+    events: [eventId, ...state.events.slice(0, EVENT_LIMIT - 1)],
   };
   const updatedEventId = await db.updateEvent(eventId, newState);
   return newState;
 };
 
-const undoEvent = async (_board, event) => {
+const undo = async (board) => {
+  const event = board.events[0];
   const deletes = await handleDeletes(event);
-  const newState = await db.getLastState(previous.id);
+  const newState = await db.getLastState();
   return newState;
 };
 
@@ -31,4 +34,4 @@ const handleDeletes = async (event) => {
   return results;
 };
 
-export default { EVENT_LIMIT, addToState, undoEvent, reset };
+export default { EVENT_LIMIT, addToState, undo };

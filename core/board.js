@@ -1,7 +1,7 @@
-import Shift from "./shift-functions.js";
-import Rotation from "./rotation-functions.js";
-import Patient from "./patient-functions.js";
-import Event from "./event-functions.js";
+import Shift from "./shift.js/index.js";
+import Rotation from "./rotation.js/index.js";
+import Patient from "./patient.js";
+import Event from "./event.js/index.js";
 
 /*
 Shift Objects

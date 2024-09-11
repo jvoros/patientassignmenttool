@@ -1,11 +1,11 @@
-import Event from "./event-functions.js";
+import Event from "./event.js";
 
 // API
 const getNextShiftId = (board, whichNext, offset = 1) => {
   const neighborShift = getNeighborShift(board, whichNext, offset);
   const nextShiftId = shouldRecurseForNextSupervisor(whichNext, neighborShift)
-    ? getNextShiftId(board, whichNext, offset)
-    : nextShift.id;
+    ? getNextShiftId(board, whichNext, offset + 1)
+    : neighborShift.id;
   return nextShiftId;
 };
 
@@ -39,13 +39,13 @@ const moveShiftInRotation = (board, shiftId, offset) => {
 
 // HELPERS
 const getNeighborShift = (board, whichNext, offset) =>
-  findIndexAndNeighbor(board, board[whichNext], offset).nextShift;
+  findIndexAndNeighbor(board, board.state[whichNext], offset).nextShift;
 
 const findIndexAndNeighbor = (board, shiftId, offset) => {
-  const rotation = board.main;
-  const index = rotation.indexOf(shiftId);
-  const nextIndex = (index + offset + rotation.length) % rotation.length;
-  return { index, nextIndex, nextShift: rotation[nextIndex] };
+  const index = board.state.main.indexOf(shiftId);
+  const length = board.state.main.length;
+  const nextIndex = (index + offset + length) % length;
+  return { index, nextIndex, nextShift: board.store.main[nextIndex] };
 };
 
 const shouldRecurseForNextSupervisor = (whichNext, neighborShift) => {

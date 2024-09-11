@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { getAllShifts, logObject } from "./helper-functions.js";
+import { getAllShifts, logObject } from "./helper.js";
 import "dotenv/config";
 
 // Create a single supabase client for interacting with your database
@@ -48,7 +48,7 @@ const getRecords = (table, query, ids) =>
 const hydrateIds = (ids, records) =>
   ids.map((id) => records.find((record) => record.id === id));
 
-export const getStoreFromState = async (state) => {
+const getStoreFromState = async (state) => {
   const stateShifts = getAllShifts(state);
   const response = await Promise.all([
     getRecords("shifts", shiftsQuery, stateShifts),
@@ -82,16 +82,29 @@ const addEvent = () => {};
 const updateEvent = () => {};
 const deleteEvent = () => {};
 
-const initialState = {
-  main: [1, 3],
-  flex: [2, 4],
-  off: [],
-  events: [1],
-  ft: 2,
-  next: 1,
-  super: 1,
+// const initialState = {
+//   main: [1, 3],
+//   flex: [2, 4],
+//   off: [],
+//   events: [1],
+//   ft: 2,
+//   next: 1,
+//   super: 1,
+// };
+
+// const lastState = await getLastState();
+
+// logObject("getStoreFromState", await getStoreFromState(lastState));
+
+export default {
+  getLastState,
+  getStoreFromState,
+  addEvent,
+  updateEvent,
+  deleteEvent,
+  addPatient,
+  updatePatient,
+  deletePatient,
+  addShift,
+  deleteShift,
 };
-
-const lastState = await getLastState();
-
-logObject("getStoreFromState", await getStoreFromState(lastState));

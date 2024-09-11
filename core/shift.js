@@ -1,5 +1,5 @@
-import Rotation from "./rotation-functions.js";
-import Event from "./event-functions.js";
+import Rotation from "./rotation.js/index.js";
+import Event from "./event.js/index.js";
 
 // API
 const addShift = async (board, providerId, scheduleId) => {
