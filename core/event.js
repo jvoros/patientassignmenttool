@@ -11,8 +11,10 @@ const addToState = async (state, type, options) => {
   return newState;
 };
 
-const undo = async (board) => {
-  const event = board.events[0];
+// comes from board so state will be first param
+// event param from front end, full event object
+// event { id, event_type, shift {id}, patient {id}}
+const undo = async (_state, event) => {
   const deletes = await handleDeletes(event);
   const newState = await db.getLastState();
   return newState;

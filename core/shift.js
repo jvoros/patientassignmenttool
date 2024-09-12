@@ -2,17 +2,18 @@ import Rotation from "./rotation.js/index.js";
 import Event from "./event.js/index.js";
 
 // API
-const addShift = async (board, providerId, scheduleId) => {
-  const newShift = await db.addShift(providerId, scheduleId);
-  const newState = joinBoard(board.state, newShift);
+// provider {id, role}
+const addShift = async (state, provider, scheduleId) => {
+  const newShift = await db.addShift(provider.id, scheduleId);
+  const newState = joinBoard(state, newShift);
   const newStateWithEvent = await Event.addToState(newState, "addShift", {
     shiftId: newShift.id,
   });
   return newStateWithEvent;
 };
 
-const flexOn = async (board, shiftId) => {
-  const onMain = addToMain(board.state, shiftId);
+const flexOn = async (state, shift = { id, role }) => {
+  const onMain = addToMain(state, shift);
   const offFlex = removeFromZone("flex")(onMain, shiftId);
   const newStateWithEvent = await Event.addToState(offFlex, "flexOn", {
     shiftId,
@@ -20,16 +21,16 @@ const flexOn = async (board, shiftId) => {
   return newStateWithEvent;
 };
 
-const flexOff = async (board, shiftId) => {
-  const offMain = leaveMain(board, shiftId);
-  const onFlex = addToZone("flex")(offMain, shiftId);
+const flexOff = async (state, shift) => {
+  const offMain = leaveMain(state, shift.id);
+  const onFlex = addToZone("flex")(offMain, shift);
   const newStateWithEvent = await Event.addToState(onFlex, "flexOff", {
-    shiftId,
+    shiftId: shift.id,
   });
   return newStateWithEvent;
 };
 
-const joinFt = (board, shiftId) => {
+const joinFt = (state, shiftId) => {
   const newState = setNextFt(board.state, shiftId);
   const newStateWithEvent = Event.addToState(newState, "joinFt", {
     shiftId,
@@ -37,25 +38,27 @@ const joinFt = (board, shiftId) => {
   return newStateWithEvent;
 };
 
-const leaveFt = (board, shiftId) => {
-  if (!isNextFt(board.state, shiftId)) return board.state;
-  const newState = setNextFt(board.state, null);
+const leaveFt = (state, shiftId) => {
+  if (!isNextFt(state, shiftId)) return board.state;
+  const newState = setNextFt(state, null);
   const newStateWithEvent = Event.addToState(newState, "leaveFt", {
     shiftId,
   });
   return newStateWithEvent;
 };
 
-const signOut = (board, shiftId) => {
-  const leftMain = leaveMain(board, shiftId);
-  const leftApp = leaveAppZones(leftMain, shiftId);
-  const addOff = addToZone("off")(leftApp, shiftId);
-  const newStateWithEvent = Event.addToState(addOff, "signOut", { shiftId });
+const signOut = (state, shift) => {
+  const leftMain = leaveMain(board, shift.id);
+  const leftApp = leaveAppZones(leftMain, shift.id);
+  const addOff = addToZone("off")(leftApp, shift);
+  const newStateWithEvent = Event.addToState(addOff, "signOut", {
+    shiftId: shift.id,
+  });
   return newStateWithEvent;
 };
 
-const rejoin = (board, shift) => {
-  const takeOff = removeFromZone("off")(board.state, shift.id);
+const rejoin = (state, shift) => {
+  const takeOff = removeFromZone("off")(state, shift.id);
   const onBoard = joinBoard(takeOff, shift);
   const newStateWithEvent = Event.addToState(onBoard, "rejoin", {
     shiftId: shift.id,
@@ -66,27 +69,30 @@ const rejoin = (board, shift) => {
 // INTERNAL
 // Zones
 const joinBoard = (state, shift) => {
-  return isDoctor(shift.provider)
-    ? addDoctorToMain(state, shift.id)
-    : addToAppZones(state, shift.id);
+  return shift.type === "physician"
+    ? addDoctorToMain(state, shift)
+    : addToAppZones(state, shift);
 };
 
-const addToMain = (state, shiftId) => {
+const addToMain = (state, shift) => {
+  const miniShift = { id: shift.id, t: shift.type };
   // set as next
-  const newNext = setNextProvider(state, shiftId);
+  const newNext = setNextProvider(state, shift.id);
   // add at start, if empty, or as up next
-  const insertIndex = !state.next ? 0 : state.main.indexOf(state.next);
+  const insertIndex = !state.next
+    ? 0
+    : state.main.findIndex((s) => s.id === state.next);
   const newState = structuredClone(state);
-  newState.main = state.main.toSpliced(insertIndex, 0, shiftId);
+  newState.main = state.main.toSpliced(insertIndex, 0, miniShift);
   return newState;
 };
 
-const addDoctorToMain = (state, shiftId) => {
+const addDoctorToMain = (state, shift) => {
   // add as super only if empty
   const stateWithSuper = state.nextSupervisor
     ? state
-    : setNextSupervisor(state, shiftId);
-  const newState = addToMain(stateWithSuper, shiftId);
+    : setNextSupervisor(state, shift.id);
+  const newState = addToMain(stateWithSuper, shift);
   return newState;
 };
 
@@ -98,15 +104,12 @@ const addToAppZones = (state, shiftId) => {
   return newState;
 };
 
-const leaveMain = (board, shift) => {
+const leaveMain = (state, shift) => {
   // error checks before changes
-  if (
-    isLastDoctorOnMain(board.state, shift) ||
-    !board.state.main.includes(shift.id)
-  ) {
-    return board.state;
+  if (isLastDoctorOnMain(state, shift) || !state.main.includes(shift.id)) {
+    return state;
   }
-  const offNexts = handleNextsOnLeave(board, shift.id);
+  const offNexts = handleNextsOnLeave(state, shift.id);
   const newState = removeFromZone("main")(offNexts, shift.id);
   return newState;
 };
@@ -119,23 +122,21 @@ const leaveAppZones = (state, shiftId) => {
   return newState;
 };
 
-const handleNextsOnLeave = (board, shiftId) => {
+const handleNextsOnLeave = (state, shiftId) => {
   const nexts = ["nextProvider", "nextSupervisor"];
-  const newState = { ...board.state };
+  const newState = structuredClone(state);
   nexts.forEach((next) => {
     newState[next] =
       newState[next] === shiftId
-        ? Rotation.getNextShiftId(board, next)
+        ? Rotation.getNextShiftId(state, next)
         : newState[next];
   });
   return newState;
 };
 
 // Helpers
-const isDoctor = (provider) => provider.role === "physician";
-
 const isLastDoctorOnMain = (state, shift) =>
-  state.main.length < 2 && isDoctor(shift.provider);
+  state.main.length < 2 && shift.t === "physician";
 
 const addToZone = (zone) => (state, shiftId) => {
   const newState = structuredClone(state);

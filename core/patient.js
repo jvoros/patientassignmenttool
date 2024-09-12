@@ -3,12 +3,19 @@ import Event from "./event.js";
 import db from "./db.js";
 
 // API
-const assignPatient = async (board, shift, type, room, advance = true) => {
-  const supervisor = withSupervisor(board, shift);
-  const newPtId = await db.addPatient(room, type, shift.id, {
+// shift object from client {id, type, info {bonus} patients {count} }
+// pt { type, room } from client
+const assignPatient = async (
+  state,
+  shift,
+  pt = { type, room },
+  advance = true
+) => {
+  const supervisor = withSupervisor(state, shift);
+  const newPtId = await db.addPatient(pt.room, pt.type, shift.id, {
     supervisorId: supervisor,
   });
-  const newState = handleNexts(board, shift, supervisor, advance);
+  const newState = handleNexts(state, shift, supervisor, advance);
   const newStateWithEvent = await Event.addToState(newState, "addPatient", {
     shiftId: shift.id,
     patientId: newPtId,
@@ -16,9 +23,10 @@ const assignPatient = async (board, shift, type, room, advance = true) => {
   return newStateWithEvent;
 };
 
-const reassignPatient = async (board, event, newShift) => {
+// event from client
+const reassignPatient = async (state, event, newShift = { id, provider }) => {
   const { newSupervisorId, newState } = handleReassignSupervisor(
-    board,
+    state,
     event.shift.provider,
     newShift.provider
   );
@@ -36,39 +44,39 @@ const reassignPatient = async (board, event, newShift) => {
 
 // INTERNAL
 
-const withSupervisor = (board, shift) => {
-  return shift.type === "app" ? board.state.nextSupervisor : null;
+const withSupervisor = (state, shift) => {
+  return shift.type === "app" ? state.nextSupervisor : null;
 };
 
-const handleNexts = (board, shift, supervisor, advance) => {
-  const nextSupervisor = getNextSupervisor(board, supervisor);
-  const nextProvider = getNextProvider(board, shift, advance);
-  return { ...board.state, nextSupervisor, nextProvider };
+const handleNexts = (state, shift, supervisor, advance) => {
+  const nextSupervisor = getNextSupervisor(state, supervisor);
+  const nextProvider = getNextProvider(state, shift, advance);
+  return { ...state, nextSupervisor, nextProvider };
 };
 
-const getNextSupervisor = (board, supervisor) => {
+const getNextSupervisor = (state, supervisor) => {
   return supervisor
-    ? Rotation.getNextShiftId(board, "nextSupervisor")
-    : board.state.nextSupervisor;
+    ? Rotation.getNextShiftId(state, "nextSupervisor")
+    : state.nextSupervisor;
 };
 
-const getNextProvider = (board, shift, advance) => {
+const getNextProvider = (state, shift, advance) => {
   return shouldAdvance(shift, advance)
-    ? Rotation.getNextShiftId(board, "nextProvider")
-    : board.state.nextProvider;
+    ? Rotation.getNextShiftId(state, "nextProvider")
+    : state.nextProvider;
 };
 
 const shouldAdvance = (shift, advance) =>
-  shift.counts.total >= shift.info.bonus && advance;
+  shift.patients.count >= shift.info.bonus && advance;
 
 export const handleReassignSupervisor = (
-  board,
+  state,
   currentProvider,
   newProvider
 ) => {
-  const currentSupervisorId = board.state.nextSupervisor;
+  const currentSupervisorId = state.nextSupervisor;
   let newSupervisorId = "";
-  let newState = { ...board.state };
+  let newState = structuredClone(state);
 
   // if new = doc and current = doc
   // if new = doc and current = app
@@ -79,8 +87,8 @@ export const handleReassignSupervisor = (
     newSupervisorId = currentProvider.id;
   } else {
     // if new = app and current = app
-    newSupervisorId = board.state.nextSupervisor;
-    newState.nextSupervisor = Rotation.getNextShiftId(board, "nextSupervisor");
+    newSupervisorId = state.nextSupervisor;
+    newState.nextSupervisor = Rotation.getNextShiftId(state, "nextSupervisor");
   }
 
   return { newSupervisorId, newState };

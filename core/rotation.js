@@ -1,18 +1,19 @@
 import Event from "./event.js";
 
 // API
-const getNextShiftId = (board, whichNext, offset = 1) => {
+const getNextShiftId = (state, whichNext, offset = 1) => {
   const directionMultiplier = offset < 1 ? -1 : 1; // will keep recursion going correct direction
-  const neighborShift = getNeighborShift(board, whichNext, offset);
+  const neighborShift = getNeighborShift(state, whichNext, offset);
   const nextShiftId = shouldRecurseForNextSupervisor(whichNext, neighborShift)
-    ? getNextShiftId(board, whichNext, offset + 1 * directionMultiplier)
+    ? getNextShiftId(state, whichNext, offset + 1 * directionMultiplier)
     : neighborShift.id;
   return nextShiftId;
 };
 
-const moveNext = async (board, whichNext, offset = 1) => {
-  const nextShiftId = getNextShiftId(board, whichNext, offset);
-  const newState = { ...board.state, [whichNext]: nextShiftId };
+const moveNext = async (state, whichNext, offset = 1) => {
+  const nextShiftId = getNextShiftId(state, whichNext, offset);
+  const newState = structuredClone(state);
+  newState[whichNext] = nextShiftId;
   const newStateWithEvent = await Event.addToState(
     newState,
     `move-${whichNext}`,
@@ -23,11 +24,11 @@ const moveNext = async (board, whichNext, offset = 1) => {
   return newStateWithEvent;
 };
 
-const moveShiftInRotation = (board, shiftId, offset = 1) => {
-  const newState = structuredClone(board.state);
+const moveShiftInRotation = (state, shiftId, offset = 1) => {
+  const newState = structuredClone(state);
   const rotation = newState.main;
   const { index, nextIndex, nextShift } = findIndexAndNeighbor(
-    board,
+    state,
     shiftId,
     offset
   );
@@ -39,14 +40,14 @@ const moveShiftInRotation = (board, shiftId, offset = 1) => {
 };
 
 // HELPERS
-const getNeighborShift = (board, whichNext, offset) =>
-  findIndexAndNeighbor(board, board.state[whichNext], offset).nextShift;
+const getNeighborShift = (state, whichNext, offset) =>
+  findIndexAndNeighbor(state, state[whichNext], offset).nextShift;
 
-const findIndexAndNeighbor = (board, shiftId, offset) => {
-  const index = board.state.main.indexOf(shiftId);
-  const length = board.state.main.length;
+const findIndexAndNeighbor = (state, shiftId, offset) => {
+  const index = state.main.findIndex((shift) => shift.id === shiftId);
+  const length = state.main.length;
   const nextIndex = (index + offset + length) % length;
-  return { index, nextIndex, nextShift: board.store.main[nextIndex] };
+  return { index, nextIndex, nextShift: state.main[nextIndex] };
 };
 
 const shouldRecurseForNextSupervisor = (whichNext, neighborShift) => {

@@ -13,7 +13,7 @@ supervisor [ids]
 }
 */
 
-const store = {
+const board = {
   main: [{}, {}, {}], // array of shift objects
   flex: [], //same
   off: [], //same
@@ -23,31 +23,35 @@ const store = {
   nextSupervisor: "shiftId",
 };
 
-export const getEmptyBoard = () => {
+export const getEmptyState = () => {
   return {
-    state: {
-      main: [], // array of shift IDs
-      flex: [], // array of shift IDs
-      off: [], // array of shift IDs
-      events: [], // array of event IDs, limit to 30
-      nextFt: "", // shift ID
-      nextProvider: "", // shift ID
-      nextSupervisor: "", // shift ID
-    },
-    store: {}, // deeply nested, hydrated version of state
+    main: [], // array of shift {id, type}
+    flex: [], // array of shift {id, type}
+    off: [], // array of shift {id, type}
+    events: [], // array of event IDs, limit to 30
+    nextFt: "", // shift ID
+    nextProvider: "", // shift ID
+    nextSupervisor: "", // shift ID
   };
 };
 
+export const getEmptyBoard = () => {
+  // board is the deeply nested object based on state
+};
+
 const createStore = () => {
+  let state = getEmptyState();
   let board = getEmptyBoard();
 
+  // never need to get state, board is always based on state
   const get = () => board;
 
   const reset = async () => {
-    const newState = getEmptyBoard().state;
+    const newState = getEmptyState();
     const newStateWithEvent = Event.addToState(newState, "reset");
-    const newStore = await db.getStoreFromState(newStateWithEvent);
-    board = { state: newStateWithEvent, store: newStore };
+    const newStore = await db.getBoard(newStateWithEvent);
+    state = newStateWithEvent;
+    board = newStore;
   };
 
   // error checking here
@@ -56,9 +60,8 @@ const createStore = () => {
     (fn) =>
     async (...args) => {
       try {
-        const newState = await fn(board, ...args);
-        const newStore = await db.getStoreFromState(newState);
-        board = { state: newState, store: newStore };
+        state = await fn(state, ...args);
+        board = await db.getStoreFromState(state);
       } catch (error) {
         console.error("Error during state rehydration:", error);
         throw error;

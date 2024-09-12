@@ -18,41 +18,23 @@ describe("# Patient Module", () => {
   // db
   const addSpy = vi.spyOn(db, "addPatient").mockResolvedValue("newPt");
   const updateSpy = vi.spyOn(db, "updatePatient").mockResolvedValue("updatePt");
-  // board
-  const board = {
-    state: {
-      main: [1, 2, 3, 4],
-      nextProvider: 1,
-      nextSupervisor: 3,
-    },
-    store: {
-      main: [
-        {
-          id: 1,
-          type: "app",
-          provider: { id: 2, lname: "Cheever", role: "app" },
-          info: { bonus: 0 },
-          counts: { total: 0 },
-        },
-        {
-          id: 2,
-          type: "physician",
-          provider: { id: 1, lname: "Voros", role: "physician" },
-          info: { bonus: 0 },
-          counts: { total: 0 },
-        },
-        {
-          id: 3,
-          type: "physician",
-          provider: { id: 3, lname: "Blake", role: "physician" },
-        },
-        {
-          id: 4,
-          type: "app",
-          provider: { id: 2, lname: "Kasavana", role: "app" },
-        },
-      ],
-    },
+  // state
+  const state = {
+    main: [
+      { id: 1, type: "app" },
+      { id: 2, type: "physician" },
+      { id: 3, type: "physician" },
+      { id: 4, type: "app" },
+    ],
+    nextProvider: 1,
+    nextSupervisor: 3,
+  };
+
+  const shiftFromClient = {
+    id: 1,
+    type: "app",
+    info: { bonus: 0 },
+    patients: { count: 2 },
   };
 
   afterEach(() => {
@@ -63,8 +45,8 @@ describe("# Patient Module", () => {
   describe("assignPatient", () => {
     it("should call db.addPatient and Event.addToState", async () => {
       const newState = await Patient.assignPatient(
-        board,
-        board.store.main[0],
+        state,
+        shiftFromClient,
         "walk in",
         "Tr A"
       );
@@ -75,8 +57,8 @@ describe("# Patient Module", () => {
 
     it("should also assign supervisor if shift is app", async () => {
       const newState = Patient.assignPatient(
-        board,
-        board.store.main[0],
+        state,
+        shiftFromClient,
         "walk in",
         "Tr A"
       );
@@ -85,8 +67,8 @@ describe("# Patient Module", () => {
 
     it("should advance nextProvider when assigning to APP", async () => {
       const newState = await Patient.assignPatient(
-        board,
-        board.store.main[0],
+        state,
+        shiftFromClient,
         "walk in",
         "Tr A"
       );
@@ -95,8 +77,8 @@ describe("# Patient Module", () => {
 
     it("should advance nextSupervisor when assigning to APP", async () => {
       const newState = await Patient.assignPatient(
-        board,
-        board.store.main[0],
+        state,
+        shiftFromClient,
         "walk in",
         "Tr A"
       );
@@ -104,58 +86,78 @@ describe("# Patient Module", () => {
     });
 
     it("should not advance nextPatient for doc unless count >= bonus", async () => {
-      const shift = {
+      const testShift = {
         id: 2,
         type: "physician",
         info: { bonus: 2 },
-        counts: { total: 0 },
+        patients: { count: 0 },
       };
-      const shift2 = {
+      const testShift2 = {
         id: 2,
         type: "physician",
         info: { bonus: 2 },
-        counts: { total: 2 },
+        patients: { count: 2 },
       };
-      const board2 = structuredClone(board);
-      board2.state.nextProvider = 2;
+      const state2 = structuredClone(state);
+      state2.nextProvider = 2;
       const newState = await Patient.assignPatient(
-        board2,
-        shift,
+        state2,
+        testShift,
         "walk in",
         "4"
       );
 
       expect(getEventState().nextProvider).toBe(2);
-      const newState2 = await Patient.assignPatient(board2, shift2, "w", "4");
+      const newState2 = await Patient.assignPatient(
+        state2,
+        testShift2,
+        "w",
+        "4"
+      );
       expect(getEventState().nextProvider).toBe(3);
+    });
+  });
+
+  describe("reassignPatient", () => {
+    it("should call db.updatePatient and Event.addToState", async () => {
+      const newState = await Patient.reassignPatient(
+        state,
+        {
+          shift: { provider: { id: 1, role: "app" } },
+          patient: { id: 3 },
+        },
+        { id: 12, provider: { id: 4, role: "app" } }
+      );
+      expect(updateSpy).toHaveBeenCalled();
+      expect(eventSpy).toHaveBeenCalled();
     });
   });
 
   describe("handleReassignSupervisor", () => {
     // handleReassign
-    const doc1 = board.store.main[1];
-    const doc2 = board.store.main[2];
-    const app1 = board.store.main[0];
-    const app2 = board.store.main[3];
+    const doc1 = { id: 2, provider: { id: 3, role: "physician" } };
+    const doc2 = { id: 3, provider: { id: 1, role: "physician" } };
+    const app1 = { id: 1, provider: { id: 4, role: "app" } };
+    const app2 = { id: 4, provider: { id: 5, role: "app" } };
     it("should handle doc to doc reassign", () => {
       const { newSupervisorId, newState } = handleReassignSupervisor(
-        board,
+        state,
         doc1,
         doc2
       );
-      expect(newState.supervisorId).toBe(board.state.supervisorId);
+      expect(newSupervisorId).toBe(state.nextSupervisor);
     });
     it("should handle app to doc reassign", () => {
       const { newSupervisorId, newState } = handleReassignSupervisor(
-        board,
+        state,
         app1,
         doc2
       );
-      expect(newState.supervisorId).toBe(board.state.supervisorId);
+      expect(newSupervisorId).toBe(state.nextSupervisor);
     });
     it("should handle app to doc reassign", () => {
       const { newSupervisorId, newState } = handleReassignSupervisor(
-        board,
+        state,
         doc2,
         app2
       );
@@ -163,23 +165,11 @@ describe("# Patient Module", () => {
     });
     it("should handle app to app reassign", () => {
       const { newSupervisorId, newState } = handleReassignSupervisor(
-        board,
+        state,
         app1,
         app2
       );
-      expect(newSupervisorId).toBe(board.state.nextSupervisor);
-    });
-  });
-
-  describe("reassignPatient", () => {
-    it("should call db.updatePatient", async () => {
-      const newState = await Patient.reassignPatient(
-        board,
-        { shift: { provider: { id: 1, role: "app" } }, patient: { id: 3 } },
-        board.store.main[0]
-      );
-      expect(updateSpy).toHaveBeenCalled();
-      expect(eventSpy).toHaveBeenCalled();
+      expect(newSupervisorId).toBe(state.nextSupervisor);
     });
   });
 });

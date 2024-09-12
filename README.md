@@ -17,7 +17,7 @@ This also allows for a small state object that can be kept with the Events, so t
 ### Board Functions
 Aside from `board.get`, all the other methods return a `state` object. There is higher-order function wrapper that uses the `state` object to build a new `board` that is returned by `board.get()`.
 
-The higher-order function in `board.js` passes in `board` as the first argument to each method.
+The higher-order function in `board.js` passes in `state` as the first argument to each method. Therefore, `board.state` is the one source of truth.
 
 #### &rarr; `board.get()`
 

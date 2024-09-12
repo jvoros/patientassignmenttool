@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import Event from "../core/event.js";
 import db from "../core/db.js";
+
 describe("# Event Module", () => {
   // mocks
   const dbMocks = {
@@ -19,8 +20,11 @@ describe("# Event Module", () => {
 
   describe("addToState", () => {
     it("adds new eventId to start of event array and limits to 30 items", async () => {
-      const stateWithEvent = await Event.addToState(testState, "test");
-      expect(stateWithEvent.events[0]).toBe("newEventId");
+      const stateWithEvent = await Event.addToState(testState, "test", {
+        shiftId: 1,
+        patientId: 4,
+      });
+      expect(stateWithEvent.events[0]).toEqual("newEventId");
       expect(stateWithEvent.events.length).toBe(30);
     });
 
@@ -38,27 +42,22 @@ describe("# Event Module", () => {
 
   describe("undo", () => {
     it("deletes the event and then gets last state", async () => {
-      const board = {
-        events: [{ id: 1, event_type: "board" }],
-      };
-      const stateAfterDelete = await Event.undo(board);
+      const event = { id: 1, event_type: "board" };
+      const stateAfterDelete = await Event.undo({}, event);
       expect(dbMocks.deleteSpy).toBeCalled();
       expect(stateAfterDelete).toBe("new state");
     });
 
     it("also deletes patient for assignPatient types", async () => {
-      const board = {
-        events: [{ id: 1, event_type: "assignPatient", patient: { id: 1 } }],
-      };
-      const stateAfterDelete = await Event.undo(board);
+      const event = { id: 1, event_type: "assignPatient", patient: { id: 1 } };
+
+      const stateAfterDelete = await Event.undo({}, event);
       expect(dbMocks.deletePtSpy).toBeCalled();
     });
 
     it("also deletes shift for addShift types", async () => {
-      const board = {
-        events: [{ id: 1, event_type: "addShift", shift: { id: 1 } }],
-      };
-      const stateAfterDelete = await Event.undo(board);
+      const event = { id: 1, event_type: "addShift", shift: { id: 1 } };
+      const stateAfterDelete = await Event.undo({}, event);
       expect(dbMocks.deletePtSpy).toBeCalled();
     });
   });

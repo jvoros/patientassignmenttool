@@ -21,8 +21,8 @@ const shiftsQuery = `
   id,
   provider:${providersQuery},
   info:shift_details(id, name, bonus, shift_type),
-  patients!shift_id(id),
-  supervisor:patients!supervisor_id(id)
+  patients!shift_id({ count: 'exact', head: true }),
+  supervisor:patients!supervisor_id({ count: 'exact', head: true })
   `;
 
 const eventsQuery = `
@@ -48,7 +48,7 @@ const getRecords = (table, query, ids) =>
 const hydrateIds = (ids, records) =>
   ids.map((id) => records.find((record) => record.id === id));
 
-const getStoreFromState = async (state) => {
+const getBoard = async (state) => {
   const stateShifts = getAllShifts(state);
   const response = await Promise.all([
     getRecords("shifts", shiftsQuery, stateShifts),
@@ -98,7 +98,7 @@ const deleteEvent = () => {};
 
 export default {
   getLastState,
-  getStoreFromState,
+  getBoard,
   addEvent,
   updateEvent,
   deleteEvent,
