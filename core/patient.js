@@ -1,5 +1,6 @@
-import Rotation from "./rotation.js/index.js";
-import Event from "./event.js/index.js";
+import Rotation from "./rotation.js";
+import Event from "./event.js";
+import db from "./db.js";
 
 // API
 const assignPatient = async (board, shift, type, room, advance = true) => {
@@ -36,7 +37,7 @@ const reassignPatient = async (board, event, newShift) => {
 // INTERNAL
 
 const withSupervisor = (board, shift) => {
-  return shift.provider.role === "app" ? board.state.nextSupervisor : null;
+  return shift.type === "app" ? board.state.nextSupervisor : null;
 };
 
 const handleNexts = (board, shift, supervisor, advance) => {
@@ -60,20 +61,25 @@ const getNextProvider = (board, shift, advance) => {
 const shouldAdvance = (shift, advance) =>
   shift.counts.total >= shift.info.bonus && advance;
 
-const handleReassignSupervisor = (board, currentProvider, newProvider) => {
+export const handleReassignSupervisor = (
+  board,
+  currentProvider,
+  newProvider
+) => {
+  const currentSupervisorId = board.state.nextSupervisor;
   let newSupervisorId = "";
   let newState = { ...board.state };
 
   // if new = doc and current = doc
   // if new = doc and current = app
   if (newProvider.role === "physician") {
-    newSupervisorId = null;
+    newSupervisorId = currentSupervisorId;
   } else if (currentProvider.role === "physician") {
     // if new = app and current = physician
     newSupervisorId = currentProvider.id;
   } else {
     // if new = app and current = app
-    newSupervisorId = state.nextSupervisor;
+    newSupervisorId = board.state.nextSupervisor;
     newState.nextSupervisor = Rotation.getNextShiftId(board, "nextSupervisor");
   }
 

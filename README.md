@@ -52,11 +52,7 @@ The higher-order function in `board.js` passes in `board` as the first argument 
 
 > Resets the board and adds a reset event. This event can be undone as it keeps track of the last event, which is hold the state from before the reset.
 
-#### &rarr; `board.undoEvent(event)`
-
-**Parameters**
-
-> `event` object from `board.store`.
+#### &rarr; `board.undo()`
 
 #### &rarr; `board.addShift(providerId, scheduleId)`
 #### &rarr; board.flexOn(shiftId);
