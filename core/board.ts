@@ -1,42 +1,29 @@
-import Shift from "./shift.js/index.js";
-import Rotation from "./rotation.js/index.js";
-import Patient from "./patient.js";
-import Event from "./event.js/index.js";
+import Shift from "./shift";
+import Rotation from "./rotation";
+import Patient from "./patient";
+import Event from "./event";
+import db from "./db";
 
-/*
-Shift Objects
-{
-info,
-provider { last, first},
-patients [ids]
-supervisor [ids]
-}
-*/
+const getEmptyBoard = (): Board => ({
+  main: [],
+  flex: [],
+  off: [],
+  events: [],
+  nextFt: null,
+  nextProvider: null,
+  nextSupervisor: null,
+});
 
-const board = {
-  main: [{}, {}, {}], // array of shift objects
-  flex: [], //same
-  off: [], //same
-  events: [{}], // array of event objects
-  nextFt: "shiftId",
-  nextProvider: "shiftId",
-  nextSupervisor: "shiftId",
-};
-
-export const getEmptyState = () => {
+export const getEmptyState = (): State => {
   return {
-    main: [], // array of shift {id, type}
-    flex: [], // array of shift {id, type}
-    off: [], // array of shift {id, type}
-    events: [], // array of event IDs, limit to 30
-    nextFt: "", // shift ID
-    nextProvider: "", // shift ID
-    nextSupervisor: "", // shift ID
+    main: [],
+    flex: [],
+    off: [],
+    events: [],
+    nextFt: null,
+    nextProvider: null,
+    nextSupervisor: null,
   };
-};
-
-export const getEmptyBoard = () => {
-  // board is the deeply nested object based on state
 };
 
 const createStore = () => {
@@ -44,14 +31,16 @@ const createStore = () => {
   let board = getEmptyBoard();
 
   // never need to get state, board is always based on state
-  const get = () => board;
+  const get = (): Board => board;
 
   const reset = async () => {
     const newState = getEmptyState();
-    const newStateWithEvent = Event.addToState(newState, "reset");
-    const newStore = await db.getBoard(newStateWithEvent);
+    const newStateWithEvent = await Event.addToState(newState, {
+      type: "reset",
+    });
+    const newBoard = await db.getBoard(newStateWithEvent);
     state = newStateWithEvent;
-    board = newStore;
+    board = newBoard;
   };
 
   // error checking here
@@ -61,7 +50,7 @@ const createStore = () => {
     async (...args) => {
       try {
         state = await fn(state, ...args);
-        board = await db.getStoreFromState(state);
+        board = await db.getBoard(state);
       } catch (error) {
         console.error("Error during state rehydration:", error);
         throw error;

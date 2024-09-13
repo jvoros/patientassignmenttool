@@ -1,7 +1,11 @@
-import Event from "./event.js";
+import Event from "./event";
 
 // API
-const getNextShiftId = (state, whichNext, offset = 1) => {
+const getNextShiftId = (
+  state: State,
+  whichNext: Next,
+  offset: number = 1
+): number => {
   const directionMultiplier = offset < 1 ? -1 : 1; // will keep recursion going correct direction
   const neighborShift = getNeighborShift(state, whichNext, offset);
   const nextShiftId = shouldRecurseForNextSupervisor(whichNext, neighborShift)
@@ -10,21 +14,26 @@ const getNextShiftId = (state, whichNext, offset = 1) => {
   return nextShiftId;
 };
 
-const moveNext = async (state, whichNext, offset = 1) => {
+const moveNext = async (
+  state: State,
+  whichNext: Next,
+  offset = 1
+): Promise<State> => {
   const nextShiftId = getNextShiftId(state, whichNext, offset);
   const newState = structuredClone(state);
   newState[whichNext] = nextShiftId;
-  const newStateWithEvent = await Event.addToState(
-    newState,
-    `move-${whichNext}`,
-    {
-      shiftId: nextShiftId,
-    }
-  );
+  const newStateWithEvent = await Event.addToState(newState, {
+    type: `move-${whichNext}`,
+    shiftId: nextShiftId,
+  });
   return newStateWithEvent;
 };
 
-const moveShiftInRotation = (state, shiftId, offset = 1) => {
+const moveShiftInRotation = async (
+  state: State,
+  shiftId: number,
+  offset = 1
+): Promise<State> => {
   const newState = structuredClone(state);
   const rotation = newState.main;
   const { index, nextIndex, nextShift } = findIndexAndNeighbor(
@@ -33,17 +42,26 @@ const moveShiftInRotation = (state, shiftId, offset = 1) => {
     offset
   );
   rotation.splice(nextIndex, 0, rotation.splice(index, 1)[0]);
-  const newStateWithEvent = Event.addToState(newState, "adjustRotation", {
+  const newStateWithEvent = await Event.addToState(newState, {
+    type: "adjustRotation",
     shiftId,
   });
   return newStateWithEvent;
 };
 
 // HELPERS
-const getNeighborShift = (state, whichNext, offset) =>
+const getNeighborShift = (
+  state: State,
+  whichNext: Next,
+  offset: number
+): ShiftTuple =>
   findIndexAndNeighbor(state, state[whichNext], offset).nextShift;
 
-const findIndexAndNeighbor = (state, shiftId, offset) => {
+const findIndexAndNeighbor = (
+  state: State,
+  shiftId: number,
+  offset: number
+): IndexAndNeighbor => {
   const index = state.main.findIndex((shift) => shift.id === shiftId);
   const length = state.main.length;
   const nextIndex = (index + offset + length) % length;

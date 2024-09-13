@@ -32,23 +32,3 @@ Board object sent to client can be deeply nested
 
 Don't need message for each event. Can generate message based on type.
 */
-
-/*
-Shift Objects
-{
-info,
-provider { last, first},
-patients [ids]
-supervisor [ids]
-}
-*/
-
-const store = {
-  main: [{}, {}, {}], // array of shift objects
-  flex: [], //same
-  off: [], //same
-  events: [{}], // array of event objects
-  nextFt: "shiftId",
-  nextProvider: "shiftId",
-  nextSupervisor: "shiftId",
-};

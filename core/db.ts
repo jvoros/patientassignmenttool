@@ -48,7 +48,7 @@ const getRecords = (table, query, ids) =>
 const hydrateIds = (ids, records) =>
   ids.map((id) => records.find((record) => record.id === id));
 
-const getBoard = async (state) => {
+const getBoard = async (state: State): Promise<Board> => {
   const stateShifts = getAllShifts(state);
   const response = await Promise.all([
     getRecords("shifts", shiftsQuery, stateShifts),
@@ -62,25 +62,53 @@ const getBoard = async (state) => {
     flex: hydrateIds(state.flex, shifts),
     off: hydrateIds(state.off, shifts),
     events: hydrateIds(state.events, events),
-    next: state.next,
-    super: state.super,
-    ft: state.ft,
+    nextProvider: state.nextProvider,
+    nextSupervisor: state.nextSupervisor,
+    nextFt: state.nextFt,
   };
 };
 
-// Shift db calls
-const addShift = () => {};
-const deleteShift = () => {};
+// SHIFT
+const addShift = async (
+  providerId: number,
+  scheduleId: number
+): Promise<Shift> => {
+  return {
+    id: null,
+    type: "physician",
+    info: { bonus: null },
+    provider: { id: null, lname: "", fname: "", role: "" },
+    patients: { count: null },
+  };
+};
+const deleteShift = async (shiftId): Promise<number> => {
+  return 3;
+};
 
 // Patient db calls
-const addPatient = () => {};
-const updatePatient = () => {};
-const deletePatient = () => {};
+const addPatient = async (options: AddPatientOptions): Promise<number> => {
+  return 3;
+};
+const updatePatient = async (
+  patientId: number,
+  options: UpdatePatientOptions
+): Promise<number> => {
+  return 3;
+};
+const deletePatient = async (shiftId): Promise<number> => {
+  return 3;
+};
 
 // Event db calls
-const addEvent = () => {};
-const updateEvent = () => {};
-const deleteEvent = () => {};
+const addEvent = async (options: EventOptions): Promise<number> => {
+  return 3;
+};
+const updateEvent = async (eventId, state): Promise<number> => {
+  return 3;
+};
+const deleteEvent = async (eventId): Promise<number> => {
+  return 3;
+};
 
 // const initialState = {
 //   main: [1, 3],

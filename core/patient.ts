@@ -1,22 +1,25 @@
-import Rotation from "./rotation.js";
-import Event from "./event.js";
-import db from "./db.js";
+import Rotation from "./rotation";
+import Event from "./event";
+import db from "./db";
 
 // API
-// shift object from client {id, type, info {bonus} patients {count} }
-// pt { type, room } from client
+// shift and pt come hydrated from client
 const assignPatient = async (
-  state,
-  shift,
-  pt = { type, room },
-  advance = true
+  state: State,
+  shift: Shift,
+  pt: Patient,
+  advance: boolean = true
 ) => {
-  const supervisor = withSupervisor(state, shift);
-  const newPtId = await db.addPatient(pt.room, pt.type, shift.id, {
-    supervisorId: supervisor,
+  const supervisorId = withSupervisor(state, shift);
+  const newPtId = await db.addPatient({
+    type: pt.type,
+    room: pt.room,
+    shiftId: shift.id,
+    supervisorId: supervisorId,
   });
-  const newState = handleNexts(state, shift, supervisor, advance);
-  const newStateWithEvent = await Event.addToState(newState, "addPatient", {
+  const newState = handleNexts(state, shift, supervisorId, advance);
+  const newStateWithEvent = await Event.addToState(newState, {
+    type: "addPatient",
     shiftId: shift.id,
     patientId: newPtId,
   });
@@ -24,18 +27,22 @@ const assignPatient = async (
 };
 
 // event from client
-const reassignPatient = async (state, event, newShift = { id, provider }) => {
+const reassignPatient = async (
+  state: State,
+  event: BoardEvent,
+  newShift: Shift
+) => {
   const { newSupervisorId, newState } = handleReassignSupervisor(
     state,
     event.shift.provider,
     newShift.provider
   );
-  const updatedPt = await db.updatePatient(
-    event.patient.id,
-    newShift.id,
-    newSupervisorId
-  );
-  const newStateWithEvent = await Event.addToState(newState, "reassign", {
+  const updatedPt = await db.updatePatient(event.patient.id, {
+    shiftId: newShift.id,
+    supervisorId: newSupervisorId,
+  });
+  const newStateWithEvent = await Event.addToState(newState, {
+    type: "reassign",
     patientId: event.patient.id,
     shiftId: newShift.id,
   });
@@ -44,38 +51,47 @@ const reassignPatient = async (state, event, newShift = { id, provider }) => {
 
 // INTERNAL
 
-const withSupervisor = (state, shift) => {
+const withSupervisor = (state: State, shift: Shift) => {
   return shift.type === "app" ? state.nextSupervisor : null;
 };
 
-const handleNexts = (state, shift, supervisor, advance) => {
-  const nextSupervisor = getNextSupervisor(state, supervisor);
+const handleNexts = (
+  state: State,
+  shift: Shift,
+  supervisorId: number,
+  advance: boolean
+) => {
+  const nextSupervisor = getNextSupervisor(state, supervisorId);
   const nextProvider = getNextProvider(state, shift, advance);
   return { ...state, nextSupervisor, nextProvider };
 };
 
-const getNextSupervisor = (state, supervisor) => {
-  return supervisor
+const getNextSupervisor = (state: State, supervisorId: number): number => {
+  return supervisorId
     ? Rotation.getNextShiftId(state, "nextSupervisor")
     : state.nextSupervisor;
 };
 
-const getNextProvider = (state, shift, advance) => {
+const getNextProvider = (
+  state: State,
+  shift: Shift,
+  advance: boolean
+): number => {
   return shouldAdvance(shift, advance)
     ? Rotation.getNextShiftId(state, "nextProvider")
     : state.nextProvider;
 };
 
-const shouldAdvance = (shift, advance) =>
+const shouldAdvance = (shift: Shift, advance: boolean): boolean =>
   shift.patients.count >= shift.info.bonus && advance;
 
 export const handleReassignSupervisor = (
-  state,
-  currentProvider,
-  newProvider
+  state: State,
+  currentProvider: Provider,
+  newProvider: Provider
 ) => {
   const currentSupervisorId = state.nextSupervisor;
-  let newSupervisorId = "";
+  let newSupervisorId = null;
   let newState = structuredClone(state);
 
   // if new = doc and current = doc
