@@ -94,7 +94,7 @@ const deleteShift = async (shiftId): Promise<number> => {
 };
 
 // Patient db calls
-const addPatient = async (options: AddPatientOptions): Promise<number> => {
+const addPatient = async (options: AddPatientOptionsDB): Promise<number> => {
   return 3;
 };
 const updatePatient = async (

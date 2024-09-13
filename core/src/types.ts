@@ -42,6 +42,8 @@ type Patient = {
   id: number;
   type: string;
   room: string;
+  shiftId?: number;
+  supervisorId?: number;
 };
 
 // EVENTS
@@ -69,6 +71,11 @@ type IndexAndNeighbor = {
 
 // PATIENT
 type AddPatientOptions = {
+  type: string;
+  room: string;
+};
+
+type AddPatientOptionsDB = {
   type: string;
   room: string;
   shiftId: number;

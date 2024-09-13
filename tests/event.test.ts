@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import Event from "../core/event";
-import db from "../core/db.js";
+import Event from "../core/src/event";
+import db from "../core/src/db";
 
 describe("# Event Module", () => {
   // mocks

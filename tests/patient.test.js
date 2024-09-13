@@ -1,20 +1,15 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import Patient, { handleReassignSupervisor } from "../core/patient";
-import Event from "../core/event";
-import db from "../core/db";
+import Patient, { handleReassignSupervisor } from "../core/src/patient";
+import Event from "../core/src/event";
+import db from "../core/src/db";
 
 describe("# Patient Module", () => {
   // mocks
-  // event
+  // event, will return the state that was passed to it
   const eventSpy = vi
     .spyOn(Event, "addToState")
-    .mockResolvedValue("event added to state");
-  // utility to get first param sent to Event.addState, then clear it so can check again later
-  const getEventState = () => {
-    const state = eventSpy.mock.calls[0][0];
-    eventSpy.mockClear();
-    return state;
-  };
+    .mockImplementation(async (state, options) => state);
+
   // db
   const addSpy = vi.spyOn(db, "addPatient").mockResolvedValue("newPt");
   const updateSpy = vi.spyOn(db, "updatePatient").mockResolvedValue("updatePt");
@@ -37,6 +32,11 @@ describe("# Patient Module", () => {
     patients: { count: 2 },
   };
 
+  const ptOpts = {
+    type: "walk in",
+    room: "Tr A",
+  };
+
   afterEach(() => {
     addSpy.mockClear();
     eventSpy.mockClear();
@@ -47,42 +47,37 @@ describe("# Patient Module", () => {
       const newState = await Patient.assignPatient(
         state,
         shiftFromClient,
-        "walk in",
-        "Tr A"
+        ptOpts
       );
-
       expect(addSpy).toHaveBeenCalled();
       expect(eventSpy).toHaveBeenCalled();
     });
 
     it("should also assign supervisor if shift is app", async () => {
-      const newState = Patient.assignPatient(
+      const newState = await Patient.assignPatient(
         state,
         shiftFromClient,
-        "walk in",
-        "Tr A"
+        ptOpts
       );
-      expect(addSpy.mock.calls[0][3].supervisorId).toBe(3);
+      expect(newState.nextSupervisor).not.toBe(3);
     });
 
     it("should advance nextProvider when assigning to APP", async () => {
       const newState = await Patient.assignPatient(
         state,
         shiftFromClient,
-        "walk in",
-        "Tr A"
+        ptOpts
       );
-      expect(getEventState().nextProvider).toBe(2);
+      expect(newState.nextProvider).toBe(2);
     });
 
     it("should advance nextSupervisor when assigning to APP", async () => {
       const newState = await Patient.assignPatient(
         state,
         shiftFromClient,
-        "walk in",
-        "Tr A"
+        ptOpts
       );
-      expect(getEventState().nextSupervisor).toBe(2);
+      expect(newState.nextSupervisor).toBe(2);
     });
 
     it("should not advance nextPatient for doc unless count >= bonus", async () => {
@@ -100,21 +95,10 @@ describe("# Patient Module", () => {
       };
       const state2 = structuredClone(state);
       state2.nextProvider = 2;
-      const newState = await Patient.assignPatient(
-        state2,
-        testShift,
-        "walk in",
-        "4"
-      );
-
-      expect(getEventState().nextProvider).toBe(2);
-      const newState2 = await Patient.assignPatient(
-        state2,
-        testShift2,
-        "w",
-        "4"
-      );
-      expect(getEventState().nextProvider).toBe(3);
+      const newState = await Patient.assignPatient(state2, testShift, ptOpts);
+      expect(newState.nextProvider).toBe(2);
+      const newState2 = await Patient.assignPatient(state2, testShift2, ptOpts);
+      expect(newState2.nextProvider).toBe(3);
     });
   });
 

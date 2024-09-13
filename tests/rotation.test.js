@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import Rotation from "../core/rotation";
-import Event from "../core/event";
+import Rotation from "../core/src/rotation";
+import Event from "../core/src/event";
 
 describe("# Rotation Module", () => {
   // mocks

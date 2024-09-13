@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import Shift from "../core/shift";
-import Event from "../core/event";
-import db from "../core/db";
+import Shift from "../core/src/shift";
+import Event from "../core/src/event";
+import db from "../core/src/db";
 
 describe("# Shift Module", () => {
   // MOCKS

@@ -7,13 +7,13 @@ import db from "./db";
 const assignPatient = async (
   state: State,
   shift: Shift,
-  pt: Patient,
+  ptOptions: AddPatientOptions,
   advance: boolean = true
 ) => {
   const supervisorId = withSupervisor(state, shift);
   const newPtId = await db.addPatient({
-    type: pt.type,
-    room: pt.room,
+    type: ptOptions.type,
+    room: ptOptions.room,
     shiftId: shift.id,
     supervisorId: supervisorId,
   });
