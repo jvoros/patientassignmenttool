@@ -25,7 +25,7 @@ type ShiftTuple = {
 
 type Shift = {
   id: number;
-  type: "physician" | "app";
+  type: string;
   info: { bonus: number };
   provider: Provider;
   patients: { count: number };
@@ -60,7 +60,7 @@ type EventOptions = {
 };
 
 // ROTATION
-type Next = "nextFt" | "nextSupervisor" | "nextProvider";
+type Next = string;
 type IndexAndNeighbor = {
   index: number;
   nextIndex: number;

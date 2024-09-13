@@ -1,6 +1,14 @@
 import { createClient } from "@supabase/supabase-js";
-import { getAllShifts, logObject } from "./helper.js";
 import "dotenv/config";
+
+// Helper
+// https://dev.to/atomikjaye/styling-consolelog-in-the-terminal-25c1
+const logObject = (text, obj) => {
+  console.log(`\x1b[33m#### ${text} ####\x1b[0m`);
+  console.log(" ");
+  console.dir(obj, { depth: 99 });
+  console.log(" ");
+};
 
 // Create a single supabase client for interacting with your database
 const supabase = createClient(
@@ -49,7 +57,7 @@ const hydrateIds = (ids, records) =>
   ids.map((id) => records.find((record) => record.id === id));
 
 const getBoard = async (state: State): Promise<Board> => {
-  const stateShifts = getAllShifts(state);
+  const stateShifts = [...state.main, ...state.flex, ...state.off];
   const response = await Promise.all([
     getRecords("shifts", shiftsQuery, stateShifts),
     getRecords("events", eventsQuery, state.events),

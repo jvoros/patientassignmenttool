@@ -46,8 +46,8 @@ const createStore = () => {
   // error checking here
   // should catch any error from whole program
   const withRehydrate =
-    (fn) =>
-    async (...args) => {
+    (fn: any) =>
+    async (...args: any) => {
       try {
         state = await fn(state, ...args);
         board = await db.getBoard(state);

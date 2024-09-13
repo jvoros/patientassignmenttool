@@ -1,6 +1,6 @@
 import Rotation from "./rotation";
 import Event from "./event";
-import db from "./db.js";
+import db from "./db";
 
 // API
 const addShift = async (
@@ -9,8 +9,9 @@ const addShift = async (
   scheduleId: number
 ): Promise<State> => {
   const newShift = await db.addShift(provider.id, scheduleId);
-  const miniShift = { id: newShift.id, type: newShift.type };
-  const newState = joinBoard(state, miniShift);
+  const shiftTuple = { id: newShift.id, type: newShift.type };
+  const newState = joinBoard(state, shiftTuple);
+
   const newStateWithEvent = await Event.addToState(newState, {
     type: "addShift",
     shiftId: newShift.id,
@@ -93,7 +94,7 @@ const addToMain = (state: State, shift: ShiftTuple): State => {
   const insertIndex = !state.nextProvider
     ? 0
     : state.main.findIndex((s) => s.id === state.nextProvider);
-  const newState = structuredClone(state);
+  const newState = structuredClone(newNext);
   newState.main.splice(insertIndex, 0, shift);
   return newState;
 };
@@ -172,7 +173,7 @@ const removeFromZone =
 const isNextFt = (state: State, shiftId: number): boolean =>
   state.nextFt === shiftId;
 
-const setNext = (whichNext: Next, state: State, shiftId: number): State => {
+const setNext = (whichNext: string, state: State, shiftId: number): State => {
   const newState = structuredClone(state);
   newState[whichNext] = shiftId;
   return newState;
