@@ -1,0 +1,38 @@
+
+  <div class="shiftBox" :class="getShiftClasses(shift)">
+    <div v-if="shift.zone === 'rotation' && isNext(shift.id)" class="shiftNextFlag">next</div>
+    
+    <div v-if="shift.zone !== 'fasttrack'"><%- include('./shiftControls.ejs'); %></div>
+
+    <div class="shiftContent">
+      <div>
+        <div class="shiftDoc">
+          <div>{{ shift.provider.first }} {{ shift.provider.last }}</div>
+          <div v-if="board.next.sup === shift.id" class="nextMidlevel"><span class="nextMidlevelFlag"><%- include('../icons/people.svg'); %> Next APP</span></div>
+        </div>
+        <div v-if="shift.app && shift.zone!=='off'" role="group" class="shiftControlsApp">
+          <button v-if="shift.zone==='rotation'" class="secondary" @click="appFlexOff(shift.id)">Flex Off</button>
+          <button v-if="shift.zone==='flex'" class="secondary" @click="appFlexOn(shift.id)">Flex On</button>
+          <button v-if="!isFT(shift.id)" v-if="shift.zone!=='fasttrack'" class="secondary" @click="joinFT(shift.id)">Join FT</button>
+          <button v-if="isFT(shift.id) && shift.zone==='fasttrack'" class="secondary" @click="leaveFT(shift.id)">Leave FT</button>
+        </div>
+      </div>
+      <div class="shiftButtons">
+        <template v-if="isNext(shift.id) && shift.zone === 'rotation'">
+          <div class="assignButton">
+            <%- include('./assignPopover.ejs'); %>
+          </div>
+        </template>
+        <template v-if="shift.zone === 'fasttrack'">
+          <div class="assignButton">
+            <%- include('./assignPopoverFasttrack.ejs'); %>
+          </div>
+        </template>
+        </div>
+    </div>
+    <ul class="shiftCounts">
+      <li v-if="shift.counts.total > 0">Total: {{ shift.counts.total }}</li>
+      <li v-if="shift.counts.app > 0">w/APP: {{ shift.counts.app }}</li>
+    </ul>
+  </div>
+

@@ -1,0 +1,23 @@
+<nav>
+  <ul>
+    <li><img src="/pat.svg" width="70" /></li>
+    <li class="siteName">
+      <strong>Patient Assignment Tools</strong> <small>v0.7</small>
+    </li>
+  </ul>
+  <ul>
+    <li><a href="https://patientassignmenttools-quickref.netlify.app" target="_blank">Quick Reference</a></li>
+    <li><%- include('./addShiftPopover.ejs'); %></li>
+    <li>
+      <a role="button" class="contrast" href="/logout">
+        Logout <%- include('../icons/logout.svg'); %>
+      </a>
+    </li>
+    <li>
+      <button class="secondary outline" data-tooltip="Dark Mode" @click="themeToggle()">
+        <span v-if="ui.theme==='light'"><%- include('../icons/moon.svg'); %></span>
+        <span v-if="ui.theme==='dark'"><%- include('../icons/sun.svg'); %></span>
+      </button>
+    </li> 
+  </ul>
+</nav>

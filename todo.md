@@ -1,6 +1,18 @@
-## TODO
+## To Dos
 
-- [x] Sort out package.json scripts, .env vars, deploy scripts
-- [x] Deploy dev and prod database
-- [x] Server doesn't ever re-poll db for changes, so if db changes independent of server, frontend never updates
-- [ ] Handle case where optimistic update fails
+- [ ] dark mode
+
+- [ ] help link
+- [ ] filter shifts/docs
+- [ ] delete shifts
+- [ ] better narrow views for DeWeerd
+- [ ] Quick Reference
+  - hospital protocols
+  - links to call schedules
+  - links to TeleMed Tracking
+  - link to bicycle health
+  - link to DOPL
+  - link to emails
+- [ ] Database?
+- [ ] switch to server events rather than websocket
+- [ ] more robust tests
