@@ -26,6 +26,7 @@ const providers = [
   { last: "Lemon", first: "Anthon" },
   { last: "Lempit", first: "Hilary", app: true },
   { last: "Li", first: "Helen" },
+  { last: "McNeill", first: "Josie", app: true },
   { last: "Merchant", first: "Azher" },
   { last: "Mooth", first: "Steve" },
   { last: "Mueller", first: "Trent" },
