@@ -1,65 +1,77 @@
-# Patient Assignment Tool v0.2
+# Patient Assignment Tool v 1.0
 
-## Intro
+## Tools
 
-This is a ground up rewrite of the first version. Key things: manages state just on the server, no database, seemed unnecessary.
+- `server/core`: contains the source from the patientassignmenttools-core library
+- `server`: runs a [Hono](http://hono.dev) web server to serve the backend
+- `client`: contains a Vue project for the frontend
 
-## Backend
+## Configuration
 
-`index.js` is the entry point for an Express.js server.
+Like any modern javascript project the tooling is complex.
 
-### Authentication
+### `package.json`
 
-**Authentication** is handled with a minimal JWT implementation.
+The usual npm stuff.
 
-`/login` renders the login page that POSTS a form to `/login/password` that does the work of verifying the password against constant values stored in `.env`.
+- The `core...` scripts just copy over the core files from the other project, to keep that self contained.
+- The `dev...` scripts use the "concurrently" project to start the Vite dev server for the Vue frontend and the Hono server for the backend. Hot Module Reloading works with both.
+- `dev:client` launches the Vite project server. `client` is necessary to tell Vite to look in the client folder for the project.
+- the `launch` script runs the necessary build steps and starts the server to serve the compiled frontend project
 
-The `/checklogin` route is used for the frontend to make sure its token is up to date.
+### `jsconfig.json`
 
-`authorization()` is Express middleware that checks the token and makes sure it is valid. If invalid it redirects to `/login`.
+Required for shadcn-vue. I don't actually think what is in here matters.
 
-### API
+### `tailwind.config.js`
 
-The API runs off the functions in the controllers folder. The routes basically just map to controller functions.
+For tailwind (duh). It has to be in the root of the project.
 
-The controllers are based on a simple functional pattern inspired by [this tutorial](https://dev.to/nas5w/learn-the-basics-of-redux-by-writing-your-own-version-in-30-lines-1if3). Originally used a reducer but realized that could be removed all together.
+- `content` option tells tailwind which files to process
+- `theme.extend` options are the theming variables for shadcn-vue. Shadcn-vue uses these variables to style components so changing these values changes the components.
 
-I tried to use a very functional approach. This should make each controller quite easy to understand. The controllers handle plain javascript objects. This means the whole board state can be stored in a JSON string. The functional approach also made testing _very_ easy. The controllers are well covered by unit tests.
+### `components.json`
 
-The main `board.js` controller is **not** functional and uses a singleton pattern.
+This is the config for the shadcn-vue CLI. This is important to get the files in the right spot. The documentation for the project is not great.
 
-One unique feature is the `withHistory()` wrapper. This function is used to control which functions save a snapshot to the history stack.
+- `tailwind` options are pretty self explanatory. Except, _`cssVariables: true`_ is critical for the tailwind theming. If this is set to `true` shadcn-vue will use the tailwind variables described in the tailwind config to style components, so that those variables can be used for site-wide styling. If this is set to false, the components will have color options set specifically on each component.
 
+- `aliases` is also poorly documented.
+  - `components` and `utils` aliases are added to the components downloaded by shadcn-vue. Because you can put the components wherever you'd like, shadcn-vue CLI uses the `@` alias feature to locate the necessary files. The `@` alias is configured in `vite.config.js`. So these path names are relative to whatever you set in `vite.config.js`.
+  - `ui` alias is relative to the root of the project, e.g. where this file is located, and tells shadcn-vue CLI which folder components should be downloaded into.
 
-### Socket.IO
+### `client/vite.config.js`
 
-All the clients stay in sync with **Socket.IO**. Using websockets means every client is subscribed to the server. The API endpoints don't have to return any site changes. After the API performs some action, the Socket.IO server just emits the new version of state.
+- Plugins include:
+  - `vue` - self explanatory
+  - `unplugin-vue-components` to auto-import Vue components. Must be told which `dirs` to look in for components.
+- `root` tells Vite where to find `index.html`, the entry point for the Vue app and Vite. This is relative to project root.
+- `envDir` tells Vite where to find `.env` files.
+- `build` and `css` are self-explanatory.
+- `server` does some magic.
+  - `proxy` sets routes outside the Vite dev server and tells Vite where to look for those routes. This way we can run our frontend dev server with Vite and the backend server with Hono can run also.
+  - his config says: for `/api/*` routes, go ask `localhost:3000`, which is the port where Hono is running.
+  - Any Hono route not prefixed with `/api`, such as `/hello` will not be found by the Vite dev server. _This is important later_ because the Hono server is set to serve the built Vue project from `/dist` at the `/index.html` endpoint, but in development, that Hono endpoint is never available from the frontend.
+- `alias` comes back into play. This is set for the shadcn-vue components. This sets up an alias so that `@` can be used by the shadcn-vue CLI in the downloaded components. So `@` should point to where the shadcn-vue `components` and `lib` folders are located.
 
-## Frontend
+### `components.d.ts`
 
-The front end is just HTML/CSS/JS.
+Auto-generated by `unplugin-vue-components`.
 
-### HTML
+## Server
 
-The HTML is served by the Express server using EJS. EJS is used basically just to break the HTML down into chunks. It doesn't do any flow control, auth or higher level stuff.
+The most important part of the `server` setup are the `/` and `/api` endpoints. The `/` endpoint is not used during development. The Vue frontend is served by Vite during development and calls to `/api/*` endpoints are proxied to this Hono server.
 
-### CSS
+But once the frontend is built for deployment, this Hono server will be the only server running, responsible for serving the frontend also. Vite builds the Vue project to the `/dist/client` folder. So Hono serves `index.html` and the associated `assets` and `public` resources fom there.
 
-The CSS is just [Pico CSS v2](https://v2.picocss.com/). A very lightweight, nearly classless framework. Simple. Easy. Only made a few small modifications.
+### `board.js`
 
-The `public` folder includes some SVG files that were necessary where the CSS used `background-image` to place icons in the timeline. They couldn't be added by EJS and are linked by URL.
+This handles function calls to the `core` library. The `core` library handles state manipulations and database communications. The basic setup is that the server keeps an in-memory version of each board to rapidly update and broadcast changes. The database sync happens in the background. This keeps the database up to date but makes updates more rapid.
 
-### JS
+Both `board.js` and `stream.js` need to keep a list of each site, with that site's board and users. The `jwt` token used for authentication registers the user's site so updates can be applied appropriately. The `stream.js` clients list allows broadcasting updates to users by site.
 
-The JS is run by Vue v3. The Vue instance doesn't require a build step. I followed the directions in the docs for the embedded setup. I originally had a Vite setup, running on a different port with proxies to connect front and back ends. Way to0 complicated for a simple site.
+### `stream.js`
 
-The first version of the site used `petite-vue`. This version uses the full thing. Vue handles the conditional rendering, flow control, etc.
+This is the setup for the Server Sent Events that allow realtime updating of the app. The important piece of this code is the `keep-alive` message that is sent to each client every 15 seconds. Without this ping, the connection could be dropped. The Hono streamSSE helper also automatically closes any connection that does not have some sort of keep-alive mechanism to ensure the proper setup, though the documentation does not make this clear.
 
-I can't use single file components this way. But the amount of code required for each section of the site is fairly minimal and can be neatly organized into a single file with less than 300 lines of code.
-
-The `dummy.js` and `dummy2.js` files are just dumps of the state from server. Used for development. Useful to see the shape of content from server. That's why I'm leaving them here.
-
-## Docs
-The `client/docs` folder holds markdown files for the Quick Reference section of the website. There is one route in the express server that dynamically fetches the markdown files and uses the `docs.ejs` templates for the boilerplate code. [This was the reference tutorial](https://dev.to/khalby786/creating-a-markdown-blog-with-ejs-express-j40).
-
-Any new Markdown pages need to be added to the `docs_sidenav.ejs` partial.
+My research on SSE indicates this kind of setup can handle tens of thousands of users and thousands of broadcast updates per second. More than enough for our needs.

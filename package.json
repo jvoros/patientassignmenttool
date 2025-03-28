@@ -1,35 +1,51 @@
 {
-  "name": "patient-assignment-tools",
-  "version": "0.2.0",
-  "description": "",
-  "main": "index.js",
+  "name": "patientassignmenttool-hono",
+  "private": true,
+  "version": "0.0.0",
   "type": "module",
-  "scripts": {
-    "test": "npx mocha",
-    "dev": "nodemon index.js",
-    "start": "NODE_ENV=production node index.js"
+  "engines": {
+    "node": "22.x"
   },
-  "author": "",
-  "license": "ISC",
-  "engines" : {
-    "node": "20.x"
+  "scripts": {
+    "dev:client": "vite client",
+    "dev:server": "node --env-file=.env --watch server/index.js",
+    "dev": "concurrently -k -p \"[{name}]\" -n \"client,server\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm run dev:client\" \"npm run dev:server\"",
+    "build:client": "vite build client",
+    "build": "npm run build:client",
+    "preview": "vite preview",
+    "core:build": "echo 'building core...' && cd ../patientassignmenttool-core && npm run build",
+    "core:copy": "echo 'copying core...' && cp -rv ../patientassignmenttool-core/dist/* ./server/core && cp ../patientassignmenttool-core/dummy/* ./server/core",
+    "core:get": "npm run core:build && npm run core:copy",
+    "db:production": "npx prisma migrate deploy --schema ./server/prisma/schema.prisma",
+    "start": "npx prisma generate --schema ./server/prisma/schema.prisma && npm run build && node server/index.js"
   },
   "dependencies": {
-    "cookie-parser": "^1.4.6",
-    "dotenv": "^16.3.1",
-    "ejs": "^3.1.9",
-    "express": "^4.18.2",
-    "express-async-errors": "^3.1.1",
-    "jsonwebtoken": "^9.0.2",
-    "nodemailer": "^6.9.14",
-    "short-unique-id": "^5.0.3",
-    "socket.io": "^4.7.2",
-    "socket.io-client": "^4.7.2"
+    "@hono/node-server": "^1.13.7",
+    "@prisma/client": "^6.3.1",
+    "@prisma/extension-accelerate": "^1.2.1",
+    "@vueuse/core": "^12.0.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "hono": "^4.6.13",
+    "immer": "^10.1.1",
+    "radix-vue": "^1.9.11",
+    "short-unique-id": "^5.2.0",
+    "tailwind-merge": "^2.5.5",
+    "tailwindcss-animate": "^1.0.7",
+    "vue": "^3.5.13",
+    "vue-sonner": "^1.3.0"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.16",
-    "chai": "^4.3.10",
-    "mocha": "^10.2.0",
-    "nodemon": "^3.0.1"
+    "@iconify/vue": "^4.3.0",
+    "@types/node": "^22.10.1",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "autoprefixer": "^10.4.20",
+    "concurrently": "^9.1.0",
+    "lucide-vue-next": "^0.468.0",
+    "tailwindcss": "^3.4.16",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "unplugin-vue-components": "^0.27.5",
+    "vite": "^6.0.1"
   }
 }
