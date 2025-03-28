@@ -43,6 +43,8 @@ export const useSite = () => {
   };
 
   const updateBoard = (data) => {
+    console.log("[stream] board: updating...");
+    console.log(data);
     data.loading = false;
     store.board = data;
   };
