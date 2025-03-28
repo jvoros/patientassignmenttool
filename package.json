@@ -17,7 +17,7 @@
     "core:copy": "echo 'copying core...' && cp -rv ../patientassignmenttool-core/dist/* ./server/core && cp ../patientassignmenttool-core/dummy/* ./server/core",
     "core:get": "npm run core:build && npm run core:copy",
     "db:production": "npx prisma migrate deploy --schema ./server/prisma/schema.prisma",
-    "start": "prisma generate && npm run build && node server/index.js"
+    "start": "npx prisma generate && npm run build && node server/index.js"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
