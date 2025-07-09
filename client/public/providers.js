@@ -1,7 +1,6 @@
 const providers = [
   { last: "Baretela", first: "Tracie", app: true },
   { last: "Blake", first: "Kelly" },
-  { last: "Bolin", first: "Morgan", app: true },
   { last: "Bown", first: "Deanna", app: true },
   { last: "Carmack", first: "Brian" },
   { last: "Cheever", first: "Shelley", app: true },
@@ -43,6 +42,7 @@ const providers = [
   { last: "Stiles", first: "Adam" },
   { last: "Voros", first: "Jeremy" },
   { last: "Wiesley", first: "Brett" },
+  { last: "Wolfe", first: "Matt" },
   { last: "Yeates", first: "Todd" },
   { last: "Doc - Not Listed", first: "" },
   { last: "APP - Not Listed", first: "", app: true },
