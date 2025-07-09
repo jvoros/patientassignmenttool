@@ -32,9 +32,9 @@
 
       <div class="eventAssignRoom">
         <div>{{ event.patient.room }}</div>
-        <template v-if="!event.reassign"
-          ><%- include('./reassignPopover.ejs') %></template
-        >
+        <template v-if="!event.reassign">
+          <%- include('./reassignPopover.ejs') %>
+        </template>
       </div>
     </div>
   </div>
