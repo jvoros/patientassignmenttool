@@ -1,0 +1,47 @@
+# Site Config Info
+slug: smh
+
+name: St. Mark's Hospital
+
+rooms:
+  - "1"
+  - "2"
+  - "3"
+  - "4"
+  - "5"
+
+schedule:
+  - name: 6a - 3p
+    bonus: 2
+    joins: main
+  - name: 6a - 3p APP
+    bonus: 0
+    joins: main
+  - name: 8a - 5p
+    bonus: 2
+    joins: main
+
+providers:
+  - last: Blake
+    first: Kelly
+    role: physician
+  - last: Kasavana
+    first: Brian
+    role: app
+  - last: Voros
+    first: Jeremy
+    role: physician
+
+zones:
+  - slug: main
+    name: Main Rotation
+    type: dual
+    super: main
+  - slug: ft
+    name: Fast Track
+    type: simple
+    super: main
+    skip: true
+  - slug: "off"
+    name: "Off"
+    type: list

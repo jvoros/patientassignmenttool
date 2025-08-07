@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "allowJs": true,
+    "types": ["node"],
+    "outDir": "./dist"
+  },
+  "include": ["core", "server", "sites", "database", "tests"],
+  "exclude": ["node_modules"]
+}

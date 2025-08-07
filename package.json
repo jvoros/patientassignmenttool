@@ -1,35 +1,37 @@
 {
-  "name": "patient-assignment-tools",
-  "version": "0.2.0",
-  "description": "",
-  "main": "index.js",
+  "name": "pat-hono-vue",
   "type": "module",
   "scripts": {
-    "test": "npx mocha",
-    "dev": "nodemon index.js",
-    "start": "NODE_ENV=production node index.js"
-  },
-  "author": "",
-  "license": "ISC",
-  "engines" : {
-    "node": "20.x"
+    "test": "vitest -w",
+    "dev:client": "vite serve ./client",
+    "dev:server": "node --env-file=.env --import=tsx --watch ./server/index.ts",
+    "dev": "concurrently --names client,server --prefix-colors magenta,blue 'npm run dev:client' 'npm run dev:server'",
+    "db:configpush": "node --env-file=.env --import=tsx ./database/config.js",
+    "db:test": "node --env-file=.env ./database/test.js",
+    "build:client": "vite build ./client",
+    "build:server": "tsc -p tsconfig.prod.json",
+    "build": "npm run build:client & npm run build:server",
+    "start:local": "NODE_ENV=production node --env-file=.env dist/server/index.js",
+    "start": "NODE_ENV=production node dist/server/index.js"
   },
   "dependencies": {
-    "cookie-parser": "^1.4.6",
-    "dotenv": "^16.3.1",
-    "ejs": "^3.1.9",
-    "express": "^4.18.2",
-    "express-async-errors": "^3.1.1",
-    "jsonwebtoken": "^9.0.2",
-    "nodemailer": "^6.9.14",
-    "short-unique-id": "^5.0.3",
-    "socket.io": "^4.7.2",
-    "socket.io-client": "^4.7.2"
+    "@awesome.me/webawesome": "^3.0.0-beta.2",
+    "@hono/node-server": "^1.14.4",
+    "@libsql/client": "^0.15.10",
+    "@types/node": "^20.11.17",
+    "hono": "^4.8.3",
+    "immer": "^10.1.1",
+    "lucide-vue-next": "^0.525.0",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "tsx": "^4.7.1",
+    "typescript": "^5.8.3",
+    "vue": "^3.5.17",
+    "vite": "^7.0.0"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.16",
-    "chai": "^4.3.10",
-    "mocha": "^10.2.0",
-    "nodemon": "^3.0.1"
+    "@vitejs/plugin-vue": "^6.0.0",
+    "concurrently": "^9.2.0",
+    "vitest": "^3.2.4"
   }
 }

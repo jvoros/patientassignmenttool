@@ -1,0 +1,110 @@
+{
+  "slug": "smh",
+  "date": 1750708522692,
+  "zoneOrder": ["main", "ft", "off", "trauma"],
+  "timeline": ["FTH315", "WyYkUK", "9sCwez", "moqeNA", "L8J2h2"],
+  "patients": [],
+  "zones": {
+    "main": {
+      "slug": "main",
+      "name": "Main Rotation",
+      "type": "dual",
+      "superZone": "main",
+      "triggerSkip": false,
+      "next": 1,
+      "super": 1,
+      "shifts": ["O40CbA", "Yt3LEo"]
+    },
+    "ft": {
+      "slug": "ft",
+      "name": "Fast Track",
+      "type": "simple",
+      "superZone": "main",
+      "triggerSkip": true,
+      "next": null,
+      "super": null,
+      "shifts": ["O40CbA"]
+    },
+    "off": {
+      "slug": "off",
+      "name": "Off Rotation",
+      "type": "list",
+      "triggerSkip": false,
+      "next": null,
+      "super": null,
+      "shifts": []
+    },
+    "trauma": {
+      "slug": "trauma",
+      "name": "Trauma Rotation",
+      "type": "rotation",
+      "superZone": "trauma",
+      "triggerSkip": false,
+      "next": null,
+      "super": null,
+      "shifts": []
+    }
+  },
+  "shifts": {
+    "Yt3LEo": {
+      "id": "Yt3LEo",
+      "name": "6a-3p",
+      "bonus": 2,
+      "status": "active",
+      "assigned": 0,
+      "supervised": 1,
+      "last": "Voros",
+      "first": "Jeremy",
+      "role": "physician"
+    },
+    "O40CbA": {
+      "id": "O40CbA",
+      "name": "6a-3p APP",
+      "bonus": 0,
+      "status": "paused",
+      "assigned": 2,
+      "supervised": 1,
+      "last": "Kasvana",
+      "first": "Brian",
+      "role": "app"
+    }
+  },
+  "events": {
+    "L8J2h2": {
+      "id": "L8J2h2",
+      "time": 1750708522692,
+      "patches": [],
+      "message": "Jeremy Voros joined Main Rotation"
+    },
+    "moqeNA": {
+      "id": "moqeNA",
+      "time": 1750708522692,
+      "patches": [],
+      "message": "Brian Kasvana joined Main Rotation"
+    },
+    "9sCwez": {
+      "id": "9sCwez",
+      "time": 1750708522692,
+      "patches": [],
+      "mode": "ambo",
+      "room": "1",
+      "assign": "O40CbA",
+      "super": "Yt3LEo"
+    },
+    "WyYkUK": {
+      "id": "WyYkUK",
+      "time": 1750708522692,
+      "patches": [],
+      "message": "Brian Kasvana joined Fast Track"
+    },
+    "FTH315": {
+      "id": "FTH315",
+      "time": 1750708522692,
+      "patches": [],
+      "mode": "ft",
+      "room": "4",
+      "assign": "O40CbA",
+      "super": "Yt3LEo"
+    }
+  }
+}
