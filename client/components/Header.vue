@@ -18,7 +18,9 @@ import DarkModeSwitch from "./DarkModeSwitch.vue";
             <div class="socket-status" v-if="!socketConnected">
                 Error: no socket connection.
             </div>
-
+            <a href="https://patientassignmenttools-quickref.netlify.app/">
+                Quick Reference
+            </a>
             <HeaderAddClinician v-if="site" />
             <wa-button
                 appearance="filled outlined"
@@ -66,6 +68,15 @@ nav {
     display: flex;
     align-items: center;
     gap: 1rem;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+nav a:hover {
+    color: var(--text-muted);
 }
 
 .socket-status {
