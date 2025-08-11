@@ -1,3 +1,5 @@
+testdb.sql
+
 node_modules
 .env
 .DS_Store
@@ -21,6 +23,8 @@ node_modules/
 # env
 .env
 .env.production
+.env.dev
+
 
 # logs
 logs/

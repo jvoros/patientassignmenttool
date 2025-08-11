@@ -76,6 +76,8 @@ core.all("/board", async (c) => {
   const res = await db.getBoard(c.get("site"));
   // turso empty row is string "null"
   if (res.data?.board === "null") {
+    console.log("no board in database");
+    console.log("building board...");
     const siteRes = await db.getSite(c.get("site"));
     const site = JSON.parse(siteRes.data?.site as string);
     const zoneConfig = site.zoneOrder.map((slug: string) => site.zones[slug]);
