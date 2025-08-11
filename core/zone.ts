@@ -38,9 +38,10 @@ const joinZone = (params: { zone: Zone; shift: Shift }): void => {
         // to same index where just inserted
         zone.super = zone.next;
       }
-      if (shift.role === "app" && zone.super! >= zone.next) {
+      if (zone.super !== null && zone.super >= zone.next) {
         zone.super = zone.super! + 1;
       }
+
       break;
 
     case "rotation":
