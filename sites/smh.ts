@@ -50,6 +50,7 @@ const config: SiteConfig = {
     { last: "Conca", first: "Rocco", role: "app" },
     { last: "Cross", first: "Taylor", role: "app" },
     { last: "Dastrup", first: "Brigham", role: "physician" },
+    { last: "Dearden", first: "Rachel", role: "physician" },
     { last: "DeWeerd", first: "Pete", role: "physician" },
     { last: "Denson", first: "Dave", role: "physician" },
     { last: "Erbach", first: "Craig", role: "physician" },
