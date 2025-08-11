@@ -1,6 +1,9 @@
 {
   "name": "pat-hono-vue",
   "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "test": "vitest -w",
     "dev:client": "vite serve ./client",
