@@ -24,33 +24,32 @@ const make = (params: ZoneMakeParams): Zone => {
 
 // JOIN ZONE
 
-const joinZone = (params: { zone: Zone; shift: Shift }): void => {
-  const { zone, shift } = params;
-  // don't add more than once
+const joinZone = ({ zone, shift }: { zone: Zone; shift: Shift }): void => {
+  // Don't add more than once
   if (zone.shifts.includes(shift.id)) return;
 
+  // Ensure zone.next is initialized
+  zone.next = zone.next ?? 0;
+
+  // Insert shift ID based on zone type
   switch (zone.type) {
     case "dual":
-      if (zone.next === null) zone.next = 0;
       zone.shifts.splice(zone.next, 0, shift.id);
+      // If first physician shift, set super pointer
       if (shift.role === "physician" && zone.super === null) {
-        // first physician shift, set super pointer
-        // to same index where just inserted
         zone.super = zone.next;
       }
+      // If super already set, and past shift insert point, increment super
       if (zone.super !== null && zone.super >= zone.next) {
-        zone.super = zone.super! + 1;
+        zone.super++;
       }
-
       break;
 
     case "rotation":
-      if (zone.next === null) zone.next = 0;
       zone.shifts.splice(zone.next, 0, shift.id);
       break;
 
     case "simple":
-      if (zone.next === null) zone.next = 0;
       zone.shifts.unshift(shift.id);
       break;
 
@@ -62,37 +61,41 @@ const joinZone = (params: { zone: Zone; shift: Shift }): void => {
 
 // LEAVE ZONE
 
-const leaveZone = (params: {
+const leaveZone = ({
+  leaveShiftId,
+  zone,
+  shifts,
+}: {
   leaveShiftId: Shift["id"];
   zone: Zone;
   shifts: IndexShift;
 }): void => {
-  const { leaveShiftId, zone, shifts } = params;
   const index = zone.shifts.findIndex((s) => s === leaveShiftId);
-  if (index === -1) return; // shift not in zone
+  // Shift not in zone
+  if (index === -1) return;
 
-  // handle pointers
+  // Handle pointers
   const pointerKeys: ZonePointer[] = ["next", "super"];
   pointerKeys.forEach((key) => {
-    if (zoneRotatesPointer(key, zone)) {
-      let pointer = zone[key];
-      // if leaving is next or super, advance
-      // prevents edge case of removing last shift and wrapping to 0
-      if (index === zone[key]) {
-        movePointer({ zone, shifts, which: key, offset: 1 });
-        pointer = zone[key];
-      }
-      // if after advance still pointer means it is last shift, clear pointer
-      if (index === zone[key]) {
-        zone[key] = null;
-        pointer = zone[key];
-      }
-      // if index < pointer, need to decrement pointer
-      if (pointer !== null && index < pointer) zone[key] = pointer - 1;
+    if (!zoneRotatesPointer(key, zone)) return;
+
+    // Check if the current shift is the pointer
+    if (index === zone[key]) {
+      movePointer({ zone, shifts, which: key, offset: 1 });
+    }
+
+    // If current shift is *still* pointer than it is last one left, need to null pointer
+    if (index === zone[key]) {
+      zone[key] = null;
+    }
+
+    // If leaving shift index is less than pointer, need to decrement pointer
+    if (zone[key] !== null && index < zone[key]) {
+      zone[key]--;
     }
   });
 
-  // remove shift
+  // Remove shift
   zone.shifts.splice(index, 1);
 };
 

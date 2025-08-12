@@ -1,7 +1,6 @@
-import { produce, produceWithPatches, enablePatches } from "immer";
+import { produce } from "immer";
 import Board from "./board.js";
 import Assign from "./assign.js";
-enablePatches();
 
 type CoreResponse = {
   board?: Board;
@@ -46,16 +45,8 @@ const signInCheckReset = (
   return withUndo(Board.signIn)(board, params);
 };
 
-const reset = (board: Board): CoreResponse => {
-  const logs = Board.buildLogs(board.slug, board);
-  const res = withUndo(Board.reset)(board, null);
-  res.logs = logs;
-  return res;
-};
-
 export default {
   build: Board.make,
-  reset,
   // signIn: withUndo(Board.signIn),
   signIn: signInCheckReset,
   signOut: withUndo(Board.signOut),
