@@ -38,10 +38,12 @@ const joinZone = ({ zone, shift }: { zone: Zone; shift: Shift }): void => {
       // If first physician shift, set super pointer
       if (shift.role === "physician" && zone.super === null) {
         zone.super = zone.next;
+        break;
       }
       // If super already set, and past shift insert point, increment super
       if (zone.super !== null && zone.super >= zone.next) {
         zone.super++;
+        break;
       }
       break;
 

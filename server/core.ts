@@ -10,7 +10,9 @@ type Variables = {
 
 const core = new Hono<{ Variables: Variables }>();
 
-// middleware to get site from JWT token
+// MIDDLEWARE
+// Get site from JWT token
+
 core.use(jwt({ secret: process.env.JWT_SECRET!, cookie: "auth" }));
 core.use(async (c, next) => {
   const payload = c.get("jwtPayload");
@@ -18,10 +20,10 @@ core.use(async (c, next) => {
   await next();
 });
 
-// core reducer
+// CORE REDUCER
+// one entry for each method of core library to ensure correct function call
 
-// one entry for each method of core
-const handlers2 = [
+const handlers = [
   "reset",
   "undo",
   "signIn",
@@ -47,7 +49,7 @@ const reducer = (
   currentBoard: Board,
   action: Action,
 ): { board: Board; oldboard: Board } => {
-  if (!handlers2.includes(action.type)) {
+  if (!handlers.includes(action.type)) {
     return { board: currentBoard, oldboard: currentBoard };
   }
 
@@ -58,7 +60,6 @@ const reducer = (
 
   if (error) throw error;
 
-  // Save logs if present
   if (logs) {
     db.saveLogs(logs);
   }
