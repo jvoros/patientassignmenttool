@@ -1,42 +1,31 @@
-import {
-  produce,
-  produceWithPatches,
-  enablePatches,
-  applyPatches,
-} from "immer";
+import { produce, produceWithPatches, enablePatches } from "immer";
 import Board from "./board.js";
 import Assign from "./assign.js";
 enablePatches();
 
 type CoreResponse = {
   board?: Board;
+  oldboard?: Board;
   error?: unknown;
   logs?: LogItem[];
 };
 
 type BoardFn<T> = (board: Board, params: T) => void;
 
+// withUndo takes a board and returns board: newBoard, oldboard: startingBoard, error: error }
 const withUndo = <T>(fn: BoardFn<T>) => {
   return (board: Board, params: T): CoreResponse => {
     let error: unknown;
     let returnBoard = board;
     try {
-      const [newBoard, _patches, inversePatches] = produceWithPatches(
-        board,
-        (draftBoard) => {
-          fn(draftBoard, params);
-        },
-      );
-      // return from immer is immutable
-      // use produce() to modify
-      const newBoardWithPatches = produce(newBoard, (draft) => {
-        draft.events[draft.timeline[0]].patches = inversePatches;
+      const newBoard = produce(board, (draftBoard) => {
+        fn(draftBoard, params);
       });
-      returnBoard = newBoardWithPatches;
+      returnBoard = newBoard;
     } catch (err: unknown) {
       error = err;
     }
-    return { board: returnBoard, error };
+    return { board: returnBoard, oldboard: board, error };
   };
 };
 
@@ -64,22 +53,9 @@ const reset = (board: Board): CoreResponse => {
   return res;
 };
 
-const undo = (board: Board): CoreResponse => {
-  let error: unknown;
-  let returnBoard = board;
-  try {
-    const patches = board.events[board.timeline[0]].patches;
-    returnBoard = applyPatches(board, patches);
-  } catch (err) {
-    error = err;
-  }
-  return { board: returnBoard, error };
-};
-
 export default {
   build: Board.make,
   reset,
-  undo,
   // signIn: withUndo(Board.signIn),
   signIn: signInCheckReset,
   signOut: withUndo(Board.signOut),

@@ -8,6 +8,7 @@
 type Board = {
   slug: string; // site slug
   date: number; // datetime
+  undo?: number; // db ID added by database to track back to last state
   zoneOrder: Zone["slug"][];
   timeline: BoardEvent["id"][];
   zones: IndexZone;

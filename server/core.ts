@@ -43,32 +43,36 @@ type Action = {
   payload: object;
 };
 
-const reducer = (currentBoard: Board, action: Action): Board => {
-  if (handlers2.includes(action.type)) {
-    const { board, error, logs } = Board[action.type](
-      currentBoard,
-      action.payload,
-    );
-    if (error) throw error;
-    // logs only present after reset
-    if (logs !== undefined) {
-      db.saveLogs(logs);
-    }
-    // check for undo reset, need to delete logs
-    if (
-      action.type === "undo" &&
-      currentBoard.events[currentBoard.timeline[0]].message?.includes("reset")
-    ) {
-      const resetEvent = currentBoard.events[currentBoard.timeline[0]];
-      db.deleteLogs(
-        // event.note holds the previous day's board.date
-        resetEvent.note ? Number(resetEvent.note) : 0,
-        currentBoard.slug,
-      );
-    }
-    return board;
+const reducer = (
+  currentBoard: Board,
+  action: Action,
+): { board: Board; oldboard: Board } => {
+  if (!handlers2.includes(action.type)) {
+    return { board: currentBoard, oldboard: currentBoard };
   }
-  return currentBoard;
+
+  const { board, oldboard, error, logs } = Board[action.type](
+    currentBoard,
+    action.payload,
+  );
+
+  if (error) throw error;
+
+  // Save logs if present
+  if (logs) {
+    db.saveLogs(logs);
+  }
+
+  // Handle undo reset and delete logs if necessary
+  if (
+    action.type === "undo" &&
+    currentBoard.events[currentBoard.timeline[0]].message?.includes("reset")
+  ) {
+    const resetEvent = currentBoard.events[currentBoard.timeline[0]];
+    db.deleteLogs(Number(resetEvent.note) || 0, currentBoard.slug);
+  }
+
+  return { board, oldboard };
 };
 
 // routes
@@ -97,19 +101,34 @@ core.post("/action", async (c) => {
   const site = c.get("site");
   const action = await c.req.json();
   const { data, error } = await db.getBoard(site);
-  if (data !== undefined) {
-    const currentBoard = JSON.parse(data["board"] as string);
-    try {
-      const newBoard = reducer(currentBoard, action);
-      db.updateBoard(site, newBoard);
-      io.to(site).emit("board", newBoard);
-      return c.json({ data: "success", error: false });
-    } catch (err: any) {
-      console.log("caught error:", err);
-      return c.json({ data: "error", error: err.message });
-    }
-  } else {
+
+  if (!data) {
     return c.json({ data: "error", error });
+  }
+
+  const currentBoard = JSON.parse(data.board as string);
+
+  try {
+    if (action.type === "undo") {
+      const undoRes = await db.getUndo(currentBoard.undo);
+      if (undoRes.error) throw new Error(undoRes.error as string);
+
+      const oldBoard = JSON.parse(undoRes.data?.board as string);
+      await db.updateBoard(site, oldBoard);
+      io.to(site).emit("board", oldBoard);
+    } else {
+      const { board, oldboard } = reducer(currentBoard, action);
+      const newBoard = JSON.parse(JSON.stringify(board)); // Immutable copy
+      const undoRes = await db.addUndo(oldboard);
+      newBoard.undo = Number(undoRes.lastInsertRowid);
+      await db.updateBoard(site, newBoard);
+      io.to(site).emit("board", newBoard);
+    }
+
+    return c.json({ data: "success", error: false });
+  } catch (err: any) {
+    console.error("caught error:", err);
+    return c.json({ data: "error", error: err.message });
   }
 });
 

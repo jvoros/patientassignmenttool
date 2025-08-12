@@ -24,3 +24,10 @@ CREATE TABLE logs (
     bounty INTEGER,
     PRIMARY KEY (date, site, shift)
 );
+
+CREATE TABLE undos (
+    id INTEGER PRIMARY KEY,
+    board TEXT,
+    site TEXT NOT NULL,
+    date INTEGER NOT NULL,
+);
