@@ -13,7 +13,7 @@ const useSocket = (honoServer: any): any => {
     }
     socket.join(payload!.site as string);
     console.log(`[socket][${payload!.site}] new connection: ${socket.id}`);
-    console.log("[socket] total connections: ", io.of("/").sockets.size);
+    console.log(`[socket] total connections: ${io.of("/").sockets.size}`);
   });
 
   return io;
