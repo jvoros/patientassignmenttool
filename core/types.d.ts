@@ -1,14 +1,9 @@
-// Immer patches work better with key: value objects than arrays
-// - put patients, shifts, zones, events in to indexed objects
-// - track position of those items on board with small arrays with just ids
-// - then create a different object for the client without the indexes
-
 // BOARD
 
 type Board = {
   slug: string; // site slug
   date: number; // datetime
-  undo?: number; // db ID added by database to track back to last state
+  undo?: number; // db ID added by database to track back to previous state
   zoneOrder: Zone["slug"][];
   timeline: BoardEvent["id"][];
   zones: IndexZone;

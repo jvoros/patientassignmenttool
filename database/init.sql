@@ -1,5 +1,5 @@
 -- Initial DB Setup
--- Tables: sites, logs
+-- Tables: sites, logs, undos
 -- Rudimentary, just handles JSON config, not true relational DB, just stores config separate from app
 -- Digital Ocean can reboot app, not persistent data store
 
