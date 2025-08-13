@@ -14,9 +14,10 @@ const isSuperRot = computed(() => ["dual", "super"].includes(zone.value.type));
 const isSuper = (ind) => zone.value.super === ind;
 const isNext = (ind) => {
     const z = zone.value;
-    return [z.next === ind, z.type === "simple" && ind === 0].some(
-        (condition) => condition,
-    );
+    return [
+        z.next === ind && isRotation.value,
+        z.type === "simple" && ind === 0,
+    ].some((condition) => condition);
 };
 
 const adjustRotation = (which, offset) => {
