@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, expectTypeOf } from "vitest";
 import Assign from "../core/assign.js";
 import Board from "../core/board.js";
-import dummy from "./dummy.js";
-import { makeBoard, lastEvent } from "./dummy.js";
+import dummy from "./dummy.config.js";
+//import { makeBoard, lastEvent } from "./dummy.js";
 
 // add types for vitest context
 type Context = {
@@ -11,12 +11,28 @@ type Context = {
   shiftId2: Shift["id"];
 };
 
+const makeBoard = (): Board => {
+  const board = Board.make({ slug: "smh", siteConfig: dummy });
+  Board.signIn(board, {
+    provider: dummy.providers[0],
+    schedule: dummy.schedule[0],
+  });
+  return board;
+};
+
+const lastEvent = (board: Board): BoardEvent => board.events[board.timeline[0]];
+
+// TESTS
+
 describe("Assign Controller", () => {
   describe("Assign", (c) => {
     beforeEach<Context>((c) => {
       c.board = makeBoard();
       // add app for tests
-      Board.signIn(c.board, { schedule: dummy.schedules[1], provider: dummy.providers[1] });
+      Board.signIn(c.board, {
+        schedule: dummy.schedule[1],
+        provider: dummy.providers[1],
+      });
       c.shiftId = c.board.zones.main.shifts[0];
       Assign.toShift(c.board, {
         shiftId: c.shiftId,
@@ -44,7 +60,10 @@ describe("Assign Controller", () => {
     it("should not advance rotation", () => {
       const board = makeBoard();
       // add app for tests
-      Board.signIn(board, { schedule: dummy.schedules[1], provider: dummy.providers[1] });
+      Board.signIn(board, {
+        schedule: dummy.schedule[1],
+        provider: dummy.providers[1],
+      });
       const shiftId = board.zones.main.shifts[1]; // assign to non-pointer shift
       Assign.toShift(board, {
         shiftId: shiftId,
@@ -59,18 +78,26 @@ describe("Assign Controller", () => {
   describe("Assign to Zone", (c) => {
     beforeEach<Context>((c) => {
       c.board = makeBoard();
-      // add app for tests
-      Board.signIn(c.board, { schedule: dummy.schedules[1], provider: dummy.providers[1] });
+      // add app for tests, this app becomes next
+      Board.signIn(c.board, {
+        schedule: dummy.schedule[1],
+        provider: dummy.providers[1],
+      });
+      // add assigned patients to get to end of bonus
+      c.board.shifts[c.board.zones.main.shifts[0]].assigned = 1;
+      // to join FT zone later
       const zone = c.board.zones.main;
       c.shiftId = zone.shifts[zone.next!]; // pointer shift
+
       Assign.toZone(c.board, {
         zoneSlug: "main",
         mode: "ft",
         room: "1",
       });
     });
+
     it<Context>("should assign a patient to shift at next pointer", (c) => {
-      expect(Board.getShift(c.shiftId, c.board).assigned).toEqual(1);
+      expect(Board.getShift(c.shiftId, c.board).assigned).toEqual(2);
     });
     it<Context>("should advance next pointer", (c) => {
       expect(c.board.zones.main.next).toEqual(1);
@@ -83,7 +110,6 @@ describe("Assign Controller", () => {
         room: "4",
       });
       const shift = Board.getShift(c.shiftId, c.board);
-      console.log(JSON.stringify(c.board));
       expect(shift.status).toEqual("skip");
     });
   });

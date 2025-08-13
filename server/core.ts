@@ -83,11 +83,9 @@ core.all("/board", async (c) => {
   // turso empty row is string "null"
   if (res.data?.board === "null") {
     console.log(`[server][${c.get("site")}] no board in database, building...`);
-    // TODO: server shouldn't be handling the logic to build new board
     const siteRes = await db.getSite(c.get("site"));
-    const site = JSON.parse(siteRes.data?.site as string);
-    const zoneConfig = site.zoneOrder.map((slug: string) => site.zones[slug]);
-    const newBoard = Board.build({ slug: c.get("site"), zoneConfig });
+    const siteConfig = JSON.parse(siteRes.data?.site as string);
+    const newBoard = Board.build({ slug: c.get("site"), siteConfig });
     db.updateBoard(newBoard.slug, newBoard);
     return c.json({ data: { board: JSON.stringify(newBoard) }, error: false });
   }
