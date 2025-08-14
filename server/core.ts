@@ -76,17 +76,16 @@ const reducer = (
   return { board, oldboard };
 };
 
-// routes
+// ROUTES
+
 core.all("/board", async (c) => {
   const res = await db.getBoard(c.get("site"));
   // turso empty row is string "null"
   if (res.data?.board === "null") {
-    console.log("no board in database");
-    console.log("building board...");
+    console.log(`[server][${c.get("site")}] no board in database, building...`);
     const siteRes = await db.getSite(c.get("site"));
-    const site = JSON.parse(siteRes.data?.site as string);
-    const zoneConfig = site.zoneOrder.map((slug: string) => site.zones[slug]);
-    const newBoard = Board.build({ slug: c.get("site"), zoneConfig });
+    const siteConfig = JSON.parse(siteRes.data?.site as string);
+    const newBoard = Board.build({ slug: c.get("site"), siteConfig });
     db.updateBoard(newBoard.slug, newBoard);
     return c.json({ data: { board: JSON.stringify(newBoard) }, error: false });
   }
@@ -113,19 +112,18 @@ core.post("/action", async (c) => {
     if (action.type === "undo") {
       const undoRes = await db.getUndo(currentBoard.undo);
       if (undoRes.error) throw new Error(undoRes.error as string);
-
       const oldBoard = JSON.parse(undoRes.data?.board as string);
       await db.updateBoard(site, oldBoard);
       io.to(site).emit("board", oldBoard);
     } else {
       const { board, oldboard } = reducer(currentBoard, action);
       const newBoard = JSON.parse(JSON.stringify(board)); // Immutable copy
+      // TODO: consider turso transaction for these two db acctions
       const undoRes = await db.addUndo(oldboard);
       newBoard.undo = Number(undoRes.lastInsertRowid);
       await db.updateBoard(site, newBoard);
       io.to(site).emit("board", newBoard);
     }
-
     return c.json({ data: "success", error: false });
   } catch (err: any) {
     console.error("caught error:", err);

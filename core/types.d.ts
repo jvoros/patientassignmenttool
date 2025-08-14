@@ -1,3 +1,15 @@
+// SITE
+
+type SiteConfig = {
+  name: string;
+  slug: string;
+  zones: Record<string, zoneConfig>;
+  zoneOrder: ZoneConfig["slug"][];
+  schedule: ScheduleItem[];
+  providers: Provider[];
+  rooms: string[];
+};
+
 // BOARD
 
 type Board = {
@@ -9,7 +21,6 @@ type Board = {
   zones: IndexZone;
   shifts: IndexShift;
   events: IndexBoardEvent;
-  patients: number[];
 };
 
 type IndexShift = Record<Shift["id"], Shift>;
@@ -98,7 +109,6 @@ type Patient = {
 type BoardEvent = EventMakeParams & {
   id: string;
   time: number;
-  patches: Patch[];
 };
 
 type EventMakeParams = {
@@ -108,12 +118,6 @@ type EventMakeParams = {
   room?: string;
   assign?: Shift["id"];
   super?: Shift["id"];
-};
-
-type Patch = {
-  op: "replace" | "remove" | "add";
-  path: (string | number)[];
-  value?: any;
 };
 
 // LOGS

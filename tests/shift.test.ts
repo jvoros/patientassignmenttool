@@ -1,8 +1,9 @@
 import { describe, expect, it, expectTypeOf } from "vitest";
 import Shift from "../core/shift.js";
-import dummy from "./dummy.js";
+import dummy from "./dummy.config.js";
+//import dummy from "./dummy.js";
 
-const schedule = dummy.schedules[0];
+const schedule = dummy.schedule[0];
 const provider = dummy.providers[0];
 const testshift = Shift.make({ schedule, provider });
 

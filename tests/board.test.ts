@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, expectTypeOf } from "vitest";
 import Board from "../core/board.js";
-import dummy from "./dummy.js";
-import { makeBoard, lastEvent } from "./dummy.js";
+import dummy from "./dummy.config.js";
 
 // add types for vitest context
 type Context = {
@@ -10,10 +9,23 @@ type Context = {
   shiftId2: Shift["id"];
 };
 
+const makeBoard = (): Board => {
+  const board = Board.make({ slug: "smh", siteConfig: dummy });
+  Board.signIn(board, {
+    provider: dummy.providers[0],
+    schedule: dummy.schedule[0],
+  });
+  return board;
+};
+
+const lastEvent = (board: Board): BoardEvent => board.events[board.timeline[0]];
+
+// TESTS
+
 describe("Board Controller", () => {
   describe("Make", () => {
     it("should make Board from config params", () => {
-      const b = makeBoard();
+      const b = Board.make({ slug: "smh", siteConfig: dummy });
       expectTypeOf(b).toEqualTypeOf<Board>();
     });
   });
@@ -32,7 +44,7 @@ describe("Board Controller", () => {
     it<Context>("should add an Event for signing in", (c) => {
       const eventId = c.board.timeline[0];
       const event = c.board.events[eventId];
-      expect(event.message).toEqual("Jeremy Voros joined Main Rotation");
+      expect(event.message).toEqual("Kelly Blake joined Main Rotation");
     });
   });
 
@@ -42,7 +54,7 @@ describe("Board Controller", () => {
       const shiftId = board.zones.main.shifts[0];
       Board.joinZone(board, { shiftId, zoneSlug: "ft" });
       expect(board.zones.ft.shifts[0]).toEqual(shiftId);
-      expect(lastEvent(board).message).toEqual("Jeremy Voros joined Fast Track");
+      expect(lastEvent(board).message).toEqual("Kelly Blake joined Fast Track");
     });
     it("should not add to zone if already in zone", () => {
       const board = makeBoard();
@@ -63,7 +75,9 @@ describe("Board Controller", () => {
 
     it<Context>("should leave specified zone and add Event", (c) => {
       Board.leaveZone(c.board, { shiftId: c.shiftId, zoneSlug: "main" });
-      expect(lastEvent(c.board).message).toEqual("Jeremy Voros left Main Rotation");
+      expect(lastEvent(c.board).message).toEqual(
+        "Kelly Blake left Main Rotation",
+      );
     });
     it<Context>("should not allow shift to leave if only in one zone", (c) => {
       Board.leaveZone(c.board, { shiftId: c.shiftId, zoneSlug: "main" });
@@ -77,11 +91,15 @@ describe("Board Controller", () => {
     it("should leave one zone, join another and add an Event", () => {
       const board = makeBoard();
       const shiftId = board.zones.main.shifts[0];
-      Board.switchZone(board, { shiftId, leaveZoneSlug: "main", joinZoneSlug: "ft" });
+      Board.switchZone(board, {
+        shiftId,
+        leaveZoneSlug: "main",
+        joinZoneSlug: "ft",
+      });
       expect(board.zones.main.shifts.length).toEqual(0);
       expect(board.zones.ft.shifts.length).toEqual(1);
       expect(lastEvent(board).message).toEqual(
-        "Jeremy Voros switched from Main Rotation to Fast Track"
+        "Kelly Blake switched from Main Rotation to Fast Track",
       );
     });
   });
@@ -101,7 +119,7 @@ describe("Board Controller", () => {
       expect(c.board.zones.ft.shifts.length).toEqual(0);
     });
     it<Context>("should add Event for signing out", (c) => {
-      expect(lastEvent(c.board).message).toEqual("Jeremy Voros signed out");
+      expect(lastEvent(c.board).message).toEqual("Kelly Blake signed out");
     });
   });
 
@@ -132,20 +150,36 @@ describe("Board Controller", () => {
     beforeEach<Context>((c) => {
       c.board = makeBoard();
       c.shiftId = c.board.zones.main.shifts[0];
-      Board.signIn(c.board, { provider: dummy.providers[2], schedule: dummy.schedules[2] });
+      Board.signIn(c.board, {
+        provider: dummy.providers[2],
+        schedule: dummy.schedule[2],
+      });
     });
     it<Context>("should move next pointer forward and add Event", (c) => {
-      Board.adjustRotation(c.board, { zoneSlug: "main", which: "next", offset: 1 });
+      Board.adjustRotation(c.board, {
+        zoneSlug: "main",
+        which: "next",
+        offset: 1,
+      });
       expect(c.board.zones.main.next).toEqual(1);
       expect(lastEvent(c.board).message!.includes("forward")).toBeTruthy();
     });
     it<Context>("should move super pointer forward and add Event", (c) => {
-      Board.adjustRotation(c.board, { zoneSlug: "main", which: "super", offset: 1 });
-      expect(c.board.zones.main.super).toEqual(1);
+      expect(c.board.zones.main.super).toEqual(1); // should be on first signed in shift
+      Board.adjustRotation(c.board, {
+        zoneSlug: "main",
+        which: "super",
+        offset: 1,
+      });
+      expect(c.board.zones.main.super).toEqual(0);
       expect(lastEvent(c.board).message!.includes("supervisor")).toBeTruthy();
     });
     it<Context>("should change event for backward adjustment", (c) => {
-      Board.adjustRotation(c.board, { zoneSlug: "main", which: "next", offset: -1 });
+      Board.adjustRotation(c.board, {
+        zoneSlug: "main",
+        which: "next",
+        offset: -1,
+      });
       expect(lastEvent(c.board).message!.includes("back")).toBeTruthy();
     });
   });

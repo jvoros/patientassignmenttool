@@ -9,22 +9,45 @@ const EVENT_LIMIT = parseInt(process.env.DEV_EVENT_LIMIT as string) || 25;
 
 // MAKE
 
-const make = (params: {
-  slug: string;
-  zoneConfig: ZoneMakeParams[];
-}): Board => {
-  const { slug, zoneConfig } = params;
+// const make = (params: {
+//   slug: string;
+//   zoneConfig: ZoneMakeParams[];
+// }): Board => {
+//   const { slug, zoneConfig } = params;
+//   const board: Board = {
+//     slug: slug,
+//     date: Date.now(),
+//     zoneOrder: [],
+//     timeline: [],
+//     zones: {},
+//     shifts: {},
+//     events: {},
+//   };
+
+//   zoneConfig.forEach((z) => {
+//     const zone = Zone.make(z);
+//     board.zoneOrder.push(zone.slug);
+//     board.zones[zone.slug] = zone;
+//   });
+
+//   return board;
+// };
+
+const make = (params: { slug: string; siteConfig: SiteConfig }): Board => {
+  const { slug, siteConfig } = params;
+
   const board: Board = {
     slug: slug,
     date: Date.now(),
     zoneOrder: [],
     timeline: [],
-    patients: [],
     zones: {},
     shifts: {},
     events: {},
   };
-
+  const zoneConfig = siteConfig.zoneOrder.map(
+    (slug: string) => siteConfig.zones[slug],
+  );
   zoneConfig.forEach((z) => {
     const zone = Zone.make(z);
     board.zoneOrder.push(zone.slug);
@@ -42,7 +65,6 @@ const reset = (board: Board): void => {
   // do it immer way so undo patches work well
   board.date = Date.now();
   board.timeline = [];
-  board.patients = [];
   board.shifts = {};
   board.events = {};
   for (const slug in board.zones) {
@@ -54,7 +76,7 @@ const reset = (board: Board): void => {
   // event
   const eventParams = {
     message: "Board reset",
-    note: `${oldDate}`,
+    note: `${oldDate}`, // keep previous date for undo; need to delete logs if undoing reset
   };
   addEvent(board, eventParams);
 };
