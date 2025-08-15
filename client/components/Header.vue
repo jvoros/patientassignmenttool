@@ -18,7 +18,10 @@ import DarkModeSwitch from "./DarkModeSwitch.vue";
             <div class="socket-status" v-if="!socketConnected">
                 Error: no socket connection.
             </div>
-            <a href="https://patientassignmenttools-quickref.netlify.app/">
+            <a
+                href="https://patientassignmenttools-quickref.netlify.app/"
+                target="_blank"
+            >
                 Quick Reference
             </a>
             <HeaderAddClinician v-if="site" />

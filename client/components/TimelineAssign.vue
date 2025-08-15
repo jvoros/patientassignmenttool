@@ -43,7 +43,7 @@ const { event } = defineProps(["event"]);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--bg-highlight);
-    padding: var(--padding-half);
+    padding: 0.75rem 1rem 1rem 1rem;
 }
 
 .assign:hover .reassign-chevron {

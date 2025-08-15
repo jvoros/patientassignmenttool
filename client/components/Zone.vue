@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { board, dispatch } from "./store.js";
 import ZoneHeader from "./ZoneHeader.vue";
+import ZoneEmpty from "./ZoneEmpty.vue";
 import Shift from "./Shift.vue";
 
 const { slug } = defineProps(["slug"]);
@@ -28,7 +29,10 @@ const adjustRotation = (which, offset) => {
 <template>
     <div class="zone">
         <ZoneHeader :title="zone.name" :inst="instructions" />
-        <template v-for="(shiftId, index) in zone.shifts">
+        <template
+            v-for="(shiftId, index) in zone.shifts"
+            v-if="zone.shifts.length > 0"
+        >
             <Shift
                 :shiftId="shiftId"
                 :zone="zone"
@@ -36,6 +40,7 @@ const adjustRotation = (which, offset) => {
                 :isSuper="isSuper(index)"
             />
         </template>
+        <template v-else><ZoneEmpty /></template>
         <div class="zone-controls" v-if="isRotation">
             <wa-tooltip for="rotation-back">Move rotation back</wa-tooltip>
             <wa-button

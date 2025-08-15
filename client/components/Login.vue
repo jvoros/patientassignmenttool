@@ -11,24 +11,32 @@ const loginEvent = async (event) => {
 </script>
 
 <template>
-    <main>
-        <img src="/public/pat.svg" alt="Patient Assignment Tool Logo" />
-        <h1>Welcome to the Rotation.</h1>
-        <div v-if="error">{{ error }}</div>
-        <form>
-            <label>Access Code<input type="text" v-model="code" /></label>
-            <button class="btn" type="submit" @click="loginEvent">Login</button>
-        </form>
-    </main>
+    <section>
+        <main>
+            <img src="/public/pat.svg" alt="Patient Assignment Tool Logo" />
+            <h1>Welcome to the Rotation.</h1>
+            <div v-if="error">{{ error }}</div>
+            <form>
+                <label>Access Code<input type="text" v-model="code" /></label>
+                <button class="btn" type="submit" @click="loginEvent">
+                    Login
+                </button>
+            </form>
+        </main>
+    </section>
 </template>
 
 <style scoped>
-main {
+section {
     display: flex;
     flex-direction: column;
     gap: 1rem;
     max-width: 25rem;
-    margin: 5rem auto;
+    margin: 0 auto;
+}
+
+main {
+    margin-top: 5rem;
     background-color: var(--bg-highlight);
     border: 1px solid var(--border);
     border-radius: var(--radius);
