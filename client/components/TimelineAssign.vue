@@ -55,5 +55,6 @@ const { event } = defineProps(["event"]);
     font-family: var(--font-mono);
     font-size: 0.8rem;
     color: var(--text-muted);
+    margin-bottom: -0.3rem;
 }
 </style>
