@@ -63,7 +63,7 @@ const config: SiteConfig = {
     { last: "Heinlein", first: "Danielle", role: "app" },
     { last: "Hollifield", first: "Matt", role: "physician" },
     { last: "Kamba", first: "Patrick", role: "physician" },
-    { last: "Kasavana", first: "Brian", role: "physician" },
+    { last: "Kasavana", first: "Brian", role: "app" },
     { last: "Lawyer", first: "Thomas", role: "physician" },
     { last: "Lemon", first: "Anthon", role: "physician" },
     { last: "Lempit", first: "Hilary", role: "app" },
@@ -139,6 +139,7 @@ const config: SiteConfig = {
     "Hall D",
     "Hall E",
     "Hall F",
+    "Other",
   ],
 };
 

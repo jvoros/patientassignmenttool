@@ -53,7 +53,7 @@ const { event } = defineProps(["event"]);
 .time,
 .message {
     font-family: var(--font-mono);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
     margin-bottom: -0.3rem;
 }
