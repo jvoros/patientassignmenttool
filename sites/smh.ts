@@ -87,6 +87,7 @@ const config: SiteConfig = {
     { last: "Stevens", first: "Mark", role: "physician" },
     { last: "Stiles", first: "Adam", role: "physician" },
     { last: "Voros", first: "Jeremy", role: "physician" },
+    { last: "Wallace", first: "Hannah", role: "app" },
     { last: "Wiesley", first: "Brett", role: "physician" },
     { last: "Wolfe", first: "Matt", role: "physician" },
     { last: "Yeates", first: "Todd", role: "physician" },
