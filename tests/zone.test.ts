@@ -53,6 +53,9 @@ describe("Zone Controller", () => {
     it("should make Zone objects from ZoneMakeParams", () => {
       const zone = Zone.make(dummy.zones.main);
       expectTypeOf(zone).toEqualTypeOf<Zone>();
+      // test optional config options
+      const zonePIT = Zone.make(dummy.zones.ft);
+      expect(zonePIT.pitZone).toBeTruthy();
     });
   });
 

@@ -201,5 +201,16 @@ describe("Board Controller", () => {
     });
   });
 
+  describe("Triage Patient", (c) => {
+    beforeEach<Context>((c) => {
+      c.board = makeBoard();
+      c.shiftId = c.board.zones.main.shifts[0];
+      Board.addTriage(c.board, { shiftId: c.shiftId });
+    });
+    it<Context>("should add triaged patients", (c) => {
+      expect(c.board.shifts[c.shiftId].triaged).toEqual(1);
+    });
+  });
+
   describe.todo("Reset", (c) => {});
 });

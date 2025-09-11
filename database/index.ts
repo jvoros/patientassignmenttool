@@ -33,8 +33,8 @@ const getSiteSql = `
   `;
 
 const updateLogsSql = `
-  INSERT OR REPLACE INTO logs (date, site, shift, provider, assigned, supervised, bounty)
-  VALUES (:date, :site, :shift, :provider, :assigned, :supervised, :bounty)
+  INSERT OR REPLACE INTO logs (date, site, shift, provider, assigned, supervised, bounty, triaged)
+  VALUES (:date, :site, :shift, :provider, :assigned, :supervised, :bounty, :triaged)
   `;
 
 const deleteLogsSql = `

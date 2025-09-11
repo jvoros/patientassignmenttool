@@ -14,6 +14,7 @@ const config: SiteConfig = {
       name: "Fast Track",
       type: "simple",
       superZone: "main",
+      pitZone: true,
       triggerSkip: true,
     },
     off: {

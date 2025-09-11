@@ -9,30 +9,6 @@ const EVENT_LIMIT = parseInt(process.env.DEV_EVENT_LIMIT as string) || 25;
 
 // MAKE
 
-// const make = (params: {
-//   slug: string;
-//   zoneConfig: ZoneMakeParams[];
-// }): Board => {
-//   const { slug, zoneConfig } = params;
-//   const board: Board = {
-//     slug: slug,
-//     date: Date.now(),
-//     zoneOrder: [],
-//     timeline: [],
-//     zones: {},
-//     shifts: {},
-//     events: {},
-//   };
-
-//   zoneConfig.forEach((z) => {
-//     const zone = Zone.make(z);
-//     board.zoneOrder.push(zone.slug);
-//     board.zones[zone.slug] = zone;
-//   });
-
-//   return board;
-// };
-
 const make = (params: { slug: string; siteConfig: SiteConfig }): Board => {
   const { slug, siteConfig } = params;
 
@@ -264,6 +240,16 @@ const togglePause = (board: Board, params: { shiftId: Shift["id"] }): void => {
   addEventMessage(board, eventMessage);
 };
 
+// TRIAGE
+
+const addTriage = (board: Board, params: { shiftId: Shift["id"] }): void => {
+  const { shiftId } = params;
+  const shift = getShift(shiftId, board);
+  Shift.adjustCount({ shift: shift, amount: 1, type: "triaged" });
+  const eventMessage = `${shift.first} ${shift.last} triaged a patient.`;
+  addEventMessage(board, eventMessage);
+};
+
 // LOGS
 
 const buildLogs = (site: string, board: Board): LogItem[] => {
@@ -277,6 +263,7 @@ const buildLogs = (site: string, board: Board): LogItem[] => {
       provider: `${shift.first} ${shift.last}`,
       assigned: shift.assigned,
       supervised: shift.supervised,
+      triaged: shift.triaged,
     };
     logs.push(log);
   }
@@ -323,6 +310,7 @@ export default {
   deleteShift,
   adjustRotation,
   togglePause,
+  addTriage,
   //utils
   addEvent,
   getShift,

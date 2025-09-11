@@ -21,6 +21,7 @@ type Board = {
   zones: IndexZone;
   shifts: IndexShift;
   events: IndexBoardEvent;
+  dev?: boolean; // set to true if dev environment
 };
 
 type IndexShift = Record<Shift["id"], Shift>;
@@ -34,6 +35,7 @@ type Zone = {
   name: string;
   type: ZoneVariant;
   superZone?: Zone["slug"]; // zone that provides supervisor
+  pitZone?: boolean;
   triggerSkip?: boolean;
   next: number | null; // pointer
   super: number | null; // pointer
@@ -71,6 +73,7 @@ type Shift = {
   status: ShiftStatus;
   assigned: number;
   supervised: number;
+  triaged: number;
 };
 
 // PROVIDER
@@ -95,7 +98,7 @@ type ScheduleItem = {
 // PATIENT
 
 type PatientModes = "walkin" | "ambo" | "police" | "ft";
-type PatientCounts = "assigned" | "supervised";
+type PatientCounts = "assigned" | "supervised" | "triaged";
 
 type Patient = {
   id: string;
@@ -129,5 +132,6 @@ type LogItem = {
   provider: string;
   assigned: number;
   supervised: number;
+  triaged: number;
   bounty?: number;
 };

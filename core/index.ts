@@ -56,6 +56,7 @@ export default {
   deleteShift: withUndo(Board.deleteShift),
   adjustRotation: withUndo(Board.adjustRotation),
   togglePause: withUndo(Board.togglePause),
+  addTriage: withUndo(Board.addTriage),
   assignToShift: withUndo(Assign.toShift),
   assignToZone: withUndo(Assign.toZone),
   reassign: withUndo(Assign.reassign),

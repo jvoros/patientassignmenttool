@@ -5,6 +5,7 @@ import { board, token, checkLogin } from "./components/store.js";
 import Socket from "./components/Socket.vue";
 import Header from "./components/Header.vue";
 import Board from "./components/Board.vue";
+import DevAlert from "./components/DevAlert.vue";
 import Login from "./components/Login.vue";
 
 onMounted(() => {
@@ -15,6 +16,7 @@ onMounted(() => {
 <template>
     <Login v-if="!token" />
     <Socket v-else>
+        <DevAlert v-if="board.dev" />
         <Header />
         <Board v-if="board" />
     </Socket>

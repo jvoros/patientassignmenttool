@@ -34,6 +34,7 @@ const handlers = [
   "deleteShift",
   "adjustRotation",
   "togglePause",
+  "addTriage",
   "assignToShift",
   "assignToZone",
   "reassign",
@@ -86,6 +87,11 @@ core.all("/board", async (c) => {
     const siteRes = await db.getSite(c.get("site"));
     const siteConfig = JSON.parse(siteRes.data?.site as string);
     const newBoard = Board.build({ slug: c.get("site"), siteConfig });
+
+    if (process.env.DEV === "true") {
+      console.log(`[server][${c.get("site")}] set 'dev' environment`);
+      newBoard.dev = true;
+    }
     db.updateBoard(newBoard.slug, newBoard);
     return c.json({ data: { board: JSON.stringify(newBoard) }, error: false });
   }

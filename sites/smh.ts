@@ -17,6 +17,7 @@ const config: SiteConfig = {
       type: "simple",
       superZone: "main",
       triggerSkip: true,
+      pitZone: true,
     },
     off: {
       slug: "off",

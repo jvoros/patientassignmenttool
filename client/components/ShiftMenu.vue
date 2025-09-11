@@ -15,6 +15,10 @@ const otherZones = computed(() => {
     );
 });
 
+const addTriage = () => {
+    dispatch("addTriage", { shiftId: shift.id });
+};
+
 const togglePause = () => {
     dispatch("togglePause", { shiftId: shift.id });
 };
@@ -50,6 +54,11 @@ const signOut = () => {
             <Menu size="16" />
         </button>
         <h4>Shift Menu</h4>
+        <wa-dropdown-item @click="addTriage">
+            <wa-icon name="notes-medical"></wa-icon>
+            Add Triage Patient
+        </wa-dropdown-item>
+        <wa-divider></wa-divider>
         <wa-dropdown-item v-if="!isPaused" @click="togglePause">
             <wa-icon name="circle-pause" slot="icon"></wa-icon>
             Pause Shift

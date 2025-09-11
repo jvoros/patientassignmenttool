@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from "vue";
-import { board } from "./store.js";
+import { board, dispatch } from "./store.js";
 import ShiftMenu from "./ShiftMenu.vue";
 import AssignPopover from "./AssignPopover.vue";
 
@@ -16,6 +16,10 @@ const useNextFlag = computed(() => isNext && isRot.value);
 const isSkipped = computed(() => shift.value.status === "skip" && isRot);
 const isPaused = computed(() => shift.value.status === "paused" && isRot);
 const isOffRot = computed(() => zone.slug === "off");
+
+const addTriage = () => {
+    dispatch("addTriage", { shiftId: shift.value.id });
+};
 </script>
 
 <template>
@@ -46,8 +50,13 @@ const isOffRot = computed(() => zone.slug === "off");
             <div>
                 <div class="provider">{{ shift.first }} {{ shift.last }}</div>
                 <div class="counts">
-                    Total: {{ shift.assigned + shift.supervised }} • Supervised:
-                    {{ shift.supervised }}
+                    Pts: {{ shift.assigned + shift.supervised }}
+                    <span v-if="shift.role === 'physician'">
+                        | Super: {{ shift.supervised }}
+                    </span>
+                    <span v-if="shift.role === 'app'">
+                        | Triage: {{ shift.triaged }}
+                    </span>
                 </div>
             </div>
             <div class="buttons">
@@ -58,12 +67,22 @@ const isOffRot = computed(() => zone.slug === "off");
                     PAUSED
                 </div>
                 <div class="badge super-badge" v-if="isSuper">SUPER</div>
-                <AssignPopover
-                    :id="shift.id"
-                    :zoneSlug="zone.slug"
-                    variant="zone"
-                    v-if="isNext"
-                />
+                <div class="actions">
+                    <wa-button
+                        size="small"
+                        v-if="zone.pitZone"
+                        @click="addTriage"
+                    >
+                        <wa-icon name="notes-medical" slot="start"></wa-icon>
+                        Triage
+                    </wa-button>
+                    <AssignPopover
+                        :id="shift.id"
+                        :zoneSlug="zone.slug"
+                        variant="zone"
+                        v-if="isNext"
+                    />
+                </div>
             </div>
         </div>
     </div>
@@ -183,5 +202,11 @@ const isOffRot = computed(() => zone.slug === "off");
 
 .skip-badge {
     background-color: var(--color-orange-400);
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
 }
 </style>

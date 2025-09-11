@@ -10,13 +10,18 @@ const make = (params: shiftMakeParams): Shift => {
     status: "active",
     assigned: 0,
     supervised: 0,
+    triaged: 0,
     last: params.provider.last,
     first: params.provider.first,
     role: params.provider.role,
   };
 };
 
-const adjustCount = (params: { shift: Shift; amount: number; type: PatientCounts }): void => {
+const adjustCount = (params: {
+  shift: Shift;
+  amount: number;
+  type: PatientCounts;
+}): void => {
   const { shift, type, amount } = params;
   shift[type] = Math.max(0, shift[type] + amount);
   return;
