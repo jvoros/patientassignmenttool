@@ -310,6 +310,11 @@ const config: SiteConfig = {
       role: "physician",
     },
     {
+      last: "Volkov",
+      first: "Alex",
+      role: "physician",
+    },
+    {
       last: "Voros",
       first: "Jeremy",
       role: "physician",
