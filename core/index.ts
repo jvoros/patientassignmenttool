@@ -1,6 +1,7 @@
 import { produce } from "immer";
 import Board from "./board.js";
 import Assign from "./assign.js";
+import config from "../sites/smh.js"; // config is hard coded SMH config!!!
 
 type CoreResponse = {
   board?: Board;
@@ -37,8 +38,8 @@ const signInCheckReset = (
 ): CoreResponse => {
   if (params.schedule.reset) {
     const logs = Board.buildLogs(board.slug, board);
-    const resetRes = withUndo(Board.reset)(board, null);
-    const res = withUndo(Board.signIn)(resetRes.board!, params);
+    const resetBoard = Board.reset(board, { siteConfig: config }); // config is hard coded SMH config!!!
+    const res = withUndo(Board.signIn)(resetBoard, params);
     res.logs = logs;
     return res;
   }
@@ -47,7 +48,6 @@ const signInCheckReset = (
 
 export default {
   build: Board.make,
-  // signIn: withUndo(Board.signIn),
   signIn: signInCheckReset,
   signOut: withUndo(Board.signOut),
   joinZone: withUndo(Board.joinZone),
