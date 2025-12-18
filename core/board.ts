@@ -35,22 +35,11 @@ const make = (params: { slug: string; siteConfig: SiteConfig }): Board => {
 
 // RESET
 
-const reset = (board: Board, params: { siteConfig: SiteConfig }): Board => {
+const reset = (board: Board, params: { siteConfig?: SiteConfig }): Board => {
+  if (!params.siteConfig) throw Error("No siteConfig provided");
   const { siteConfig } = params;
   const oldDate = board.date;
   const newBoard = make({ slug: siteConfig.slug, siteConfig });
-  // // immer works better with modifications rather than total replacement
-  // // do it immer way so undo patches work well
-  // board.date = Date.now();
-  // board.timeline = [];
-  // board.shifts = {};
-  // board.events = {};
-  // for (const slug in board.zones) {
-  //   board.zones[slug].shifts = [];
-  //   board.zones[slug].next = null;
-  //   board.zones[slug].super = null;
-  // }
-
   // event
   const eventParams = {
     message: "Board reset",

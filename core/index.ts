@@ -1,7 +1,6 @@
 import { produce } from "immer";
 import Board from "./board.js";
 import Assign from "./assign.js";
-import config from "../sites/smh.js"; // config is hard coded SMH config!!!
 
 type CoreResponse = {
   board?: Board;
@@ -34,14 +33,29 @@ const signInCheckReset = (
   params: {
     provider: Provider;
     schedule: ScheduleItem;
+    siteConfig?: SiteConfig;
   },
 ): CoreResponse => {
   if (params.schedule.reset) {
     const logs = Board.buildLogs(board.slug, board);
-    const resetBoard = Board.reset(board, { siteConfig: config }); // config is hard coded SMH config!!!
-    const res = withUndo(Board.signIn)(resetBoard, params);
-    res.logs = logs;
-    return res;
+    const resetBoard = Board.reset(board, {
+      siteConfig: params.siteConfig,
+    });
+
+    // signIn withUndo() returns the signed in board, but 'oldboard' is just the empty reset board
+    // that emtpy reset board is just an intermediate, we don't need to return that as prior state
+    // override that return and instead return the original board that was sent at start of function call
+    const { board: signedInBoard, error } = withUndo(Board.signIn)(
+      resetBoard,
+      params,
+    );
+
+    return {
+      board: signedInBoard,
+      oldboard: board,
+      error: error,
+      logs: logs,
+    };
   }
   return withUndo(Board.signIn)(board, params);
 };

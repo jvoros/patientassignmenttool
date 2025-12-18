@@ -43,15 +43,38 @@ const handlers = [
 
 type Action = {
   type: string;
-  payload: object;
+  payload: any;
 };
 
-const reducer = (
+const undoAction = async (currentBoard: Board): Promise<Board> => {
+  if (!currentBoard.undo) throw new Error("No undo ID");
+  const { data, error } = await db.getUndo(currentBoard.undo);
+  if (error || !data) throw new Error((error as string) || "No Undo state.");
+  // If undoing 'reset' need to delete the logs that were saved on initial reset
+  // first event in timeline is shift signIn that triggered the reset
+  // second event is the reset event
+  if (
+    currentBoard.events[currentBoard.timeline[1]].message?.includes("reset")
+  ) {
+    const resetEvent = currentBoard.events[currentBoard.timeline[1]];
+    db.deleteLogs(Number(resetEvent.note) || 0, currentBoard.slug);
+    console.log(`[server][${currentBoard.slug}]: deleted logs on undo reset`);
+  }
+  return JSON.parse(data.board as string);
+};
+
+const handleAction = async (
   currentBoard: Board,
   action: Action,
-): { board: Board; oldboard: Board } => {
-  if (!handlers.includes(action.type)) {
-    return { board: currentBoard, oldboard: currentBoard };
+): Promise<Board> => {
+  if (!handlers.includes(action.type))
+    throw new Error(`No action.type: ${action.type}`);
+
+  if (action.type === "undo") return undoAction(currentBoard);
+
+  if (action.type === "signIn" && action.payload?.schedule.reset) {
+    const siteRes = await db.getSite(currentBoard.slug);
+    action.payload.siteConfig = JSON.parse(siteRes.data?.site as string);
   }
 
   const { board, oldboard, error, logs } = Board[action.type](
@@ -60,21 +83,14 @@ const reducer = (
   );
 
   if (error) throw error;
-
   if (logs) {
     db.saveLogs(logs);
+    console.log(`[server][${board.slug}] saved logs.`);
   }
+  const addUndo = await db.addUndo(oldboard);
+  const undoID = addUndo.lastInsertRowid;
 
-  // Handle undo reset and delete logs if necessary
-  if (
-    action.type === "undo" &&
-    currentBoard.events[currentBoard.timeline[0]].message?.includes("reset")
-  ) {
-    const resetEvent = currentBoard.events[currentBoard.timeline[0]];
-    db.deleteLogs(Number(resetEvent.note) || 0, currentBoard.slug);
-  }
-
-  return { board, oldboard };
+  return { ...board, undo: Number(undoID) };
 };
 
 // ROUTES
@@ -107,32 +123,16 @@ core.post("/action", async (c) => {
   const site = c.get("site");
   const action = await c.req.json();
   const { data, error } = await db.getBoard(site);
-
-  if (!data) {
-    return c.json({ data: "error", error });
-  }
-
+  if (!data) return c.json({ data: "error", error });
   const currentBoard = JSON.parse(data.board as string);
 
   try {
-    if (action.type === "undo") {
-      const undoRes = await db.getUndo(currentBoard.undo);
-      if (undoRes.error) throw new Error(undoRes.error as string);
-      const oldBoard = JSON.parse(undoRes.data?.board as string);
-      await db.updateBoard(site, oldBoard);
-      io.to(site).emit("board", oldBoard);
-    } else {
-      const { board, oldboard } = reducer(currentBoard, action);
-      const newBoard = JSON.parse(JSON.stringify(board)); // Immutable copy
-      // TODO: consider turso transaction for these two db acctions
-      const undoRes = await db.addUndo(oldboard);
-      newBoard.undo = Number(undoRes.lastInsertRowid);
-      await db.updateBoard(site, newBoard);
-      io.to(site).emit("board", newBoard);
-    }
+    const nextBoard = await handleAction(currentBoard, action);
+    await db.updateBoard(site, nextBoard);
+    io.to(site).emit("board", nextBoard);
     return c.json({ data: "success", error: false });
   } catch (err: any) {
-    console.error("caught error:", err);
+    console.error(`[server][${site}] action error caught:`, err);
     return c.json({ data: "error", error: err.message });
   }
 });
