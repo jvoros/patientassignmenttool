@@ -90,6 +90,11 @@ const config: SiteConfig = {
   ],
   providers: [
     {
+      last: "Anderson",
+      first: "Allison",
+      role: "app",
+    },
+    {
       last: "Baretela",
       first: "Tracie",
       role: "app",
@@ -160,9 +165,9 @@ const config: SiteConfig = {
       role: "physician",
     },
     {
-      last: "Fox",
-      first: "Julie",
-      role: "physician",
+      last: "Frederick",
+      first: "Marc",
+      role: "app",
     },
     {
       last: "Grahlfs",
@@ -185,8 +190,8 @@ const config: SiteConfig = {
       role: "physician",
     },
     {
-      last: "Heinlein",
-      first: "Danielle",
+      last: "Hunter",
+      first: "Jessica",
       role: "app",
     },
     {
@@ -223,6 +228,11 @@ const config: SiteConfig = {
       last: "Li",
       first: "Helen",
       role: "physician",
+    },
+    {
+      last: "Matthews",
+      first: "Sallee",
+      role: "app",
     },
     {
       last: "McNeill",
@@ -313,6 +323,11 @@ const config: SiteConfig = {
       last: "Stiles",
       first: "Adam",
       role: "physician",
+    },
+    {
+      last: "Sumpter",
+      first: "Charles",
+      role: "app",
     },
     {
       last: "Volkov",
