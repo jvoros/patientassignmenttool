@@ -250,6 +250,11 @@ const config: SiteConfig = {
       role: "physician",
     },
     {
+      last: "Mooney",
+      first: "Julie",
+      role: "app",
+    },
+    {
       last: "Mooth",
       first: "Steve",
       role: "physician",
@@ -293,16 +298,6 @@ const config: SiteConfig = {
       last: "Porter",
       first: "Jacob",
       role: "physician",
-    },
-    {
-      last: "Raborn",
-      first: "Laurie",
-      role: "physician",
-    },
-    {
-      last: "Rodriguez",
-      first: "Alec",
-      role: "app",
     },
     {
       last: "Rogers",
