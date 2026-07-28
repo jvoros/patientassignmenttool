@@ -37,7 +37,7 @@ const getShiftStyles = (flags: ShiftFlags) => ({
             : "text-dimmed md:text-muted md:bg-neutral-100 dark:md:bg-neutral-700",
     ),
     content: clsx(
-        "px-2 py-1 md:p-3 flex justify-between",
+        "px-2 py-1 md:px-3 md:pt-3 md:pb-1 flex justify-between",
         flags.isOff && "text-neutral-500 bg-neutral-100 dark:bg-neutral-800",
     ),
     providerName: "font-bold text-lg md:text-2xl",
@@ -52,6 +52,20 @@ const getShiftStyles = (flags: ShiftFlags) => ({
 const styles = computed(() =>
     props.flags ? getShiftStyles(props.flags) : null,
 );
+
+const assigns = computed(() => {
+    const assigns = [];
+    board.value?.timeline.forEach((eventId) => {
+        const e = board.value?.events[eventId];
+        if (e.super === props.shiftId) {
+            assigns.push({ room: e.room, super: true });
+        }
+        if ((e.assign === props.shiftId) & !e?.note?.includes("Reassigned:")) {
+            assigns.push({ room: e.room, super: false });
+        }
+    });
+    return assigns.slice(0, 5);
+});
 </script>
 
 <template>
@@ -155,6 +169,18 @@ const styles = computed(() =>
                     </AssignPop>
                 </div>
             </div>
+        </div>
+        <div
+            class="hidden md:flex md:mt-1 md:pb-3 md:px-3 items-center text-xs font-mono text-muted gap-2"
+        >
+            <span>Latest:</span>
+            <UBadge
+                v-for="assign in assigns"
+                :label="assign.room"
+                :color="assign.super ? 'info' : 'neutral'"
+                :variant="assign.super ? 'outline' : 'soft'"
+                size="sm"
+            />
         </div>
     </div>
 </template>
