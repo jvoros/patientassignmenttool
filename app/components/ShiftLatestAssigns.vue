@@ -24,7 +24,9 @@ const events = computed(() => {
 });
 </script>
 <template>
-    <div class="flex text-xs font-mono flex-col gap-2 pt-1 pl-3 mb-2">
+    <div
+        class="flex text-xs font-mono text-muted flex-col gap-2 pt-1 pl-3 mb-2"
+    >
         <span>Latest Assignments:</span>
         <div v-for="event in events" class="flex items-center gap-2">
             <UBadge
