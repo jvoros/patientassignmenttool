@@ -6,7 +6,9 @@ const { board, send } = useBoard();
 const props = defineProps<{
     shift: Shift;
     zoneSlug: string;
+    showAssigns: boolean;
 }>();
+const emit = defineEmits(["toggle-assigns"]);
 
 const loading = ref(false);
 
@@ -32,6 +34,20 @@ const inManyZones = computed(() => {
 // use 'class' property to hide menu items based on various criteria
 const items = computed<DropdownMenuItem[][]>(() => [
     [{ label: "Shift Menu", type: "label" }],
+    [
+        {
+            label: "Show Assignments",
+            icon: "fa7-solid:arrow-down-short-wide",
+            class: props.showAssigns === true && "hidden",
+            onSelect: () => emit("toggle-assigns"),
+        },
+        {
+            label: "Hide Assignments",
+            icon: "fa7-solid:arrow-up-short-wide",
+            class: props.showAssigns === false && "hidden",
+            onSelect: () => emit("toggle-assigns"),
+        },
+    ],
     [
         {
             label: "Add Triage Patient",

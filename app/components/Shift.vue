@@ -2,9 +2,8 @@
 import { clsx } from "clsx";
 import type { Shift } from "../../server/core/types";
 import type { ShiftFlags } from "../utils/shiftFlags";
-import { modes } from "../utils/modes";
 
-const { board, send } = useBoard();
+const { board } = useBoard();
 const props = defineProps<{
     shiftId: string;
     flags: ShiftFlags | null;
@@ -19,9 +18,11 @@ const useNextHighlight = computed(() => {
     return props.flags?.isNext && props.flags?.isRotating;
 });
 
+const showAssigns = ref(false);
+
 const getShiftStyles = (flags: ShiftFlags) => ({
     card: clsx(
-        "md:rounded md:mb-4 dark:bg-neutral-800 border",
+        "md:rounded md:mb-4 dark:bg-neutral-800 border group",
         useNextHighlight.value
             ? "border-2 border-amber-300 bg-yellow-50"
             : "bg-white border-neutral-300",
@@ -37,35 +38,15 @@ const getShiftStyles = (flags: ShiftFlags) => ({
             : "text-dimmed md:text-muted md:bg-neutral-100 dark:md:bg-neutral-700",
     ),
     content: clsx(
-        "px-2 py-1 md:px-3 md:pt-3 md:pb-1 flex justify-between",
+        "px-2 py-3 md:px-3 md:pt-3 flex justify-between",
         flags.isOff && "text-neutral-500 bg-neutral-100 dark:bg-neutral-800",
     ),
     providerName: "font-bold text-lg md:text-2xl",
-    buttons: clsx("flex gap-2", flags.isOff && "hidden"),
-    bonusBadge:
-        "self-center bg-amber-100 text-amber-500 border border-amber-500",
-    superBadge: "bg-sky-300 self-center border border-sky-400",
-    pausedBadge: "bg-orange-400 self-center",
-    skippedBadge: "bg-orange-400 self-center",
 });
 
 const styles = computed(() =>
     props.flags ? getShiftStyles(props.flags) : null,
 );
-
-const assigns = computed(() => {
-    const assigns = [];
-    board.value?.timeline.forEach((eventId) => {
-        const e = board.value?.events[eventId];
-        if (e.super === props.shiftId) {
-            assigns.push({ room: e.room, super: true });
-        }
-        if ((e.assign === props.shiftId) & !e?.note?.includes("Reassigned:")) {
-            assigns.push({ room: e.room, super: false });
-        }
-    });
-    return assigns.slice(0, 5);
-});
 </script>
 
 <template>
@@ -90,7 +71,12 @@ const assigns = computed(() => {
                         title="Assign off rotation"
                     />
                 </AssignPop>
-                <ShiftMenu :shift="shift" :zoneSlug="zoneSlug" />
+                <ShiftMenu
+                    :shift="shift"
+                    :zoneSlug="zoneSlug"
+                    :showAssigns="showAssigns"
+                    @toggle-assigns="showAssigns = !showAssigns"
+                />
             </div>
         </div>
 
@@ -115,72 +101,21 @@ const assigns = computed(() => {
             </div>
 
             <!-- RIGHT SIDE WITH BUTTONS & BADGES -->
-            <div :class="styles?.buttons">
-                <!-- BADGES -->
-                <UBadge
-                    v-if="flags?.isSuper"
-                    :class="styles?.superBadge"
-                    size="sm"
-                    title="Supervisor"
-                >
-                    <span class="flex md:hidden">S</span>
-                    <span class="hidden md:flex">SUPER</span>
-                </UBadge>
-                <UBadge
-                    v-if="flags?.isPaused"
-                    :class="styles?.pausedBadge"
-                    size="sm"
-                    label="PAUSED"
+            <div class="flex gap-2" v-if="!flags?.isOff">
+                <ShiftBadges
+                    :isSuper="flags?.isSuper"
+                    :isPaused="flags?.isPaused"
+                    :isSkipped="flags?.isSkipped"
+                    :isBonus="shift.bonus > shift.assigned"
+                    :bonus="shift.bonus - shift.assigned"
                 />
-                <UBadge
-                    v-if="flags.isSkipped"
-                    :class="styles?.skippedBadge"
-                    size="sm"
-                    label="SKIP"
+                <ShiftButtons
+                    :shiftId="shiftId"
+                    :zoneSlug="zoneSlug"
+                    :isNext="flags?.isNext"
                 />
-                <UBadge
-                    v-if="shift.bonus > shift.assigned"
-                    :class="styles?.bonusBadge"
-                    icon="lucide:rocket"
-                    title="Bonus"
-                    :label="`${shift.bonus - shift.assigned}`"
-                />
-
-                <!-- BUTTONS -->
-                <div class="flex gap-1">
-                    <ShiftTriageButton
-                        v-if="zoneSlug === 'ft'"
-                        :shiftId="shiftId"
-                    />
-                    <AssignPop
-                        v-if="flags?.isNext"
-                        class="self-center"
-                        :shiftId="shiftId"
-                        :zoneSlug="zoneSlug"
-                    >
-                        <UButton
-                            color="neutral"
-                            title="Assign Patient"
-                            leading-icon="fa7-solid:user-plus"
-                            trailing-icon="fa7-solid:caret-down"
-                        >
-                            <span class="hidden md:flex">Assign</span>
-                        </UButton>
-                    </AssignPop>
-                </div>
             </div>
         </div>
-        <div
-            class="hidden md:flex md:mt-1 md:pb-3 md:px-3 items-center text-xs font-mono text-muted gap-2"
-        >
-            <span>Latest:</span>
-            <UBadge
-                v-for="assign in assigns"
-                :label="assign.room"
-                :color="assign.super ? 'info' : 'neutral'"
-                :variant="assign.super ? 'outline' : 'soft'"
-                size="sm"
-            />
-        </div>
+        <ShiftLatestAssigns v-if="showAssigns" :shiftId="shiftId" />
     </div>
 </template>
