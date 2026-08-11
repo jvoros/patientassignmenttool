@@ -10,6 +10,7 @@ const hideSmall = "hidden md:flex";
         label="Quick Reference"
         icon="fa7-solid:bookmark"
         class="text-purple-500"
+        to="https://patientassignmenttools-quickref.netlify.app/"
         :class="hideSmall"
     />
 
