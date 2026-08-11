@@ -13,8 +13,24 @@ export default defineEventHandler(async (event) => {
 
   const site = await getAccessCode(slug);
 
-  if (!site || !verifyCode(code, site.hash, site.salt)) {
-    throw createError({ statusCode: 401, message: "Invalid access code" });
+  if (!site) {
+    console.error(`[login] No site found for slug: "${slug}"`);
+    throw createError({
+      statusCode: 401,
+      message: "Invalid site or access code",
+    });
+  }
+
+  const valid = verifyCode(code, site.hash, site.salt);
+  console.log(
+    `[login] slug="${slug}" hash=${site.hash ? "present" : "missing"} salt=${site.salt ? "present" : "missing"} valid=${valid}`,
+  );
+
+  if (!valid) {
+    throw createError({
+      statusCode: 401,
+      message: "Invalid site or access code",
+    });
   }
 
   await setUserSession(event, { user: { slug } });
