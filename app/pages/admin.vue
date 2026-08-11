@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import JsonEditorVue from "json-editor-vue";
-import LiteJsonEditor from "lite-json-editor";
 const { board, config, updateConfig } = useBoard();
 // extra auth
 definePageMeta({
