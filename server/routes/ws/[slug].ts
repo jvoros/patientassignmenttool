@@ -38,6 +38,12 @@ export default defineWebSocketHandler({
 
     const { action, payload } = parsed;
 
+    // Respond to keepalive pings — don't dispatch to core
+    if (action === "ping") {
+      peer.send(JSON.stringify({ action: "pong" }));
+      return;
+    }
+
     // Undo is handled separately — it doesn't go through Core
     const result =
       action === "undo"

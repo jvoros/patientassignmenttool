@@ -65,35 +65,78 @@ export const useBoard = (): BoardState => {
       // Fetch the initial board state before the WebSocket connects
       getBoardAndConfig(slug);
 
-      const protocol = location.protocol === "https:" ? "wss" : "ws";
-      ws = new WebSocket(`${protocol}://${location.host}/ws/${slug}`);
+      let reconnectDelay = 1000;
+      let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+      let pingInterval: ReturnType<typeof setInterval> | null = null;
+      let intentionallyClosed = false;
 
-      ws.addEventListener("open", () => {
-        connected.value = true;
-      });
-
-      ws.addEventListener("close", () => {
-        connected.value = false;
-        pending?.reject(new Error("WebSocket closed"));
-        pending = null;
-      });
-
-      ws.addEventListener("message", (event) => {
-        try {
-          const msg = JSON.parse(event.data) as SendResult;
-          if (msg.ok) {
-            board.value = msg.board;
-          } else {
-            console.error("Board action error:", msg.error);
-          }
-          pending?.resolve(msg);
-        } catch {
-          const err = new Error("Failed to parse board message");
-          console.error(err, event.data);
-          pending?.reject(err);
-        } finally {
-          pending = null;
+      const clearPing = () => {
+        if (pingInterval) {
+          clearInterval(pingInterval);
+          pingInterval = null;
         }
+      };
+
+      const connect = () => {
+        const protocol = location.protocol === "https:" ? "wss" : "ws";
+        ws = new WebSocket(`${protocol}://${location.host}/ws/${slug}`);
+
+        ws.addEventListener("open", () => {
+          connected.value = true;
+          reconnectDelay = 1000;
+          // Send a ping every 30s to keep the connection alive through
+          // DO's load balancer idle timeout (~60s)
+          clearPing();
+          pingInterval = setInterval(() => {
+            if (ws?.readyState === WebSocket.OPEN) {
+              ws.send(JSON.stringify({ action: "ping" }));
+            }
+          }, 30000);
+        });
+
+        ws.addEventListener("close", () => {
+          connected.value = false;
+          clearPing();
+          pending?.reject(new Error("WebSocket closed"));
+          pending = null;
+          if (!intentionallyClosed) {
+            // Reconnect with exponential backoff, capped at 30s
+            reconnectTimer = setTimeout(() => {
+              connect();
+            }, reconnectDelay);
+            reconnectDelay = Math.min(reconnectDelay * 2, 30000);
+          }
+        });
+
+        ws.addEventListener("message", (event) => {
+          try {
+            const msg = JSON.parse(event.data) as SendResult;
+            // Ignore ping acknowledgements
+            if ((msg as any).action === "pong") return;
+            if (msg.ok) {
+              board.value = msg.board;
+            } else {
+              console.error("Board action error:", msg.error);
+            }
+            pending?.resolve(msg);
+          } catch {
+            const err = new Error("Failed to parse board message");
+            console.error(err, event.data);
+            pending?.reject(err);
+          } finally {
+            pending = null;
+          }
+        });
+      };
+
+      connect();
+
+      // Clean up on page unload so we don't reconnect after logout/navigation
+      window.addEventListener("beforeunload", () => {
+        intentionallyClosed = true;
+        clearPing();
+        if (reconnectTimer) clearTimeout(reconnectTimer);
+        ws?.close();
       });
     }
   }
