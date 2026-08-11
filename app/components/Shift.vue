@@ -89,6 +89,8 @@ const styles = computed(() =>
                     <ShiftMenu
                         :shift="shift"
                         :zoneSlug="zoneSlug"
+                        :showAssigns="showAssigns"
+                        @toggle-assigns="showAssigns = !showAssigns"
                         class="mr-2"
                     />
 
