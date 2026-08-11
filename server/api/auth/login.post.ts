@@ -22,8 +22,15 @@ export default defineEventHandler(async (event) => {
   }
 
   const valid = verifyCode(code, site.hash, site.salt);
+  const { hashCode, generateSalt } = await import("../../utils/auth");
+  const recomputed = hashCode(code, site.salt);
+  console.log(`[login] slug="${slug}"`);
+  console.log(`[login] stored hash:     "${site.hash}"`);
+  console.log(`[login] stored salt:     "${site.salt}"`);
+  console.log(`[login] recomputed hash: "${recomputed}"`);
+  console.log(`[login] match: ${valid}`);
   console.log(
-    `[login] slug="${slug}" hash=${site.hash ? "present" : "missing"} salt=${site.salt ? "present" : "missing"} valid=${valid}`,
+    `[login] code length: ${code.length}, trimmed+lowercased: "${code.trim().toLowerCase()}"`,
   );
 
   if (!valid) {
