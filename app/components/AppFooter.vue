@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { board, config } = useBoard();
+const { board, config, connected } = useBoard();
 const formattedDate = computed(() => {
     if (!board.value?.date) return "";
     const date = new Date(Number(board.value.date));
@@ -26,6 +26,17 @@ const formattedDate = computed(() => {
                         <div>
                             <b>Board Date:</b>
                             {{ formattedDate }}
+                        </div>
+                        <div>
+                            <b>WebSocket:</b>
+                            <span class="ml-1 font-mono">
+                                <span v-if="connected" class="text-success">
+                                    OPEN
+                                </span>
+                                <span v-if="!connected" class="text-error">
+                                    CLOSED
+                                </span>
+                            </span>
                         </div>
 
                         <USlideover side="right" inset title="Config JSON">
