@@ -1,186 +1,106 @@
-import type { Board, SiteConfig, Shift } from "../../server/core/types";
+import type { Board, SiteConfig } from "../../server/core/types";
 import type { ActionMessage } from "../../server/utils/dispatch";
 
 type SendResult = { ok: true; board: Board } | { ok: false; error: string };
+type SendFn = (action: ActionMessage) => Promise<SendResult>;
 
-type BoardState = {
-  board: Ref<Board | null>;
-  config: Ref<SiteConfig | null>;
-  connected: Ref<boolean>;
-  send: (action: ActionMessage) => Promise<SendResult>;
-  updateConfig: (slug: string, config: SiteConfig) => Promise<void>;
-  getShiftName: (id: string) => string;
-  getShiftsAlphabetically: () => string[];
-};
+// Module-level so all useBoard() calls share the same state and socket
+const board = ref<Board | null>(null);
+const config = ref<SiteConfig | null>(null);
+let socket: ReturnType<typeof createSocket> | null = null;
 
-// Shared state — one connection per site session regardless of how many
-// components call useBoard().
-let instance: BoardState | null = null;
+// Holds the resolve/reject for the in-flight send.
+// Resolves on the next message received — if a broadcast from another client
+// arrives first, it settles early which is fine: the board is already updated.
+let pendingSend: {
+  resolve: (result: SendResult) => void;
+  reject: (reason: unknown) => void;
+} | null = null;
 
-export const useBoard = (): BoardState => {
-  if (instance) return instance;
-
-  const board = useState<Board | null>("board", () => null);
-  const config = useState<SiteConfig | null>("boardConfig", () => null);
-  const connected = useState<boolean>("boardConnected", () => false);
-
-  let ws: WebSocket | null = null;
-
-  // Holds the resolve/reject for the in-flight send.
-  // Resolves on the next message received — if a broadcast from another client
-  // arrives first, it settles early which is fine: the board is already updated.
-  let pending: {
-    resolve: (result: SendResult) => void;
-    reject: (reason: unknown) => void;
-  } | null = null;
-
-  const send = (action: ActionMessage): Promise<SendResult> => {
-    return new Promise((resolve, reject) => {
-      if (ws?.readyState !== WebSocket.OPEN) {
-        reject(new Error("WebSocket is not connected"));
-        return;
-      }
-      pending = { resolve, reject };
-      ws.send(JSON.stringify(action));
-    });
-  };
-
-  const getBoardAndConfig = async (slug: string): Promise<void> => {
-    try {
-      const data = await $fetch(`/api/board/${slug}`);
-      board.value = data.board;
-      config.value = data.config;
-    } catch (err) {
-      console.error("Failed to fetch board:", err);
-    }
-  };
-
-  // Initialize Board and open WebSocket
-  // If Nuxt client-side
-  if (import.meta.client) {
+const useBoard = () => {
+  const initializeBoard = () => {
+    // Get initial board data
     const { session } = useUserSession();
     const slug = session.value?.user?.slug;
 
-    if (slug) {
-      // Fetch the initial board state before the WebSocket connects
-      getBoardAndConfig(slug);
-
-      let reconnectDelay = 1000;
-      let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
-      let pingInterval: ReturnType<typeof setInterval> | null = null;
-      let intentionallyClosed = false;
-
-      const clearPing = () => {
-        if (pingInterval) {
-          clearInterval(pingInterval);
-          pingInterval = null;
-        }
-      };
-
-      const connect = () => {
-        const protocol = location.protocol === "https:" ? "wss" : "ws";
-        ws = new WebSocket(`${protocol}://${location.host}/ws/${slug}`);
-
-        ws.addEventListener("open", () => {
-          connected.value = true;
-          reconnectDelay = 1000;
-          // Send a ping every 30s to keep the connection alive through
-          // DO's load balancer idle timeout (~60s)
-          clearPing();
-          pingInterval = setInterval(() => {
-            if (ws?.readyState === WebSocket.OPEN) {
-              ws.send(JSON.stringify({ action: "ping" }));
-            }
-          }, 30000);
-        });
-
-        ws.addEventListener("close", () => {
-          connected.value = false;
-          clearPing();
-          pending?.reject(new Error("WebSocket closed"));
-          pending = null;
-          if (!intentionallyClosed) {
-            // Reconnect with exponential backoff, capped at 30s
-            reconnectTimer = setTimeout(() => {
-              connect();
-            }, reconnectDelay);
-            reconnectDelay = Math.min(reconnectDelay * 2, 30000);
-          }
-        });
-
-        ws.addEventListener("message", (event) => {
-          try {
-            const msg = JSON.parse(event.data) as SendResult;
-            // Ignore ping acknowledgements
-            if ((msg as any).action === "pong") return;
-            if (msg.ok) {
-              board.value = msg.board;
-            } else {
-              console.error("Board action error:", msg.error);
-            }
-            pending?.resolve(msg);
-          } catch {
-            const err = new Error("Failed to parse board message");
-            console.error(err, event.data);
-            pending?.reject(err);
-          } finally {
-            pending = null;
-          }
-        });
-      };
-
-      connect();
-
-      // Clean up on page unload so we don't reconnect after logout/navigation
-      window.addEventListener("beforeunload", () => {
-        intentionallyClosed = true;
-        clearPing();
-        if (reconnectTimer) clearTimeout(reconnectTimer);
-        ws?.close();
-      });
+    if (!slug) {
+      throw new Error("useBoard().init() called without an active session");
     }
-  }
+
+    $fetch(`/api/board/${slug}`)
+      .then((data) => {
+        board.value = data.board;
+        config.value = data.config;
+      })
+      .catch((err) => console.error("[api] failed to fetch board:", err));
+
+    // Set up websocket connection
+    const boardHandler = (msg: unknown) => {
+      const result = msg as SendResult;
+      if (result.ok) {
+        board.value = result.board;
+      } else {
+        console.error("[board] action error:", result.error);
+      }
+      // resolves the promise started by send() whenever a board is received
+      pendingSend?.resolve(result);
+      pendingSend = null;
+    };
+
+    socket = createSocket(slug, boardHandler);
+  };
+
+  const send = (action: ActionMessage): Promise<SendResult> => {
+    return new Promise((resolve, reject) => {
+      if (!socket?.connected.value) {
+        reject(new Error("WebSocket is not connected"));
+        return;
+      }
+      // starts the promise that is resolved when the socket receives board
+      // see boardHandler for resolution
+      pendingSend = { resolve, reject };
+      socket.send(action);
+    });
+  };
 
   const updateConfig = async (
     slug: string,
-    config: SiteConfig,
+    newConfig: SiteConfig,
   ): Promise<void> => {
     try {
       await $fetch(`/api/config/${slug}`, {
         method: "POST",
-        body: { slug, config },
+        body: { slug, config: newConfig },
       });
-      getBoardAndConfig(slug);
+      const data = await $fetch(`/api/board/${slug}`);
+      board.value = data.board;
+      config.value = data.config;
     } catch (err) {
       console.error(err);
     }
   };
 
-  // BOARD UTILITIES
-  function getShiftName(id: string): string {
+  const getShiftName = (id: string): string => {
     const shift = board.value?.shifts[id];
     return shift ? `${shift.first} ${shift.last}` : "(unknown)";
-  }
+  };
 
-  function getShiftsAlphabetically(): string[] {
+  const getShiftsAlphabetically = (): string[] => {
     if (!board.value) return [];
     const shifts = Object.values(board.value.shifts);
     return shifts.sort((a, b) => a.last.localeCompare(b.last)).map((s) => s.id);
-  }
+  };
 
-  instance = {
+  return {
     board,
     config,
-    connected,
+    connected: computed(() => socket?.connected.value ?? false),
+    initializeBoard,
     send,
     updateConfig,
     getShiftName,
     getShiftsAlphabetically,
   };
-  return instance;
 };
 
-// Call this on logout to tear down the connection and reset shared state
-export const resetBoard = () => {
-  instance = null;
-};
+export default useBoard;

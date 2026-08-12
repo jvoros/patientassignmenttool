@@ -1,5 +1,6 @@
 <script setup lang="ts">
-const { board } = useBoard();
+const { board, initializeBoard } = useBoard();
+initializeBoard();
 </script>
 
 <template>

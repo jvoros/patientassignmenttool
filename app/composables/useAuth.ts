@@ -18,7 +18,6 @@ export const useAuth = () => {
   const logout = async (): Promise<void> => {
     await $fetch("/api/auth/logout", { method: "POST" });
     await clearSession();
-    resetBoard();
     await navigateTo("/login");
   };
 
