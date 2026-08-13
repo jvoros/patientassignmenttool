@@ -11,6 +11,7 @@ const hideSmall = "hidden md:flex";
         icon="fa7-solid:bookmark"
         class="text-purple-500"
         to="https://patientassignmenttools-quickref.netlify.app/"
+        target="_blank"
         :class="hideSmall"
     />
 
