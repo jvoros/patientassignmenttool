@@ -38,87 +38,20 @@ When the first shift of a new day signs in, the board resets and the previous da
 
 ```
 ├── server/
-│   ├── core/              # Business logic — pure functions, no framework dependencies
-│   │   ├── types.ts       # All shared TypeScript types
-│   │   ├── index.ts       # Public API: the Core object
-│   │   ├── board.ts       # Board-level operations (sign in/out, reset, zones, triage, etc.)
-│   │   ├── assign.ts      # Patient assignment logic
-│   │   ├── zone.ts        # Zone and rotation pointer logic
-│   │   ├── shift.ts       # Shift construction and count management
-│   │   ├── event.ts       # Board event construction
-│   │   └── uid.ts         # ID generation (crypto.randomUUID)
-│   │
-│   ├── api/
-│   │   ├── auth/
-│   │   │   ├── login.post.ts        # Verifies access code, sets session
-│   │   │   └── logout.post.ts       # Clears session
-│   │   ├── board/
-│   │   │   └── [slug].get.ts        # Returns current board and site config for initial page load
-│   │   └── config/
-│   │       └── [slug].post.ts       # Admin: updates site config in the database
-│   │
-│   ├── routes/
-│   │   └── ws/
-│   │       └── [slug].ts  # WebSocket handler — one room per site, handles all board actions
-│   │
-│   ├── db/                # Database access — Turso/libsql
-│   │   ├── client.ts      # Singleton libsql client (useDb)
-│   │   ├── queries.ts     # All typed query functions
-│   │   └── schema.sql     # Reference schema for the existing Turso database
-│   │
-│   └── utils/
-│       ├── auth.ts        # Access code hashing and verification
-│       └── dispatch.ts    # Executes board actions, persists state, signals reset
+│   ├── core/         # Business logic — pure functions, no I/O
+│   ├── api/          # HTTP endpoints (auth, board, config)
+│   ├── routes/ws/    # WebSocket handler — one endpoint per site
+│   ├── db/           # Turso/libsql client and query functions
+│   └── utils/        # Auth helpers and action dispatcher
 │
 ├── app/
-│   ├── composables/
-│   │   ├── useAuth.ts     # Login, logout, session state
-│   │   └── useBoard.ts    # Board state, WebSocket connection, and action sender
-│   ├── middleware/
-│   │   └── auth.global.ts # Route guard — redirects based on session state
-│   ├── pages/
-│   │   ├── login.vue      # Login form
-│   │   ├── board.vue      # Main board page
-│   │   ├── admin.vue      # Admin page (site config management)
-│   │   └── admin-lock.vue # Admin authentication gate
-│   ├── components/
-│   │   ├── AppHeader.vue          # Site header with nav
-│   │   ├── AppFooter.vue          # Site footer
-│   │   ├── HeaderButtons.vue      # Header action buttons
-│   │   ├── HeaderAddPop.vue       # Add clinician popover (provider + schedule selects)
-│   │   ├── HeaderLogo.vue         # Logo
-│   │   ├── SectionHeader.vue      # Zone section header with collapsible toggle
-│   │   ├── SectionRotation.vue    # Renders a zone's shift list with rotation flags
-│   │   ├── Shift.vue              # Individual shift card with flags-driven styles
-│   │   ├── ShiftMenu.vue          # Shift action dropdown (pause, zone, sign out, etc.)
-│   │   ├── ShiftMeta.vue          # Shift metadata display (name, counts)
-│   │   ├── ShiftTriageButton.vue  # Triage count button
-│   │   ├── AssignPop.vue          # Patient assignment popover
-│   │   ├── Timeline.vue           # Event timeline panel
-│   │   ├── TimelineEvent.vue      # Single timeline event row
-│   │   ├── TimelineEventAssign.vue# Assignment-specific event display
-│   │   ├── TimelineFilter.vue     # Timeline filter controls
-│   │   ├── TimelineIcon.vue       # Event type icon
-│   │   ├── TimelinePop.vue        # Timeline event detail popover
-│   │   └── LoadingIcon.vue        # Reusable loading spinner
-│   ├── utils/
-│   │   ├── shiftFlags.ts  # Derives shift state flags from shift + zone context
-│   │   ├── dates.ts       # Date formatting helpers
-│   │   └── modes.ts       # Patient arrival mode helpers
-│   └── app.vue
+│   ├── composables/  # useAuth, useBoard, useSocket
+│   ├── middleware/   # Global auth route guard
+│   ├── pages/        # login, board, admin, admin-lock
+│   ├── components/   # All UI components
+│   └── utils/        # shiftFlags, dates, modes
 │
-├── tests/                 # Unit tests for server/core
-│   ├── dummy.config.ts
-│   ├── assign.test.ts
-│   ├── board.test.ts
-│   ├── event.test.ts
-│   ├── shift.test.ts
-│   └── zone.test.ts
-│
-├── nuxt.config.ts
-├── vitest.config.ts
-├── .prettierrc.json
-└── .env                   # Local dev credentials (not committed)
+└── tests/            # Unit tests for server/core
 ```
 
 ---
@@ -291,6 +224,8 @@ Errors are returned only to the sender:
 
 Undo is also handled via the WebSocket — send `{ "action": "undo" }` with no payload.
 
+The server also responds to `{ "action": "ping" }` with `{ "action": "pong" }` — used by the client keepalive loop.
+
 ### `dispatch` (`server/utils/dispatch.ts`)
 
 Sits between the WebSocket handler and `Core`. For every action it:
@@ -316,17 +251,34 @@ const { loggedIn, session, login, logout } = useAuth();
 | `loggedIn` | Reactive boolean — true if a valid session cookie exists |
 | `session` | Reactive session object — contains `user.slug` |
 | `login(slug, code)` | Posts credentials, refreshes session, navigates to `/board` |
-| `logout()` | Clears session, tears down the board connection, navigates to `/login` |
+| `logout()` | Clears session, navigates to `/login` |
+
+### `createSocket` (`app/composables/useSocket.ts`)
+
+Low-level WebSocket connection factory. Not called directly by components — used internally by `useBoard`.
+
+```ts
+const socket = createSocket(slug, boardHandler);
+```
+
+Handles all connection infrastructure:
+
+- **Keepalive ping** — sends `{ action: "ping" }` every 25 seconds to prevent DigitalOcean's load balancer from dropping the idle connection (60s timeout)
+- **Automatic reconnect** — on unexpected close, retries with exponential backoff starting at 1s, capped at 30s
+- **Message routing** — ignores pong responses, calls `boardHandler` only when the message contains a `board` key
+- **Cleanup** — on `beforeunload`, marks the connection as intentionally closed to suppress reconnect attempts, then closes the socket
+
+```ts
+socket.send(data)      // sends JSON to the server
+socket.connected       // reactive ref<boolean> — true when the socket is open
+```
 
 ### `useBoard` (`app/composables/useBoard.ts`)
 
-Centralises all board communication. Any page or component that needs board state or wants to dispatch an action calls `useBoard()`.
+Centralises all board state and communication. Any page or component that needs board state or wants to dispatch an action calls `useBoard()`.
 
 ```ts
 const { board, config, connected, send } = useBoard();
-
-// Example: assign next patient in a zone
-send({ action: "assignToZone", payload: { zoneSlug: "main", mode: "walkin", room: "4" } });
 ```
 
 | Return value | Description |
@@ -334,9 +286,27 @@ send({ action: "assignToZone", payload: { zoneSlug: "main", mode: "walkin", room
 | `board` | Reactive `Board \| null` — updated on every server broadcast |
 | `config` | Reactive `SiteConfig \| null` — populated on initial fetch |
 | `connected` | Reactive boolean — WebSocket connection status |
-| `send(action)` | Sends a board action over the WebSocket, returns a `Promise` that resolves when the server responds |
+| `send(action)` | Sends a board action, returns a `Promise` that resolves when the next board broadcast arrives |
+| `initializeBoard()` | Fetches the initial board state and opens the WebSocket — call once on the board page |
+| `updateConfig(slug, config)` | Posts a config update and refreshes board state |
+| `getShiftName(id)` | Returns `"First Last"` for a shift id |
+| `getShiftsAlphabetically()` | Returns shift ids sorted by provider last name |
 
-The composable is a singleton — only one WebSocket connection is opened per session regardless of how many components call `useBoard()`. Call `resetBoard()` on logout to tear it down.
+**State** — `board`, `config`, and `socket` are module-level variables shared across all `useBoard()` calls. SSR is disabled so plain `ref`s are used instead of `useState`.
+
+**Initialization** — `initializeBoard()` is called once in `board.vue`. It fetches the initial board via HTTP then opens the WebSocket via `createSocket`. Subsequent `useBoard()` calls from child components share the same state and socket automatically.
+
+**The send/resolve cycle** — `send()` stores the Promise's `resolve`/`reject` in `pendingSend`, then sends the action over the socket. When the server broadcasts the updated board back, `boardHandler` writes the new board to state and calls `pendingSend.resolve()`, settling the Promise. If another client's broadcast arrives first, the Promise settles early — which is fine since the board is already at the latest state.
+
+```ts
+// In board.vue — initialize once
+const { board, initializeBoard } = useBoard();
+initializeBoard();
+
+// In any component — just call useBoard()
+const { send } = useBoard();
+await send({ action: "assignToZone", payload: { zoneSlug: "main", mode: "walkin", room: "4" } });
+```
 
 ---
 
@@ -360,30 +330,6 @@ Date formatting helpers for displaying event timestamps in the timeline.
 ### `modes.ts`
 
 Helpers for patient arrival mode labels and icons (`walkin`, `ambo`, `police`, `ft`, `heli`).
-
----
-
-## Board components
-
-### `SectionRotation.vue`
-
-Renders a zone's shift list. Computes `isNext` and `isSuper` flags per shift using the zone's rotation pointers, then passes a full `ShiftFlags` object to each `Shift` via `getShiftFlags`.
-
-### `Shift.vue`
-
-Individual shift card. Accepts a `shiftId` and `flags` prop. All conditional styles are computed locally via `getShiftStyles(flags)` using `clsx` — no style logic leaks into the template. Includes a `ShiftMenu` dropdown for actions.
-
-### `ShiftMenu.vue`
-
-Dropdown menu for shift actions (pause/unpause, switch zone, join zone, leave zone, sign out, delete). Uses `useBoard().send()` and shows a loading spinner while the action is in flight.
-
-### `Timeline.vue`
-
-Displays the board's recent event log from `board.timeline`. Each event is rendered by `TimelineEvent.vue` with type-specific icons and assignment detail popovers.
-
-### `HeaderAddPop.vue`
-
-Popover for adding a clinician to the board. Contains provider and schedule selects populated from `config.providers` and `config.schedule`. Submits a `signIn` action via `useBoard().send()` with a loading state on the submit button.
 
 ---
 

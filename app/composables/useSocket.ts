@@ -18,6 +18,8 @@ export const createSocket = (slug: string, boardHandler: BoardHandler) => {
     }
   };
 
+  // Digital Ocean has a 60 second timeout to drop connection
+  // this q25 sec ping keeps it alive
   const startKeepAliveLoop = () => {
     clearKeepAliveLoop();
     keepAliveLoop = setInterval(() => {
