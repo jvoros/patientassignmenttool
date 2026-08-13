@@ -8,6 +8,7 @@ type SendFn = (action: ActionMessage) => Promise<SendResult>;
 const board = ref<Board | null>(null);
 const config = ref<SiteConfig | null>(null);
 let socket: ReturnType<typeof createSocket> | null = null;
+const connected = computed(() => socket?.connected.value ?? false);
 
 // Holds the resolve/reject for the in-flight send.
 // Resolves on the next message received — if a broadcast from another client
@@ -94,7 +95,7 @@ const useBoard = () => {
   return {
     board,
     config,
-    connected: computed(() => socket?.connected.value ?? false),
+    connected,
     initializeBoard,
     send,
     updateConfig,
