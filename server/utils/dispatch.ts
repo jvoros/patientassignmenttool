@@ -55,7 +55,7 @@ export const dispatch = async (
 
   const undoId = await addUndo(result.oldboard);
   const boardToSave = { ...result.board, undo: undoId };
-  await updateBoard(slug, boardToSave);
+  await updateBoard(slug, boardToSave, site.config.timeZone);
 
   // Prune stale undo rows when the board resets (first sign-in of the day).
   if (result.reset) await clearUndos(slug);
@@ -76,6 +76,6 @@ export const dispatchUndo = async (slug: string): Promise<DispatchResult> => {
   if (!undoRow) return { ok: false, error: "Undo record not found" };
 
   // The board being restored may itself point to a further undo — keep the chain intact
-  await updateBoard(slug, undoRow.board);
+  await updateBoard(slug, undoRow.board, site.config.timeZone);
   return { ok: true, board: undoRow.board };
 };

@@ -24,11 +24,16 @@ CREATE TABLE logs (
     site       TEXT    NOT NULL,
     shift      TEXT    NOT NULL,
     provider   TEXT    NOT NULL,
+    cal_date   TEXT,
     assigned   INTEGER,
     supervised INTEGER,
     bounty     INTEGER,
     PRIMARY KEY (date, site, shift)
 );
+
+-- Added 8/16/26
+-- switching to YYYY-MM-DD dates
+-- ALTER TABLE logs ADD COLUMN cal_date TEXT;
 
 -- Undo history. Each row is the board state before an action was applied.
 -- boards.undo references the most recent undos.id for that board.

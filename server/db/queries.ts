@@ -18,18 +18,60 @@ export type UndoRow = {
 
 // ---- Helpers --------------------------------------------------------------
 
+// Returns the local calendar date string (YYYY-MM-DD) for a millisecond
+// timestamp using the site's IANA timezone. Falls back to America/Denver.
+const toCalDate = (ts: number, timeZone = "America/Denver"): string =>
+  new Intl.DateTimeFormat("en-CA", { timeZone }).format(new Date(ts));
+
 // Builds log rows from the current board state. Called on every board save
 // so logs are always current and never need special end-of-day handling.
-const buildLogArgs = (board: Board) =>
+const buildLogArgs = (board: Board, timeZone: string) =>
   Object.values(board.shifts).map((shift) => [
     board.date,
+    toCalDate(board.date, timeZone),
     board.slug,
     shift.name,
     `${shift.first} ${shift.last}`,
     shift.assigned,
     shift.supervised,
-    shift.triaged, // stored in the 'bounty' column
+    shift.triaged,
   ]);
+
+// ---- Logs ----------------------------------------------------------------
+
+export type LogRow = {
+  cal_date: string;
+  shift: string;
+  provider: string;
+  assigned: number;
+  supervised: number;
+  triaged: number;
+};
+
+export const getLogs = async (
+  slug: string,
+  start: string,
+  end: string,
+): Promise<LogRow[]> => {
+  const db = useDb();
+  const result = await db.execute({
+    sql: `SELECT cal_date, shift, provider, assigned, supervised, bounty
+          FROM logs
+          WHERE site = ?
+            AND cal_date >= ?
+            AND cal_date <= ?
+          ORDER BY cal_date ASC`,
+    args: [slug, start, end],
+  });
+  return result.rows.map((row) => ({
+    cal_date: row.cal_date as string,
+    shift: row.shift as string,
+    provider: row.provider as string,
+    assigned: (row.assigned as number) ?? 0,
+    supervised: (row.supervised as number) ?? 0,
+    triaged: (row.bounty as number) ?? 0,
+  }));
+};
 
 // ---- Access codes --------------------------------------------------------
 
@@ -91,18 +133,25 @@ export const getSite = async (slug: string): Promise<SiteRow | null> => {
 export const updateBoard = async (
   slug: string,
   board: Board,
+  timeZone = "America/Denver",
 ): Promise<void> => {
   const db = useDb();
-  const logRows = buildLogArgs(board);
+  const calDate = toCalDate(board.date, timeZone);
+  const logRows = buildLogArgs(board, timeZone);
   await db.batch(
     [
       {
         sql: "UPDATE sites SET board = ? WHERE slug = ?",
         args: [JSON.stringify(board), slug],
       },
+      // Remove any stale rows from a previous board reset on the same calendar day
+      {
+        sql: "DELETE FROM logs WHERE site = ? AND cal_date = ? AND date != ?",
+        args: [slug, calDate, board.date],
+      },
       ...logRows.map((args) => ({
-        sql: `INSERT OR REPLACE INTO logs (date, site, shift, provider, assigned, supervised, bounty)
-              VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        sql: `INSERT OR REPLACE INTO logs (date, cal_date, site, shift, provider, assigned, supervised, bounty)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         args,
       })),
     ],

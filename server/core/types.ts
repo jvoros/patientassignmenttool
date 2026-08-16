@@ -3,6 +3,7 @@
 export type SiteConfig = {
   name: string;
   slug: string;
+  timeZone?: string; // IANA timezone, e.g. 'America/Denver'. Defaults to 'America/Denver' if not set.
   zones: Record<string, Zone>;
   zoneOrder: Zone["slug"][];
   schedule: ScheduleItem[];
