@@ -5,8 +5,17 @@ const hideSmall = "hidden md:flex";
 <template>
     <UButton
         color="neutral"
-        size="lg"
-        variant="soft"
+        size="md"
+        variant="link"
+        label="Shift Logs"
+        icon="streamline:log"
+        to="logs"
+        :class="hideSmall"
+    />
+    <UButton
+        color="neutral"
+        size="md"
+        variant="link"
         label="Quick Reference"
         icon="fa7-solid:bookmark"
         class="text-purple-500"

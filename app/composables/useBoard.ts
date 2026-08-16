@@ -48,6 +48,8 @@ const useBoard = () => {
       pendingSend = null;
     };
 
+    // Disconnect any existing socket before creating a new one
+    socket?.disconnect();
     socket = createSocket(slug, boardHandler);
   };
 
@@ -92,11 +94,17 @@ const useBoard = () => {
     return shifts.sort((a, b) => a.last.localeCompare(b.last)).map((s) => s.id);
   };
 
+  const disconnect = () => {
+    socket?.disconnect();
+    socket = null;
+  };
+
   return {
     board,
     config,
     connected,
     initializeBoard,
+    disconnect,
     send,
     updateConfig,
     getShiftName,

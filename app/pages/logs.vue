@@ -20,6 +20,7 @@ thirtyDaysAgo.setDate(today.getDate() - 30);
 const toDateInput = (d: Date) => d.toISOString().slice(0, 10);
 const startDate = ref(toDateInput(thirtyDaysAgo));
 const endDate = ref(toDateInput(yesterday));
+const minDate = "2025-08-11";
 
 const logs = ref<LogRow[]>([]);
 const loading = ref(false);
@@ -56,6 +57,7 @@ onMounted(async () => {
     }
 });
 
+// HELPERS
 const scheduleOrder = computed(
     () => config.value?.schedule.map((s) => s.name) ?? [],
 );
@@ -83,6 +85,7 @@ const sd = (arr: number[]) => {
     return Math.sqrt(variance);
 };
 
+// DATA HANDLERS
 const buildTableData = (rows: LogRow[]): ShiftRow[] => {
     if (!rows.length) return [];
 
@@ -178,12 +181,13 @@ const weekendDays = computed(() =>
 
             <div class="flex flex-wrap gap-4 items-end mb-6">
                 <UFormField label="Start date">
-                    <UInput type="date" v-model="startDate" />
+                    <UInput type="date" v-model="startDate" :min="minDate" />
                 </UFormField>
                 <UFormField label="End date">
                     <UInput
                         type="date"
                         v-model="endDate"
+                        :min="minDate"
                         :max="toDateInput(yesterday)"
                     />
                 </UFormField>

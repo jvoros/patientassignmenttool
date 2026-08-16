@@ -77,15 +77,18 @@ export const createSocket = (slug: string, boardHandler: BoardHandler) => {
     }
   };
 
-  // INIT
-  connect();
-
-  window.addEventListener("beforeunload", () => {
+  const disconnect = () => {
+    console.log("[websocket] disconnected");
     intentionallyClosed = true;
     clearKeepAliveLoop();
     if (reconnectTimer) clearTimeout(reconnectTimer);
     ws?.close();
-  });
+  };
 
-  return { send, connected };
+  // INIT
+  connect();
+
+  window.addEventListener("beforeunload", disconnect);
+
+  return { send, connected, disconnect };
 };
