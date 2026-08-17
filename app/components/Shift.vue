@@ -39,7 +39,7 @@ const getShiftStyles = (flags: ShiftFlags) => ({
     ),
     content: clsx(
         "px-2 py-3 md:px-3 md:pt-3 flex justify-between",
-        flags.isOff && "text-neutral-500 bg-neutral-100 dark:bg-neutral-800",
+        flags.isOff && "text-neutral-400 bg-neutral-100 dark:bg-neutral-800",
     ),
     providerName: "font-bold text-lg md:text-2xl",
 });

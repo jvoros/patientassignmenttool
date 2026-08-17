@@ -42,7 +42,7 @@ async function undo() {
         color="neutral"
         variant="subtle"
         description="Click on time to adjust assignment or edit note."
-        class="hidden md:flex mb-2"
+        class="hidden md:flex mb-2 text-neutral-500"
     />
     <div class="my-2 md:my-4 border-l border-muted ml-4">
         <template v-for="(event, index) in filteredTimeline">
