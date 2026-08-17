@@ -177,7 +177,7 @@ const weekendDays = computed(() =>
     <AppHeader />
     <UMain>
         <UContainer class="py-6">
-            <h1 class="text-2xl font-bold mb-4">Shift Logs</h1>
+            <h1 class="text-2xl font-bold mb-4">Shift Trends</h1>
 
             <div class="flex flex-wrap gap-4 items-end mb-6">
                 <UFormField label="Start date">

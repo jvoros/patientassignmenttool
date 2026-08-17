@@ -7,8 +7,8 @@ const hideSmall = "hidden md:flex";
         color="neutral"
         size="md"
         variant="link"
-        label="Shift Logs"
-        icon="streamline:log"
+        label="Shift Trends"
+        icon="lucide:chart-no-axes-combined"
         to="logs"
         :class="hideSmall"
     />
