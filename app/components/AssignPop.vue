@@ -14,7 +14,8 @@ const popoverOpen = ref(false);
 const loading = ref(false);
 
 const selectedMode = ref(null);
-const selectedRoom = ref(null);
+const selectedRoom = ref("");
+const selectedTriage = ref("");
 
 const isDisabled = computed<boolean>(
     () => selectedMode.value === null || selectedRoom.value === null,
@@ -26,7 +27,8 @@ function setMode(modeSlug) {
 
 function clearSelections() {
     selectedMode.value = null;
-    selectedRoom.value = null;
+    selectedRoom.value = "";
+    selectedTriage.value = "";
 }
 
 async function assign() {
@@ -41,6 +43,7 @@ async function assign() {
             zoneSlug: props.zoneSlug,
             mode: selectedMode.value,
             room: selectedRoom.value,
+            note: selectedTriage.value ?? `Triage in: ${selectedTriage.value}`,
         },
     });
 
@@ -91,6 +94,13 @@ async function assign() {
                         size="lg"
                         v-model="selectedRoom"
                         :items="config?.rooms ?? []"
+                    />
+                    <USelect
+                        v-if="config?.useTriageRooms"
+                        placeholder="Triage in (optional)"
+                        size="lg"
+                        v-model="selectedTriage"
+                        :items="config?.triageRooms ?? []"
                     />
                     <UButton
                         color="neutral"

@@ -10,7 +10,7 @@ const addReassign = (params: {
   newProvider: string;
 }): void => {
   const { priorEvent, newProvider } = params;
-  priorEvent.note = `Reassigned: ${newProvider}`;
+  priorEvent.reassigned = `Reassigned to ${newProvider}`;
 };
 
 const changeRoom = (params: { event: BoardEvent; newRoom: string }): void => {

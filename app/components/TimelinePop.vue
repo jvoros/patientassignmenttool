@@ -80,7 +80,7 @@ function clearSelected() {
         </div>
 
         <template #content>
-            <div class="w-48">
+            <div class="w-60">
                 <div class="border-b border-muted p-2">
                     <span class="font-bold text-sm">Timeline Menu</span>
                 </div>
@@ -125,7 +125,7 @@ function clearSelected() {
                             <UTextarea
                                 v-model="noteValue"
                                 color="neutral"
-                                class="m-2"
+                                class="mx-2 block"
                             />
                             <UButton
                                 color="neutral"

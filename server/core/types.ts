@@ -9,6 +9,8 @@ export type SiteConfig = {
   schedule: ScheduleItem[];
   providers: Provider[];
   rooms: string[];
+  useTriageRooms?: boolean;
+  triageRooms?: string[];
 };
 
 // BOARD
@@ -118,6 +120,7 @@ export type BoardEvent = EventMakeParams & {
 export type EventMakeParams = {
   message?: string;
   note?: string;
+  reassigned?: string;
   mode?: PatientModes;
   room?: string;
   assign?: Shift["id"];

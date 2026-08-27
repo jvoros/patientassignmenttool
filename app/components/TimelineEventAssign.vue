@@ -31,9 +31,10 @@ const styles = {
                         />
                         <span>{{ getShiftName(event.super) }}</span>
                     </div>
+                    <div v-if="event.reassigned">> {{ event.reassigned }}</div>
                     <div v-if="event.note">
                         <UIcon name="fa7-solid:asterisk" class="mr-1" />
-                        <span>{{ event.note }}</span>
+                        <span v-html="event.note"></span>
                     </div>
                 </div>
             </div>

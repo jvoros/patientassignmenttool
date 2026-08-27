@@ -25,9 +25,10 @@ const assign = (
     zoneSlug: Zone["slug"];
     mode: PatientModes;
     room: string;
+    note?: string;
   },
 ): void => {
-  const { shiftId, zoneSlug, mode, room } = params;
+  const { shiftId, zoneSlug, mode, room, note } = params;
   const shift = BoardModule.getShift(shiftId, board);
   const zone = BoardModule.getZone(zoneSlug, board);
   let superId = null;
@@ -58,6 +59,7 @@ const assign = (
     message: `Room ${room} assigned to ${shift.first} ${shift.last}`,
     mode,
     room,
+    note,
     assign: shiftId,
     ...(superId && { super: superId }),
   };
@@ -72,6 +74,7 @@ const toShift = (
     zoneSlug: Zone["slug"];
     mode: PatientModes;
     room: string;
+    note?: string;
   },
 ): void => {
   assign(board, params);
@@ -84,6 +87,7 @@ const toZone = (
     zoneSlug: Zone["slug"];
     mode: PatientModes;
     room: string;
+    note?: string;
   },
 ): void => {
   const zone = BoardModule.getZone(params.zoneSlug, board);
@@ -129,10 +133,6 @@ const reassign = (
   const newShift = BoardModule.getShift(newShiftId, board);
   let newSuperId: string | null = event.super ?? null; // let new super equal old super, change as needed
 
-  EventModule.addReassign({
-    priorEvent: event,
-    newProvider: `${newShift.first} ${newShift.last}`,
-  });
   ShiftModule.adjustCount({ shift: oldShift, amount: -1, type: "assigned" });
   ShiftModule.adjustCount({ shift: newShift, amount: 1, type: "assigned" });
 
@@ -155,15 +155,21 @@ const reassign = (
     newSuperId = oldShift.id;
   }
 
-  // event
+  // new event and edit event
   const eventParams = {
-    message: `Reassigned to ${newShift.first} ${newShift.last}`,
+    reassigned: `Reassigned from ${oldShift.first} ${oldShift.last}`,
+    note: event.note,
     mode: event.mode,
     room: event.room,
     assign: newShiftId,
     ...(newSuperId && { super: newSuperId }),
   };
   BoardModule.addEvent(board, eventParams);
+
+  EventModule.addReassign({
+    priorEvent: event,
+    newProvider: `${newShift.first} ${newShift.last}`,
+  });
 };
 
 const changeRoom = (
