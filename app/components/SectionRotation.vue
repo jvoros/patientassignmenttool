@@ -9,7 +9,7 @@ const props = defineProps<{
 }>();
 
 const open = ref(true);
-const loading = ref(false);
+const loading = ref("");
 
 const collapseIcon = computed(() => {
     return open.value ? "lucide:chevrons-down-up" : "lucide:chevrons-up-down";
@@ -45,7 +45,7 @@ async function adjustRotation(params: { which: string; offset: number }) {
             offset: params.offset,
         },
     });
-    loading.value = false;
+    loading.value = "";
 }
 </script>
 
@@ -68,17 +68,18 @@ async function adjustRotation(params: { which: string; offset: number }) {
         <!-- COLLAPSIBLE -->
         <template #content>
             <!-- SHIFTS -->
-            <template v-if="zone.shifts.length === 0">
-                <UEmpty description="No shifts on rotation yet." />
-            </template>
+            <UEmpty
+                v-if="zone.shifts.length === 0"
+                description="No shifts on rotation yet."
+            />
 
-            <template v-for="shiftId in zone.shifts">
-                <Shift
-                    :shiftId="shiftId"
-                    :flags="flags(shiftId)"
-                    :zoneSlug="zone.slug"
-                />
-            </template>
+            <Shift
+                v-for="shiftId in zone.shifts"
+                :key="shiftId"
+                :shiftId="shiftId"
+                :flags="flags(shiftId)"
+                :zoneSlug="zone.slug"
+            />
 
             <!-- ROTATION CONTROLS -->
             <div v-if="isRotation" class="flex justify-between my-2">
