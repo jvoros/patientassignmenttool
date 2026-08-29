@@ -12,6 +12,9 @@ const { board } = useBoard();
                 v-for="zoneSlug in board.zoneOrder.slice(1)"
                 :zoneSlug="zoneSlug"
             />
+            <div class="hidden md:block">
+                <ZoneBars />
+            </div>
         </section>
         <section class="order-3 md:order-1 md:col-span-3 h-full">
             <Timeline :timeline="board?.timeline" />
