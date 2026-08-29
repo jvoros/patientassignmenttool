@@ -43,7 +43,9 @@ async function assign() {
             zoneSlug: props.zoneSlug,
             mode: selectedMode.value,
             room: selectedRoom.value,
-            note: selectedTriage.value ?? `Triage in: ${selectedTriage.value}`,
+            note: selectedTriage.value
+                ? `Triage in: ${selectedTriage.value}`
+                : "",
         },
     });
 
