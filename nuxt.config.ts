@@ -14,6 +14,9 @@ export default defineNuxtConfig({
     tursoUrl: "", // overridden by NUXT_TURSO_URL
     tursoAuthToken: "", // overridden by NUXT_TURSO_AUTH_TOKEN
     adminCode: "", //overridden by NUXT_ADMIN_CODE
+    public: {
+      isProdDb: "" //overridden by NUXT_IS_PROD_DB
+    }
   },
 
   nitro: {
