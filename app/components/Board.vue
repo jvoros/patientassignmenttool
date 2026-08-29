@@ -1,18 +1,18 @@
 <script setup lang="ts">
-const { board } = useBoard();
+const { board, config } = useBoard();
 </script>
 
 <template>
     <main class="grid grid-cols-1 md:grid-cols-11 md:gap-8">
         <section class="order-1 md:order-2 md:col-span-4">
-            <SectionRotation :zoneSlug="board.zoneOrder[0]" />
+            <SectionRotation :zoneSlug="board?.zoneOrder[0]" />
         </section>
         <section class="order-2 md:order-3 md:col-span-4">
             <SectionRotation
-                v-for="zoneSlug in board.zoneOrder.slice(1)"
+                v-for="zoneSlug in board?.zoneOrder.slice(1)"
                 :zoneSlug="zoneSlug"
             />
-            <div class="hidden md:block">
+            <div v-if="config?.showDistribution" class="hidden md:block">
                 <ZoneBars />
             </div>
         </section>

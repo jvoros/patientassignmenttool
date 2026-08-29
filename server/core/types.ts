@@ -11,6 +11,7 @@ export type SiteConfig = {
   rooms: string[];
   useTriageRooms?: boolean;
   triageRooms?: string[];
+  showDistribution?: boolean;
 };
 
 // BOARD
