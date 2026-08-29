@@ -1,5 +1,5 @@
 import { updateConfig } from "../../db/queries";
-import type { SiteConfig } from "../core/types";
+import type { SiteConfig } from "../../core/types";
 
 // Updates the site configuration in the database.
 export default defineEventHandler(async (event) => {
