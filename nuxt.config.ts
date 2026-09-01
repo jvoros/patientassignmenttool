@@ -11,9 +11,9 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    tursoUrl: "", // overridden by NUXT_TURSO_URL
-    tursoAuthToken: "", // overridden by NUXT_TURSO_AUTH_TOKEN
-    adminCode: "", //overridden by NUXT_ADMIN_CODE
+    tursoUrl: process.env.TURSO_URL, // overridden by NUXT_TURSO_URL
+    tursoAuthToken: process.env.TURSO_AUTH_TOKEN, // overridden by NUXT_TURSO_AUTH_TOKEN
+    adminCode: process.env.ADMIN_CODE, //overridden by NUXT_ADMIN_CODE
     public: {
       isProdDb: "" //overridden by NUXT_IS_PROD_DB
     }

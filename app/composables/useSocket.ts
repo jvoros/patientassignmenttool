@@ -10,6 +10,7 @@ export const createSocket = (slug: string, boardHandler: BoardHandler) => {
   let intentionallyClosed = false;
 
   const connected = ref<boolean>(false);
+  const attemptingReconnect = ref<boolean>(false);
 
   const clearKeepAliveLoop = () => {
     if (keepAliveLoop) {
@@ -41,14 +42,21 @@ export const createSocket = (slug: string, boardHandler: BoardHandler) => {
       connected.value = true;
       reconnectDelay = 1000;
       startKeepAliveLoop();
+      if (attemptingReconnect.value) {
+        attemptingReconnect.value = false;
+        console.log("[websocket] reconnected after drop...refreshing page...")
+        window.location.reload();
+      }
     });
 
     ws.addEventListener("close", () => {
       connected.value = false;
       clearKeepAliveLoop();
       if (!intentionallyClosed) {
+        console.log("[websocket] connection dropped, attemping reconnect...")
+        attemptingReconnect.value = true;
         console.error(
-          "[websocket] closed, reconnecting in",
+          "[websocket] reconnecting in",
           reconnectDelay,
           "ms",
         );

@@ -13,6 +13,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "start": "NODE_ENV=production node .output/server/index.mjs",
+    "start-local": "node --env-file=.env .output/server/index.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
   },
