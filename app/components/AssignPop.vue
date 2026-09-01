@@ -13,12 +13,12 @@ const props = defineProps<{
 const popoverOpen = ref(false);
 const loading = ref(false);
 
-const selectedMode = ref(null);
+const selectedMode = ref("");
 const selectedRoom = ref("");
 const selectedTriage = ref("");
 
 const isDisabled = computed<boolean>(
-    () => selectedMode.value === null || selectedRoom.value === null,
+    () => selectedMode.value === "" || selectedRoom.value === "",
 );
 
 function setMode(modeSlug) {
@@ -26,7 +26,7 @@ function setMode(modeSlug) {
 }
 
 function clearSelections() {
-    selectedMode.value = null;
+    selectedMode.value = "";
     selectedRoom.value = "";
     selectedTriage.value = "";
 }
