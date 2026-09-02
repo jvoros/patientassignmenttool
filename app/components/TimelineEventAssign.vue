@@ -40,8 +40,12 @@ const styles = {
             </div>
         </div>
 
-        <div class="text-lg md:text-lg font-bold mr-2">
+        <div v-if="event.room" class="text-lg md:text-lg font-bold mr-2">
             {{ event.room }}
         </div>
+        <div
+            v-if="!event.room"
+            class="h-4 w-4 rounded rounded-full bg-orange-200 border border-orange-300"
+        ></div>
     </div>
 </template>

@@ -32,7 +32,7 @@ function clearSelections() {
 }
 
 async function assign() {
-    if (isDisabled.value) return;
+    //if (isDisabled.value) return;
     const action = props.variant === "shift" ? "assignToShift" : "assignToZone";
     loading.value = true;
 
@@ -109,7 +109,6 @@ async function assign() {
                         label="Assign"
                         size="lg"
                         class="justify-center"
-                        :disabled="isDisabled"
                         :loading="loading"
                         @click="assign"
                     />
