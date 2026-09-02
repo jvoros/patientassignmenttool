@@ -17,9 +17,7 @@ const selectedMode = ref("");
 const selectedRoom = ref("");
 const selectedTriage = ref("");
 
-const isDisabled = computed<boolean>(
-    () => selectedMode.value === "" || selectedRoom.value === "",
-);
+const isDisabled = computed<boolean>(() => selectedMode.value === "");
 
 function setMode(modeSlug) {
     selectedMode.value = modeSlug;
@@ -32,7 +30,7 @@ function clearSelections() {
 }
 
 async function assign() {
-    //if (isDisabled.value) return;
+    if (isDisabled.value) return;
     const action = props.variant === "shift" ? "assignToShift" : "assignToZone";
     loading.value = true;
 
@@ -92,7 +90,7 @@ async function assign() {
                         />
                     </UFieldGroup>
                     <USelect
-                        placeholder="Room"
+                        placeholder="Room (optional)"
                         size="lg"
                         v-model="selectedRoom"
                         :items="config?.rooms ?? []"
@@ -110,6 +108,7 @@ async function assign() {
                         size="lg"
                         class="justify-center"
                         :loading="loading"
+                        :disabled="isDisabled"
                         @click="assign"
                     />
                 </div>
