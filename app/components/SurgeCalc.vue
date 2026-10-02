@@ -136,13 +136,21 @@ function reset() {
         <div
             class="mb-6 border border-muted rounded p-4 bg-neutral-100 dark:bg-neutral-700"
         >
-            <UForm class="flex gap-4 justify-between">
+            <span class="font-bold">Inputs</span>
+            <USeparator />
+            <UForm class="flex flex-wrap gap-4 justify-start mt-4">
                 <UFormField label="Nurses:">
-                    <USelect size="lg" v-model="nurseCount" :items="numbers" />
+                    <USelect
+                        size="lg"
+                        class="w-25"
+                        v-model="nurseCount"
+                        :items="numbers"
+                    />
                 </UFormField>
                 <UFormField label="ED Pts:">
                     <USelect
                         size="lg"
+                        class="w-25"
                         v-model="standardEdPatients"
                         :items="numbers"
                     />
@@ -150,16 +158,23 @@ function reset() {
                 <UFormField label="Admits:">
                     <USelect
                         size="lg"
+                        class="w-25"
                         v-model="admitPatients"
                         :items="numbers"
                     />
                 </UFormField>
                 <UFormField label="ICU Pts:">
-                    <USelect size="lg" v-model="icuPatients" :items="numbers" />
+                    <USelect
+                        size="lg"
+                        class="w-25"
+                        v-model="icuPatients"
+                        :items="numbers"
+                    />
                 </UFormField>
                 <UFormField label="1:1 Pts:">
                     <USelect
                         size="lg"
+                        class="w-25"
                         v-model="criticalPatients"
                         :items="numbers"
                     />
