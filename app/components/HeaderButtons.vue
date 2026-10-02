@@ -3,6 +3,20 @@ const { logout } = useAuth();
 const hideSmall = "hidden md:flex";
 </script>
 <template>
+    <USlideover inset title="Surge Calculator">
+        <UButton
+            label="Surge Calculator"
+            color="neutral"
+            variant="link"
+            icon="lucide:calculator"
+            :class="hideSmall"
+        />
+
+        <template #body>
+            <SurgeCalc />
+        </template>
+    </USlideover>
+
     <UButton
         color="neutral"
         size="md"
